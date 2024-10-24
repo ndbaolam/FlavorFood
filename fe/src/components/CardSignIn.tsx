@@ -14,7 +14,7 @@ interface CardProps {
   children?: ReactNode;
 }
 
-const CardSignin: React.FC<CardProps> = ({ children }) => {
+const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -27,8 +27,8 @@ const CardSignin: React.FC<CardProps> = ({ children }) => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <Card className="bg-gray-100 w-fit max-w-[48rem] flex-row justify-center">
+    <div className="flex justify-center items-center overflow-hidden inset-0 h-screen">
+      <Card className="bg-gray-100 w-fit max-w-[48rem] flex-row justify-center z-20">
         <CardHeader
           shadow={false}
           floated={false}
@@ -36,7 +36,7 @@ const CardSignin: React.FC<CardProps> = ({ children }) => {
         >
           <img
             src="https://www.elle.vn/wp-content/uploads/2017/09/21/JW-Marriott-Hanoi4.jpg"
-            alt="login-image"
+            alt="signin-image"
             className="sm:block hidden rounded-l-2xl h-full w-full"
           />
         </CardHeader>
@@ -81,7 +81,7 @@ const CardSignin: React.FC<CardProps> = ({ children }) => {
                 </button>
               </div>
               <Button type="submit" className="w-full">
-                Sign in
+                Sign In
               </Button>
             </form>
             <div className="mt-10 grid grid-cols-3 items-center text-gray-400">
@@ -97,17 +97,24 @@ const CardSignin: React.FC<CardProps> = ({ children }) => {
               />
               Sign in with Google
             </button>
-            <Typography>
-              If you don't have an account, please sign up here!
-              <Link to="/sign-up">Sign Up</Link>
+            <Typography className="text-black">
+              Don't have an account?{" "}
+              <Link className="text-blue-500 hover:underline" to="/sign-up">
+                Sign Up
+              </Link>
             </Typography>
-            {children && <div className="mt-4">{children}</div>}{" "}
-           
           </Card>
         </CardBody>
       </Card>
+      <div className="absolute inset-0 w-screen h-screen overflow-hidden">
+        <img
+          src="./bg.jpg"
+          className="object-cover w-full h-full blur-sm"
+          alt="Background"
+        />
+      </div>
     </div>
   );
 };
 
-export default CardSignin;
+export default CardSignIn;

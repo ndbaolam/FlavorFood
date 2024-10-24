@@ -1,13 +1,13 @@
 import React from 'react'
-import CardSignin from '../../components/CardSigin';
+import CardSignIn from '../../components/CardSignIn';
 
-const Signin = () => {
+const SignIn = () => {
   return (
     <div>
-      <CardSignin>
-      </CardSignin>
+      <CardSignIn>
+      </CardSignIn>
     </div>
   )
 }
 
-export default Signin;
+export default SignIn;
