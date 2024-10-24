@@ -1,9 +1,13 @@
 import React from 'react'
+import CardSignIn from '../../components/CardSignIn';
 
-const Signin = () => {
+const SignIn = () => {
   return (
-    <div>index</div>
+    <div>
+      <CardSignIn>
+      </CardSignIn>
+    </div>
   )
 }
 
-export default Signin;
+export default SignIn;
