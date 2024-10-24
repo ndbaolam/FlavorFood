@@ -1,8 +1,12 @@
 import React from 'react'
+import CardSignin from '../../components/CardSigin';
 
 const Signin = () => {
   return (
-    <div>index</div>
+    <div>
+      <CardSignin>
+      </CardSignin>
+    </div>
   )
 }
 
