@@ -8,7 +8,7 @@ import {
 } from "@material-tailwind/react";
 import { ReactNode, useState } from "react";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 interface CardProps {
   children?: ReactNode;
@@ -16,6 +16,7 @@ interface CardProps {
 
 const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -24,6 +25,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Add sign-in logic here
+    navigate("/");
   };
 
   return (
@@ -32,7 +34,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
         <CardHeader
           shadow={false}
           floated={false}
-          className="m-0 w-2/5 shrink-0 rounded-r-none w-fit"
+          className="m-0 shrink-0 rounded-r-none w-fit"
         >
           <img
             src="https://www.elle.vn/wp-content/uploads/2017/09/21/JW-Marriott-Hanoi4.jpg"

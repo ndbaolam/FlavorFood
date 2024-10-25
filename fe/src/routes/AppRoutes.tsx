@@ -1,10 +1,10 @@
 // AppRoutes.tsx
 import { createBrowserRouter, RouteObject } from "react-router-dom";
-import App from "../pages/App";
 import ErrorPage from "../error-page";
 import SignIn from "../pages/Signin";
 import SignUp from "../pages/Signup";
 import MainLayout from "../layouts/MainLayout";
+import Home from "../pages/Home";
 
 const routes: RouteObject[] = [
   {
@@ -14,7 +14,7 @@ const routes: RouteObject[] = [
     children: [
       {
         index: true,
-        element: <App />,
+        element: <Home />,
       },
     ],
   },
