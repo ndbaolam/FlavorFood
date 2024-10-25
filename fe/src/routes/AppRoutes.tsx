@@ -1,26 +1,35 @@
-import { createBrowserRouter } from "react-router-dom";
+// AppRoutes.tsx
+import { createBrowserRouter, RouteObject } from "react-router-dom";
 import App from "../pages/App";
 import ErrorPage from "../error-page";
-
 import SignIn from "../pages/Signin";
 import SignUp from "../pages/Signup";
+import MainLayout from "../layouts/MainLayout";
 
-const AppRoutes = createBrowserRouter([
+const routes: RouteObject[] = [
   {
     path: "/",
-    element: <App/>,
+    element: <MainLayout />,
     errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <App />,
+      },
+    ],
   },
   {
     path: "sign-in",
-    element: <SignIn/>,
+    element: <SignIn />,
     errorElement: <ErrorPage />,
   },
   {
     path: "sign-up",
-    element:<SignUp/>,
-    errorElement:< ErrorPage/>,
-  }
-]);
+    element: <SignUp />,
+    errorElement: <ErrorPage />,
+  },
+];
+
+const AppRoutes = createBrowserRouter(routes);
 
 export default AppRoutes;
