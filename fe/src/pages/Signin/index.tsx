@@ -1,4 +1,3 @@
-import React from 'react'
 import CardSignIn from '../../components/CardSignIn';
 
 const SignIn = () => {

@@ -25,14 +25,13 @@ import {
       e.preventDefault();
       // Add sign-up logic here
     };
-  
     return (
       <div className="flex justify-center items-center overflow-hidden inset-0 h-screen">
         <Card className="bg-gray-100 w-fit max-w-[48rem] flex-row justify-center z-20">
           <CardHeader
             shadow={false}
             floated={false}
-            className="m-0 w-2/5 shrink-0 rounded-r-none w-fit"
+            className="m-0 shrink-0 rounded-r-none w-fit"
           >
             <img
               src="https://www.elle.vn/wp-content/uploads/2017/09/21/JW-Marriott-Hanoi4.jpg"
