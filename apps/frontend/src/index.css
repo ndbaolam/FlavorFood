@@ -1,3 +1,26 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+//* Dark mode input styling */
+input[type="text"],
+input[type="password"] {
+  background-color: #333; /* Dark background */
+  color: #eee; /* Light text color */
+  border: 2px solid #555; /* Darker border for input */
+  border-radius: 8px;
+  padding: 10px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: #888; /* Slightly lighter border on focus */
+  outline: none;
+  box-shadow: 0 0 8px rgba(136, 136, 136, 0.6); /* Softer shadow on focus */
+}
+
+/* Placeholder text in dark theme */
+input::placeholder {
+  color: #777; /* Slightly dim placeholder color */
+}
