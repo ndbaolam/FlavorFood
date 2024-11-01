@@ -47,11 +47,11 @@ import {
                 color="blue-gray"
                 className="text-center mb-6"
               >
-                Sign Up
+                ĐĂNG KÝ
               </Typography>
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <Input type="text" label="Name" size="lg" required />
+                  <Input type="text" label="Họ tên " size="lg" required />
                 </div>
                 <div className="mb-4">
                   <Input type="email" label="Email" size="lg" required />
@@ -59,7 +59,7 @@ import {
                 <div className="relative mb-6">
                   <Input
                     type={showPassword ? "text" : "password"}
-                    label="Password"
+                    label="Mật khẩu"
                     size="lg"
                     required
                   />
@@ -83,12 +83,12 @@ import {
                   </button>
                 </div>
                 <Button type="submit" className="w-full">
-                  Sign Up
+                  ĐĂNG KÝ
                 </Button>
               </form>
               <div className="mt-10 grid grid-cols-3 items-center text-gray-400">
                 <hr className="border-gray-400" />
-                <p className="text-center text-sm">OR</p>
+                <p className="text-center text-sm">HOẶC</p>
                 <hr className="border-gray-400" />
               </div>
               <button className="bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm">
@@ -97,12 +97,12 @@ import {
                   src="./google.png"
                   alt="Google logo"
                 />
-                Sign up with Google
+                Đăng ký với Google
               </button>
               <Typography className="text-black">
-                Already have an account?{" "}
+              Đã có tài khoản ?{" "}
                 <Link className="text-blue-500 hover:underline" to="/sign-in">
-                  Sign In
+                  Đăng nhập
                 </Link>
               </Typography>
             </Card>

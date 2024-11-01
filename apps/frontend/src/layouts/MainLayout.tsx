@@ -1,15 +1,17 @@
 // MainLayout.tsx
 import { Outlet } from "react-router-dom";
 import { FC } from "react";
+import Navbar from "../components/NavBar";
+import Footer  from "../components/Footer";
 
 const MainLayout: FC = () => {
   return (
     <div>
-      <header>Header Content</header>
+      <Navbar/>
       <main>
         <Outlet /> {/* Nested routes will render here */}
       </main>
-      <footer>Footer Content</footer>
+      <Footer/>
     </div>
   );
 };

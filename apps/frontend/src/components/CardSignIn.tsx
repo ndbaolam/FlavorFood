@@ -50,16 +50,16 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
               color="blue-gray"
               className="text-center mb-6"
             >
-              Sign In
+              ĐĂNG NHẬP
             </Typography>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
-                <Input type="text" label="Name" size="lg" required />
+                <Input type="text" label="Tên đăng nhập" size="lg" required />
               </div>
               <div className="relative mb-6">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  label="Password"
+                  label="Mật khẩu"
                   size="lg"
                   required
                 />
@@ -83,12 +83,12 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
                 </button>
               </div>
               <Button type="submit" className="w-full">
-                Sign In
+                ĐĂNG NHẬP
               </Button>
             </form>
             <div className="mt-10 grid grid-cols-3 items-center text-gray-400">
               <hr className="border-gray-400" />
-              <p className="text-center text-sm">OR</p>
+              <p className="text-center text-sm">HOẶC</p>
               <hr className="border-gray-400" />
             </div>
             <button className="bg-white border py-2 w-full rounded-xl mt-5 flex justify-center items-center text-sm">
@@ -97,12 +97,12 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
                 src="./google.png"
                 alt="Google logo"
               />
-              Sign in with Google
+             Đăng nhập với Google 
             </button>
             <Typography className="text-black">
-              Don't have an account?{" "}
+            Bạn chưa có tài khoản ?{" "}
               <Link className="text-blue-500 hover:underline" to="/sign-up">
-                Sign Up
+                Đăng ký
               </Link>
             </Typography>
           </Card>
