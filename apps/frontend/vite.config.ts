@@ -11,6 +11,9 @@ export default defineConfig({
     port: 4200,
     host: 'localhost',
     open: true,
+    watch: {
+      usePolling: true,
+    }
   },
   preview: {
     port: 4300,
