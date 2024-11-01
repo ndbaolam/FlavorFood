@@ -1,5 +1,5 @@
 import React from 'react'
-import CardSignUp from '../../components/CardSignUp.tsx';
+import CardSignUp from '../../components/CardSignUp';
 
 const SignUp = () => {
   return (
