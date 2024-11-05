@@ -12,7 +12,13 @@ module.exports = withMT({
     ...createGlobPatternsForDependencies(__dirname),
   ],
   theme: {
-    extend: {},
+    extend: {theme: {
+      extend: {
+        fontFamily: {
+          playfair: ['"Playfair Display"', 'serif'],
+        },
+      },
+    },},
   },
   plugins: [require('daisyui')],
 });

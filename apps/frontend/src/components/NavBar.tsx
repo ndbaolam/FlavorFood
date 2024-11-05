@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { BookOpen, Menu, X, User } from "lucide-react";
-import { Search } from "./Search";
+import React, { useState } from 'react';
+import { Menu, X, User } from 'lucide-react';
+import { Search } from './Search';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -15,20 +15,21 @@ const Navbar = () => {
   };
 
   const menuItems = [
-    { href: "#home", label: "Trang chủ" },
-    { href: "#meals", label: "Bữa ăn" },
-    { href: "#ingredients", label: "Thành phần" },
-    { href: "#tips", label: "Mẹo vặt" },
-    { href: "#market", label: "Chợ" },
+    { href: '', label: 'Trang chủ' },
+    { href: 'meals', label: 'Bữa ăn' },
+    { href: 'ingredients', label: 'Thành phần' },
+    { href: 'tips', label: 'Mẹo vặt' },
+    { href: 'market', label: 'Chợ' },
   ];
 
   const accountItems = [
-    { href: "#profile", label: "Hồ sơ" },
-    { href: "#signout", label: "Đăng xuất" },
+    { href: 'profile', label: 'Hồ sơ' },
+    { href: 'signout', label: 'Đăng xuất' },
   ];
 
   return (
-    <nav className="relative bg-white shadow-lg">
+    <nav
+      className="relative bg-base-200 shadow-lg" >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-16">
           {/* Logo Section */}
@@ -46,7 +47,7 @@ const Navbar = () => {
               <a
                 key={href}
                 href={href}
-                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-300"
               >
                 {label}
               </a>
@@ -56,18 +57,18 @@ const Navbar = () => {
             <div className="relative">
               <button
                 onClick={toggleAccountMenu}
-                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-300"
               >
                 <User className="w-5 h-5 mr-2" />
                 Tài khoản
               </button>
               {isAccountOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1">
+                <div className="absolute right-0 mt-2 w-40 bg-gray-200 rounded-md shadow-lg py-1 z-50">
                   {accountItems.map(({ href, label }) => (
                     <a
                       key={href}
                       href={href}
-                      className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-gray-700 hover:bg-gray-300"
                     >
                       {label}
                     </a>
@@ -101,11 +102,12 @@ const Navbar = () => {
               <a
                 key={href}
                 href={href}
-                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
               >
                 {label}
               </a>
             ))}
+
             {/* Mobile Account Section */}
             <div className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100">
               <User className="w-5 h-5 mr-2" />
