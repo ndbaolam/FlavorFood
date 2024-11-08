@@ -6,6 +6,14 @@
 
 Docker, Docker compose, Nx, NestCLI, Yarn
 
+## Run PostgreSQL
+
+```sh
+cp .example.env .env
+docker compose up -d
+docker ps #To test created container
+```
+
 ## Run tasks
 
 To run the dev server, use:
