@@ -200,7 +200,7 @@ const Home: React.FC = () => {
       <main className="container mx-auto py-8 ">
         {/* Hero Slider Section */}
         {/* Hero Slider Section */}
-        <div className="w-full h-full mx-auto shadow-lg rounded-lg border-4 border-gray-300">
+        <div className="w-full h-full mx-auto shadow-lg rounded-lg ">
   <Slider {...sliderSettings}>
     {sliderItems.map((item, index) => (
       <div key={index} className="outline-none">
