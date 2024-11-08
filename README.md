@@ -19,7 +19,7 @@ docker ps #To test created container
 To run the dev server, use:
 
 ```sh
-yarn nx serve services
+yarn dev
 ```
 
 To run the frontend, use:
