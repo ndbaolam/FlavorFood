@@ -8,8 +8,8 @@ const MainLayout: FC = () => {
   return (
     <div>
       <Navbar/>
-      <main>
-        <Outlet /> {/* Nested routes will render here */}
+      <main >
+        <Outlet /> {}
       </main>
       <Footer/>
     </div>

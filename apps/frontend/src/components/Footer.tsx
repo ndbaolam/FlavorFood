@@ -3,7 +3,7 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-base-200 text-base-content p-10">
+    <footer className="bg-base-200 text-base-content p-10 mt-20 ">
       <div className="max-w-7xl mx-auto grid grid-cols-3 gap-6">
         {/* Services Section */}
         <nav>
