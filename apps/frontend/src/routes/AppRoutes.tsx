@@ -1,4 +1,3 @@
-// AppRoutes.tsx
 import { createBrowserRouter, RouteObject } from "react-router-dom";
 import ErrorPage from "../error-page";
 import SignIn from "../pages/Signin";
@@ -8,6 +7,10 @@ import Home from "../pages/Home";
 import BreakFast from "../pages/Meals/BreakFast";
 import Vegetarian from "../pages/Meals/Vegetarian";
 import Meals from "../pages/Meals";
+import Lunch from "../pages/Meals/Lunch";
+import Drinks from "../pages/Meals/Drinks";
+import Desserts from "../pages/Meals/Desserts";
+
 const routes: RouteObject[] = [
   {
     path: "/",
@@ -35,31 +38,30 @@ const routes: RouteObject[] = [
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
-     {
-       index: true,
-       element: <Meals />,
-     },
-   ],
-  },
-  {
-     path: "breakfast",
-     element: <MainLayout />,
-     errorElement: <ErrorPage />,
-     children: [
       {
         index: true,
+        element: <Meals />,
+      },
+      {
+        path: "breakfast",
         element: <BreakFast />,
       },
-    ],
-  },
-  {
-    path: "vegetarian",
-     element: <MainLayout />,
-     errorElement: <ErrorPage />,
-     children: [
       {
-        index: true,
+        path: "vegetarian",
         element: <Vegetarian />,
+      },
+   
+      {
+        path: "lunch",
+        element: <Lunch/>,  
+      },
+      {
+        path: "drinks",
+        element: <Drinks />, 
+      },
+      {
+        path: "dessert",
+        element: <Desserts />, 
       },
     ],
   },
