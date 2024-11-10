@@ -22,28 +22,28 @@ const Home: React.FC = () => {
       title: 'Bữa sáng',
       description:
         'Khởi đầu ngày mới tràn đầy năng lượng với bữa sáng dinh dưỡng!',
-      link: 'breakfast',
+      link: '/meals/breakfast',
     },
     {
       icon: Salad,
       title: 'Món chay',
       description:
         'Chay thanh đạm, hương vị ngọt ngào – Sống xanh, sống khỏe mỗi ngày!',
-      link: 'vegetarian',
+      link: '/meals/vegetarian',
     },
     {
       icon: GlassWater,
       title: 'Đồ uống',
       description:
         'Thức uống tươi mát, bổ sung sức sống – Khơi dậy mọi giác quan!',
-      link: 'drinks',
+      link: '/meals/drinks',
     },
     {
       icon: Cake,
       title: 'Tráng miệng',
       description:
         'Ngọt ngào từng miếng, thỏa mãn mọi cảm xúc – Tráng miệng là niềm vui cuối cùng!',
-      link: 'desserts',
+      link: '/meals/desserts',
     },
   ];
 

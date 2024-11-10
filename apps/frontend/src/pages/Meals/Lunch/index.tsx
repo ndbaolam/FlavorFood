@@ -1,7 +1,7 @@
-// Vegetarian.tsx
+// Lunch.tsx
 import React, { useState } from 'react';
 import { Clock, Calculator } from 'lucide-react';
-import FilterMenu from '../../../components/FileterMenu';
+import FilterMenu from '../../../components/FileterMenu'; 
 import { useNavigate } from 'react-router-dom';
 
 interface Recipe {
@@ -13,57 +13,57 @@ interface Recipe {
   category: string; // Để đảm bảo phân loại
 }
 
-// Các công thức món chay
-const vegetarianRecipes: Recipe[] = [
+// Các công thức món ăn bữa chính
+const lunchRecipes: Recipe[] = [
   {
-    title: 'Mediterranean Quinoa Salad',
-    description: 'Fresh & Nutritious',
-    time: '20 minutes',
-    calories: 330,
+    title: 'Noodle Soup With Shrimps',
+    description: 'Savory & Spicy',
+    time: '35 minutes',
+    calories: 520,
+    imageUrl:
+      'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
+    category: 'Bữa chính',
+  },
+  {
+    title: 'Grilled Chicken with Vegetables',
+    description: 'Protein Rich & Delicious',
+    time: '40 minutes',
+    calories: 600,
     imageUrl:
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish2-min.png',
-    category: 'Bữa chay', // Đảm bảo đây là món chay
+    category: 'Bữa chính',
   },
   {
-    title: 'Classic Caesar Salad',
-    description: 'Rich & Flavorful',
-    time: '10 minutes',
-    calories: 210,
+    title: 'Beef Steak with Potatoes',
+    description: 'Classic & Hearty',
+    time: '45 minutes',
+    calories: 700,
     imageUrl:
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish3-min.png',
-    category: 'Bữa chay',
+    category: 'Bữa chính',
   },
   {
-    title: 'Zucchini Noodles with Pesto',
-    description: 'Low-carb & Flavorful',
-    time: '20 minutes',
-    calories: 190,
-    imageUrl:
-      'https://uploads-ssl.webflow.com/624ff6ee2a16a1a7312e426b/62552a2c36259f3b8be4d036_Bitmap%202FITO-p-500.png',
-    category: 'Bữa chay',
-  },
-  {
-    title: 'Grilled Vegetable Skewers',
-    description: 'Smoky & Flavorful',
+    title: 'Pasta Carbonara',
+    description: 'Creamy & Flavorful',
     time: '30 minutes',
-    calories: 220,
+    calories: 500,
     imageUrl:
-      'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish6-min.png',
-    category: 'Bữa chay',
+      'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish4-min.png',
+    category: 'Bữa chính',
   },
 ];
 
-const Vegetarian: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<string>('Bữa chay');
+const Lunch: React.FC = () => {
+  const [activeFilter, setActiveFilter] = useState<string>('Bữa chính');
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen">
       <main className="container mx-auto">
         <div className="relative text-center mt-20">
-          <h2 className="text-4xl font-bold mb-2">Các món ăn chay ngon lành</h2>
+          <h2 className="text-4xl font-bold mb-2">Các món bữa chính ngon miệng</h2>
           <p className="text-gray-600 text-lg mb-8">
-            Khám phá những món chay đầy đủ dinh dưỡng và hấp dẫn
+            Khám phá những món ăn bữa chính đầy đủ năng lượng và hấp dẫn
           </p>
         </div>
 
@@ -85,10 +85,10 @@ const Vegetarian: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
-          {vegetarianRecipes.map((recipe, index) => (
+          {lunchRecipes.map((recipe, index) => (
             <div key={index} className="relative pt-20">
               <div
-                className="bg-gradient-to-b from-green-50 to-white rounded-lg shadow-lg hover:scale-105 transition-all ease-in-out"
+                className="bg-gradient-to-b from-yellow-50 to-white rounded-lg shadow-lg hover:scale-105 transition-all ease-in-out"
                 style={{ height: '400px' }}
               >
                 <div className="relative flex justify-center">
@@ -100,7 +100,7 @@ const Vegetarian: React.FC = () => {
                 </div>
 
                 <div className="p-6 flex flex-col items-center h-full">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-green-500 transition-colors duration-300 cursor-pointer line-clamp-2">
+                  <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-yellow-500 transition-colors duration-300 cursor-pointer line-clamp-2">
                     {recipe.title}
                   </h2>
 
@@ -130,4 +130,4 @@ const Vegetarian: React.FC = () => {
   );
 };
 
-export default Vegetarian;
+export default Lunch;
