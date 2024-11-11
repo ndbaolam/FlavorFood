@@ -15,7 +15,7 @@ module.exports = withMT({
     extend: {theme: {
       extend: {
         fontFamily: {
-          playfair: ['"Playfair Display"', 'serif'],
+          lobster: ['Lobster', 'cursive'],
         },
       },
     },},

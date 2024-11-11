@@ -1,19 +1,23 @@
-import { createBrowserRouter, RouteObject } from "react-router-dom";
-import ErrorPage from "../error-page";
-import SignIn from "../pages/Signin";
-import SignUp from "../pages/Signup";
-import MainLayout from "../layouts/MainLayout";
-import Home from "../pages/Home";
-import BreakFast from "../pages/Meals/BreakFast";
-import Vegetarian from "../pages/Meals/Vegetarian";
-import Meals from "../pages/Meals";
-import Lunch from "../pages/Meals/Lunch";
-import Drinks from "../pages/Meals/Drinks";
-import Desserts from "../pages/Meals/Desserts";
-
+import { createBrowserRouter, RouteObject } from 'react-router-dom';
+import ErrorPage from '../error-page';
+import SignIn from '../pages/Signin';
+import SignUp from '../pages/Signup';
+import MainLayout from '../layouts/MainLayout';
+import Home from '../pages/Home';
+import BreakFast from '../pages/Meals/BreakFast';
+import Vegetarian from '../pages/Meals/Vegetarian';
+import Meals from '../pages/Meals';
+import Lunch from '../pages/Meals/Lunch';
+import Drinks from '../pages/Meals/Drinks';
+import Desserts from '../pages/Meals/Desserts';
+import Tips from '../pages/Tips';
+import Storage from '../pages/Tips/Storage';
+import CookingTechniques from '../pages/Tips/CookingTechniques';
+import ToolComponent from '../pages/Tips/ToolComponent';
+import KitchenCleaning from '../pages/Tips/KitchenCleaning';
 const routes: RouteObject[] = [
   {
-    path: "/",
+    path: '/',
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
@@ -24,17 +28,17 @@ const routes: RouteObject[] = [
     ],
   },
   {
-    path: "sign-in",
+    path: 'sign-in',
     element: <SignIn />,
     errorElement: <ErrorPage />,
   },
   {
-    path: "sign-up",
+    path: 'sign-up',
     element: <SignUp />,
     errorElement: <ErrorPage />,
   },
   {
-    path: "meals",
+    path: 'meals',
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
@@ -43,25 +47,52 @@ const routes: RouteObject[] = [
         element: <Meals />,
       },
       {
-        path: "breakfast",
+        path: 'breakfast',
         element: <BreakFast />,
       },
       {
-        path: "vegetarian",
+        path: 'vegetarian',
         element: <Vegetarian />,
       },
-   
+
       {
-        path: "lunch",
-        element: <Lunch/>,  
+        path: 'lunch',
+        element: <Lunch />,
       },
       {
-        path: "drinks",
-        element: <Drinks />, 
+        path: 'drinks',
+        element: <Drinks />,
       },
       {
-        path: "dessert",
-        element: <Desserts />, 
+        path: 'dessert',
+        element: <Desserts />,
+      },
+    ],
+  },
+  {
+    path: 'tips',
+    element: <MainLayout />,
+    errorElement: <ErrorPage />,
+    children: [
+      {
+        index: true,
+        element: <Tips />,
+      },
+      {
+        path: 'storage',
+        element: <Storage />, // Bảo quản nguyên liệu
+      },
+      {
+        path: 'techniques',
+        element: <CookingTechniques />, // Kỹ thuật nấu ăn
+      },
+      {
+        path: 'tools',
+        element: <ToolComponent />, // Dụng cụ bếp
+      },
+      {
+        path: 'cleaning',
+        element: <KitchenCleaning />, // Vệ sinh nhà bếp
       },
     ],
   },

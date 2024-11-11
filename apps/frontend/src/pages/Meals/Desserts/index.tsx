@@ -1,7 +1,7 @@
 // Desserts.tsx
 import React, { useState } from 'react';
 import { Clock, Calculator } from 'lucide-react';
-import FilterMenu from '../../../components/FileterMenu'; 
+import FilterMenu from '../../../components/FilterMenu'; 
 import { useNavigate } from 'react-router-dom';
 
 interface Recipe {

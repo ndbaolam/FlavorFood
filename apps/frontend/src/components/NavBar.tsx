@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from 'react';
 import { Menu, X, User } from 'lucide-react';
 import { Search } from './Search';
@@ -17,8 +18,7 @@ const Navbar = () => {
   const menuItems = [
     { href: '', label: 'Trang chủ' },
     { href: 'meals', label: 'Bữa ăn' },
-    { href: 'ingredients', label: 'Thành phần' },
-    { href: 'tips', label: 'Mẹo vặt' },
+    { href: 'tips', label: 'Mẹo nhà bếp' },
     { href: 'market', label: 'Chợ' },
   ];
 
@@ -35,7 +35,7 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="flex items-center">
             <img src="./logo.jpg" alt="Logo" className="h-10 w-10 mr-2" />
-            <a href="#" className="text-2xl font-bold">
+            <a href="#" className="font-lobster text-2xl">
               FlavorFood
             </a>
           </div>

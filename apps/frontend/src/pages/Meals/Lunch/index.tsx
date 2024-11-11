@@ -1,7 +1,7 @@
 // Lunch.tsx
 import React, { useState } from 'react';
 import { Clock, Calculator } from 'lucide-react';
-import FilterMenu from '../../../components/FileterMenu'; 
+import FilterMenu from '../../../components/FilterMenu'; 
 import { useNavigate } from 'react-router-dom';
 
 interface Recipe {
@@ -10,10 +10,10 @@ interface Recipe {
   time: string;
   calories: number;
   imageUrl: string;
-  category: string; // Để đảm bảo phân loại
+  category: string; 
 }
 
-// Các công thức món ăn bữa chính
+
 const lunchRecipes: Recipe[] = [
   {
     title: 'Noodle Soup With Shrimps',
@@ -25,7 +25,7 @@ const lunchRecipes: Recipe[] = [
     category: 'Bữa chính',
   },
   {
-    title: 'Grilled Chicken with Vegetables',
+    title: 'Grilled Chicken Vegetables',
     description: 'Protein Rich & Delicious',
     time: '40 minutes',
     calories: 600,
