@@ -1,13 +1,20 @@
 /* eslint-disable react/jsx-no-undef */
 import React from 'react';
-import { Coffee, Salad, GlassWater, Cake, Clock, Calculator } from 'lucide-react';
+import {
+  Coffee,
+  Salad,
+  GlassWater,
+  Cake,
+  Clock,
+  Calculator,
+} from 'lucide-react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './Home.css';
 import NextArrow from '../../components/NextArrow';
 import PrevArrow from '../../components/PrevArrow';
-
+import { useNavigate } from 'react-router-dom';
 interface Recipe {
   title: string;
   description: string;
@@ -16,6 +23,7 @@ interface Recipe {
   imageUrl: string;
 }
 const Home: React.FC = () => {
+  const navigate = useNavigate(); 
   const menuItems = [
     {
       icon: Coffee,
@@ -48,38 +56,6 @@ const Home: React.FC = () => {
   ];
 
   const topRecipes: Recipe[] = [
-    {
-      title: 'Avocado Breads With A  Egg',
-      description: 'Tasty & Fast',
-      time: '15 minutes',
-      calories: 250,
-      imageUrl:
-        'https://dsznjaxrxc1vh.cloudfront.net/product-images/large/Beauty+Bowl+PDP_1440x1440.png',
-    },
-    {
-      title: 'Healthy Berry Fruit Bowl',
-      description: 'Easy preparation',
-      time: '15 minutes',
-      calories: 345,
-      imageUrl:
-        'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
-    },
-    {
-      title: 'Noodle Soup With Shrimps',
-      description: 'Savory & Spicy',
-      time: '35 minutes',
-      calories: 520,
-      imageUrl:
-        'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
-    },
-    {
-      title: 'Mediterranean Quinoa Salad',
-      description: 'Fresh & Nutritious',
-      time: '20 minutes',
-      calories: 330,
-      imageUrl:
-        'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish2-min.png',
-    },
     {
       title: 'Classic Caesar Salad',
       description: 'Rich & Flavorful',
@@ -199,43 +175,57 @@ const Home: React.FC = () => {
     <div className="min-h-screen  max-w-screen">
       <main className="container mx-auto py-8 ">
         {/* Hero Slider Section */}
-        {/* Hero Slider Section */}
-        <div className="w-full h-full mx-auto shadow-lg rounded-lg ">
-  <Slider {...sliderSettings}>
-    {sliderItems.map((item, index) => (
-      <div key={index} className="outline-none">
-        <div className="flex">
-          {/* Left side - Image */}
-          <div className="w-3/5">
-            <img
-              src={item.image}
-              alt={item.title}
-              className="w-full h-[400px] object-cover rounded-l-lg shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-105"
-            />
-          </div>
+        <div className="py-12">
+          {' '}
+          {/* Thêm padding trên dưới */}
+          <div className="w-full max-w-6xl mx-auto shadow-lg rounded-lg overflow-hidden">
+            {' '}
+            {/* Thêm overflow-hidden để tránh rounded-lg bị lỗi */}
+            <Slider {...sliderSettings}>
+              {sliderItems.map((item, index) => (
+                <div key={index} className="outline-none">
+                  <div className="flex">
+                    {/* Left side - Image */}
+                    <div className="w-1/2 h-[500px]">
+                      {' '}
+                      {/* Điều chỉnh width và height */}
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full h-full object-cover transition-transform duration-300 ease-in-out transform hover:scale-105"
+                        // Bỏ rounded-l-lg và shadow-lg vì đã có ở container
+                      />
+                    </div>
 
-          {/* Right side - Content */}
-          <div className="w-2/5 bg-white flex items-center rounded-r-lg shadow-md hover:shadow-lg transition-transform duration-300 ease-in-out transform hover:scale-105">
-            <div className="p-6 md:p-12">
-              <h2 className="font-serif text-3xl text-gray-800 mb-4">{item.title}</h2>
-              <p className="text-gray-500 text-sm mb-4">{item.date}</p>
-              <p className="text-gray-700 mb-8">{item.description}</p>
-              <button className="border-2 border-orange-300 px-6 py-2 text-sm uppercase tracking-wider text-orange-500 hover:bg-orange-300 hover:border-orange-500 hover:text-white transition-colors">
-                XEM CÔNG THỨC
-              </button>
-            </div>
+                    {/* Right side - Content */}
+                    <div className="w-1/2 bg-gradient-to-b from-blue-50 to-white flex items-center">
+                      {/* Bỏ rounded-r-lg và shadow vì đã có ở container */}
+                      <div className="p-8 md:p-12 w-full">
+                        <h2 className="font-serif text-3xl font-semibold text-slate-800 mb-6">
+                          {item.title}
+                        </h2>
+                        <p className="text-slate-400 text-sm mb-6">
+                          {item.date}
+                        </p>
+                        <p className="text-slate-600 leading-relaxed mb-10">
+                          {item.description}
+                        </p>
+                        <button className="border-2 border-blue-400 px-8 py-3 text-sm font-medium uppercase tracking-wider text-blue-600 hover:bg-blue-400 hover:text-white transition-all duration-300 hover:scale-105">
+                          XEM CÔNG THỨC
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
           </div>
         </div>
-      </div>
-    ))}
-  </Slider>
-</div>
-
 
         {/* Rest of your components... */}
         <div className="py-12">
           <div className="text-center mb-8">
-            <h2 className="font-playfair text-4xl font-semibold">
+            <h2 className="font-lobster text-4xl font-semibold">
               Hôm nay ăn gì
             </h2>
           </div>
@@ -243,7 +233,7 @@ const Home: React.FC = () => {
             {menuItems.map(({ icon: Icon, title, description, link }) => (
               <div
                 key={title}
-                className="bg-gradient-to-b from-orange-50 to-white rounded-lg shadow-lg p-6 text-center hover:scale-105 transition-all ease-in-out"
+                className="bg-gradient-to-b from-blue-50 to-white rounded-lg shadow-lg p-6 text-center hover:scale-105 transition-all ease-in-out"
               >
                 <div className="flex justify-center mb-4">
                   <Icon className="w-12 h-12 text-gray-700" />
@@ -260,13 +250,15 @@ const Home: React.FC = () => {
             ))}
           </div>
         </div>
-         {/* Trending Recipes Section */}
+        {/* Trending Recipes Section */}
         <div className="py-12">
-          <h2 className="text-4xl font-semibold text-center mb-8">Món ăn thịnh hành</h2>
+          <h2 className="text-4xl font-semibold text-center mb-8">
+            Món ăn thịnh hành
+          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {topRecipes.map((topRecipe, index) => (
               <div key={index} className="relative pt-20">
-                <div className="bg-gradient-to-b from-orange-50 to-white  rounded-lg shadow-lg hover:scale-105 transition-all ease-in-out">
+                <div className="bg-gradient-to-b from-blue-50 to-white  rounded-lg shadow-lg hover:scale-105 transition-all ease-in-out">
                   <div className="relative flex justify-center">
                     <img
                       src={topRecipe.imageUrl}
@@ -275,10 +267,12 @@ const Home: React.FC = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col items-center h-full">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-pink-500 transition-colors duration-300 cursor-pointer line-clamp-2">
+                    <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-blue-500 transition-colors duration-300 cursor-pointer line-clamp-2">
                       {topRecipe.title}
                     </h2>
-                    <p className="text-gray-600 text-center mb-4 text-sm">{topRecipe.description}</p>
+                    <p className="text-gray-600 text-center mb-4 text-sm">
+                      {topRecipe.description}
+                    </p>
                     <div className="border-t border-gray-300 my-4 w-full"></div>
                     <div className="flex justify-between items-center text-gray-500 text-sm w-full">
                       <div className="flex items-center gap-2">
@@ -295,6 +289,34 @@ const Home: React.FC = () => {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Kitchen tips ..*/}
+        <div className="w-full  mx-auto shadow-lg rounded-lg flex flex-col md:flex-row items-center md:items-stretch justify-center overflow-hidden">
+          {/* Hình ảnh bên trái */}
+          <div className="w-full md:w-1/2 h-64 md:h-auto">
+            <img
+              src="https://www.chowhound.com/img/gallery/14-giada-de-laurentiis-cooking-tips-you-should-know-by-heart/use-salty-water-for-pasta-1728313314.jpg"
+              alt="Logo tips"
+              className="w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-tr-none transition-transform duration-300 hover:scale-105"
+            />
+          </div>
+
+          {/* Nội dung bên phải */}
+          <div className="bg-gradient-to-b from-blue-50 to-white w-full md:w-1/2 flex flex-col items-center justify-center p-8 space-y-6 md:space-y-8">
+      <h2 className="font-serif text-2xl md:text-3xl text-slate-800 text-center leading-tight">
+        Trở thành đầu bếp tài ba ngay trong căn bếp của bạn
+      </h2>
+      <p className="text-slate-600 text-center leading-relaxed">
+        Khám phá những mẹo vặt độc đáo và bí quyết giúp bạn tự tin chế biến những món ăn ngon. Hãy cùng chúng tôi bắt đầu hành trình biến căn bếp nhỏ trở thành không gian sáng tạo đầy hương vị!
+      </p>
+      <button
+        className="bg-black rounded-lg shadow-lg px-8 py-3 text-center text-white hover:bg-gray-800 transition duration-200 ease-in-out"
+        onClick={() => navigate('/tips')}
+      >
+        ĐỌC THÊM
+      </button>
+    </div>
         </div>
       </main>
     </div>

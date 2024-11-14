@@ -6,11 +6,21 @@ interface FilterMenuProps {
   setActiveFilter: (filter: string) => void;
 }
 
-const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }) => {
+const FilterMenu: React.FC<FilterMenuProps> = ({
+  activeFilter,
+  setActiveFilter,
+}) => {
   const navigate = useNavigate();
 
-  const filters = ['Tất cả', 'Bữa sáng', 'Bữa chính', 'Đồ uống', 'Tráng miệng', 'Bữa chay'];
-  
+  const filters = [
+    'Tất cả',
+    'Bữa sáng',
+    'Bữa chính',
+    'Đồ uống',
+    'Tráng miệng',
+    'Bữa chay',
+  ];
+
   // Mapping filters to paths
   const filterPaths: { [key: string]: string } = {
     'Tất cả': '/meals',
@@ -24,7 +34,7 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }
   const handleFilterClick = (filter: string) => {
     setActiveFilter(filter);
     const path = filterPaths[filter] || '/meals';
-    navigate(path);  // Navigate to the path based on the filter
+    navigate(path); // Navigate to the path based on the filter
   };
 
   return (
@@ -34,9 +44,10 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }
           key={filter}
           onClick={() => handleFilterClick(filter)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
-            ${activeFilter === filter 
-              ? 'bg-red-700 text-white' 
-              : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
+            ${
+              activeFilter === filter
+                ? 'bg-red-700 text-white'
+                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
             }`}
         >
           {filter}

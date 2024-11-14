@@ -1,7 +1,7 @@
 // BreakFast.tsx
 import React, { useState } from 'react';
 import { Clock, Calculator } from 'lucide-react';
-import FilterMenu from '../../../components/FileterMenu'; // Import FilterMenu
+import FilterMenu from '../../../components/FilterMenu'; // Import FilterMenu
 import { useNavigate } from 'react-router-dom';
 
 interface Recipe {
@@ -67,21 +67,24 @@ const BreakFast: React.FC = () => {
           </p>
         </div>
 
-        {/* Thêm FilterMenu vào đây */}
+        {/* Thêm FilterMenu  */}
         <div className="flex justify-center items-center ">
-          <FilterMenu activeFilter={activeFilter} setActiveFilter={(filter: string) => {
-            setActiveFilter(filter);
-            // Điều hướng đến route tương ứng dựa trên filter
-            const filterPaths: { [key: string]: string } = {
-              'Tất cả': '/meals',
-              'Bữa sáng': '/meals/breakfast',
-              'Bữa chính': '/meals/lunch',
-              'Đồ uống': '/meals/drinks',
-              'Tráng miệng': '/meals/dessert',
-              'Bữa chay': '/meals/vegetarian',
-            };
-            navigate(filterPaths[filter] || '/meals');
-          }} />
+          <FilterMenu
+            activeFilter={activeFilter}
+            setActiveFilter={(filter: string) => {
+              setActiveFilter(filter);
+              // Điều hướng đến route tương ứng dựa trên filter
+              const filterPaths: { [key: string]: string } = {
+                'Tất cả': '/meals',
+                'Bữa sáng': '/meals/breakfast',
+                'Bữa chính': '/meals/lunch',
+                'Đồ uống': '/meals/drinks',
+                'Tráng miệng': '/meals/dessert',
+                'Bữa chay': '/meals/vegetarian',
+              };
+              navigate(filterPaths[filter] || '/meals');
+            }}
+          />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
