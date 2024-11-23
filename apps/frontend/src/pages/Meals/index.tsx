@@ -1,179 +1,194 @@
 import React, { useState } from 'react';
-import { Clock, Calculator } from 'lucide-react';
 import FilterMenu from '../../components/FilterMenu';
-
-
+import RecipeCard from '../../components/RecipeCard';
 interface Recipe {
-  id: string;
+  recipe_id: number;
   title: string;
   description: string;
   time: string;
   calories: number;
-  imageUrl: string;
-  category: string;
+  image: string;
+  category: Category[];
   ingredients: Ingredient[];
-  instructions: string[];
+  step: Step[];
   servings: number;
-  difficultyLevel: 'Easy' | 'Medium' | 'Hard';
-  nutrition?: { protein: number; fat: number; carbs: number };
+  difficulty_level: 'Dễ' | 'Trung bình' | 'Khó';
+  nutrition: Nutrition[];
   ratings?: { averageRating: number; reviews: number };
   isFavorite?: boolean;
 }
 
 interface Ingredient {
+  ingredient_id: number;
+  description: string;
   name: string;
-  quantity: string; // Ví dụ: "200g", "1 tablespoon"
+  unit: string;  
+}
+
+interface Category {
+  tag_id: number;
+  name: string;
+}
+
+interface Step {
+  step_id: number;
+  step_number: number;
+  description: string;
+}
+
+interface Nutrition {
+  nutrition_id: number;
+  calories: string;
+  protein: string;
+  fat: string;
+  carbohydrates: string;
 }
 
 const recipes: Recipe[] = [
   {
-    id: '1',
-    title: 'Avocado Breads With ',
-    description: 'Tasty & Fast',
-    time: '15 minutes',
+    recipe_id: 1,
+    title: 'Bánh mì bơ',
+    description: 'Một bữa sáng nhanh và ngon miệng với bơ chín được phết lên bánh mì nướng nguyên cám. Hoàn hảo để khởi đầu ngày mới đầy năng lượng!',
+    time: '15 phút',
     calories: 250,
-    imageUrl:
+    image:
       'https://dsznjaxrxc1vh.cloudfront.net/product-images/large/Beauty+Bowl+PDP_1440x1440.png',
-    category: 'Bữa sáng',
+      category: [
+        { tag_id: 1, name: 'Món chính' },
+        { tag_id: 6, name: 'Khai vị' },
+      ],
     ingredients: [
-      { name: 'Avocado', quantity: '1' },
-      { name: 'Bread', quantity: '2 slices' },
+      { ingredient_id: 1, name: 'Avocado', description: 'Ripe avocado', unit: '1' },
+      { ingredient_id: 2, name: 'Bread', description: 'Whole-grain bread slices', unit: '2 slices' },
     ],
-    instructions: ['Toast the bread.', 'Spread avocado on bread.'],
+    step: [
+      { step_id: 1, step_number: 1, description: 'Toast the bread.' },
+      { step_id: 2, step_number: 2, description: 'Spread avocado on bread.' },
+    ],
     servings: 1,
-    difficultyLevel: 'Easy',
+    difficulty_level: 'Dễ',
+    nutrition: [
+      { nutrition_id: 1, calories: '250', protein: '5', fat: '10', carbohydrates: '30' },
+    ],
   },
   {
-    id: '2',
-    title: 'Healthy Berry Fruit Bowl',
-    description: 'Easy preparation',
-    time: '15 minutes',
+    recipe_id: 2,
+    title: 'Trái cây dầm',
+    description: 'Món ăn nhẹ tươi mát với hỗn hợp các loại quả mọng và sữa chua Hy Lạp. Lựa chọn hoàn hảo cho bữa ăn nhẹ hoặc món tráng miệng nhẹ nhàng.',
+    time: '15 phút',
     calories: 345,
-    imageUrl:
+    image:
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
-    category: 'Tráng miệng',
-    ingredients: [
-      { name: 'Mixed Berries', quantity: '1 cup' },
-      { name: 'Greek Yogurt', quantity: '1/2 cup' },
+    category: [{ tag_id: 2, name: 'Tráng miệng' },
+      { tag_id: 7, name: 'Đồ uống' },
     ],
-    instructions: ['Mix all berries in a bowl.', 'Add Greek yogurt and serve.'],
+    ingredients: [
+      { ingredient_id: 3, name: 'Mixed Berries', description: 'A mix of blueberries, raspberries, strawberries', unit: '1 cup' },
+      { ingredient_id: 4, name: 'Greek Yogurt', description: 'Plain Greek yogurt', unit: '1/2 cup' },
+    ],
+    step: [
+      { step_id: 1, step_number: 1, description: 'Mix all berries in a bowl.' },
+      { step_id: 2, step_number: 2, description: 'Add Greek yogurt and serve.' },
+    ],
     servings: 2,
-    difficultyLevel: 'Easy',
+    difficulty_level: 'Dễ',
+    nutrition: [
+      { nutrition_id: 2, calories: '345', protein: '8', fat: '12', carbohydrates: '40' },
+    ],
   },
   {
-    id: '3',
-    title: 'Noodle Soup With Shrimps',
-    description: 'Savory & Spicy',
-    time: '35 minutes',
+    recipe_id: 3,
+    title: 'Phở tôm',
+    description: 'Món phở thơm ngon với tôm tươi và nước dùng đậm đà. Đây là lựa chọn hoàn hảo cho những ngày se lạnh hoặc bữa ăn bổ dưỡng.',
+    time: '35 phút',
     calories: 520,
-    imageUrl:
+    image:
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
-    category: 'Bữa chính',
+    category: [{ tag_id: 3, name: 'Canh & Lẩu' }],
     ingredients: [
-      { name: 'Shrimps', quantity: '200g' },
-      { name: 'Noodles', quantity: '100g' },
-      { name: 'Broth', quantity: '500ml' },
+      { ingredient_id: 5, name: 'Shrimps', description: 'Fresh shrimp, deveined', unit: '200g' },
+      { ingredient_id: 6, name: 'Noodles', description: 'Rice noodles', unit: '100g' },
+      { ingredient_id: 7, name: 'Broth', description: 'Chicken or vegetable broth', unit: '500ml' },
     ],
-    instructions: ['Boil the broth.', 'Add noodles and shrimps. Cook until done.'],
+    step: [
+      { step_id: 1, step_number: 1, description: 'Boil the broth.' },
+      { step_id: 2, step_number: 2, description: 'Add noodles and shrimps. Cook until done.' },
+    ],
     servings: 2,
-    difficultyLevel: 'Medium',
+    difficulty_level: 'Trung bình',
+    nutrition: [
+      { nutrition_id: 3, calories: '520', protein: '25', fat: '15', carbohydrates: '65' },
+    ],
   },
   {
-    id: '4',
-    title: 'Mediterranean Quinoa Salad',
-    description: 'Fresh & Nutritious',
-    time: '20 minutes',
+    recipe_id: 4,
+    title: 'Salad Địa Trung Hải',
+    description: 'Món salad đầy màu sắc và bổ dưỡng với rau tươi và quinoa, rưới thêm dầu ô liu. Đây là một món ăn nhẹ lý tưởng và tốt cho sức khỏe.',
+    time: '20 phút',
     calories: 330,
-    imageUrl:
+    image:
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish2-min.png',
-    category: 'Bữa chay',
+    category: [{ tag_id: 4, name: 'Khai vị' }],
     ingredients: [
-      { name: 'Quinoa', quantity: '1 cup' },
-      { name: 'Cucumber', quantity: '1' },
-      { name: 'Tomato', quantity: '2' },
-      { name: 'Olive Oil', quantity: '2 tbsp' },
+      { ingredient_id: 8, name: 'Quinoa', description: 'Cooked quinoa', unit: '1 cup' },
+      { ingredient_id: 9, name: 'Cucumber', description: 'Chopped cucumber', unit: '1' },
+      { ingredient_id: 10, name: 'Tomato', description: 'Chopped tomatoes', unit: '2' },
+      { ingredient_id: 11, name: 'Olive Oil', description: 'Extra virgin olive oil', unit: '2 tbsp' },
     ],
-    instructions: [
-      'Cook quinoa according to package instructions.',
-      'Chop vegetables and mix with quinoa.',
-      'Drizzle with olive oil and serve.',
+    step: [
+      { step_id: 1, step_number: 1, description: 'Cook quinoa according to package instructions.' },
+      { step_id: 2, step_number: 2, description: 'Chop vegetables and mix with quinoa.' },
+      { step_id: 3, step_number: 3, description: 'Drizzle with olive oil and serve.' },
     ],
     servings: 3,
-    difficultyLevel: 'Easy',
+    difficulty_level: 'Dễ',
+    nutrition: [
+      { nutrition_id: 4, calories: '330', protein: '9', fat: '14', carbohydrates: '40' },
+    ],
   },
 ];
+
 
 const Meals: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('Tất cả');
 
-  // Filter recipes based on active filter
   const filteredRecipes = recipes.filter((recipe) => {
     if (activeFilter === 'Tất cả') return true;
-    return recipe.category === activeFilter;
+    return recipe.category.some((category) => category.name === activeFilter);
   });
 
   return (
     <div className="min-h-screen">
       <main className="container mx-auto">
-        <div className="relative text-center mt-20">
+        {/* Header Section */}
+        <section className="relative text-center mt-20">
           <h2 className="text-4xl font-bold mb-2">Hôm nay ăn gì</h2>
           <p className="text-gray-600 text-lg mb-8">
             Khám phá các món ăn ngon cùng chúng tôi
           </p>
-        </div>
-        
-        <div className="flex justify-center items-center ">
-          {/* Pass the activeFilter and the setter function to FilterMenu */}
-          <FilterMenu
-            activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
-          />
-        </div>
+        </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
-          {filteredRecipes.map((recipe) => (
-            <div key={recipe.id} className="relative pt-20">
-              <div
-                className="bg-gradient-to-b from-orange-50 to-white rounded-lg shadow-lg hover:scale-105 transition-all ease-in-out"
-                style={{ height: '400px' }}
-              >
-                <div className="relative flex justify-center">
-                  <img
-                    src={recipe.imageUrl}
-                    alt={recipe.title}
-                    className="w-full h-full -mt-20 object-cover transform origin-center"
-                  />
-                </div>
+        {/* Filter Menu */}
+        <section className="flex justify-center items-center">
+          <FilterMenu activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
+        </section>
 
-                <div className="p-6 flex flex-col items-center h-full">
-                  <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-pink-500 transition-colors duration-300 cursor-pointer line-clamp-2">
-                    {recipe.title}
-                  </h2>
-
-                  <p className="text-gray-600 text-center mb-4 text-sm">
-                    {recipe.description}
-                  </p>
-
-                  <div className="border-t border-gray-300 my-4 w-full"></div>
-
-                  <div className="flex justify-between items-center text-gray-500 text-sm w-full">
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4" />
-                      <span>{recipe.time}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calculator className="w-4 h-4" />
-                      <span>{recipe.calories} calories</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Recipes Grid */}
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+          {filteredRecipes.length > 0 ? (
+            filteredRecipes.map((recipe) => (
+              <RecipeCard key={recipe.recipe_id} recipe={recipe} />
+            ))
+          ) : (
+            <p className="text-center text-gray-500 col-span-full">
+              Không có món ăn nào phù hợp!
+            </p>
+          )}
+        </section>
       </main>
     </div>
   );
 };
 
 export default Meals;
+
