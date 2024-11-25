@@ -12,9 +12,8 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './Home.css';
-import NextArrow from '../../components/NextArrow';
-import PrevArrow from '../../components/PrevArrow';
 import { useNavigate } from 'react-router-dom';
+import Banner from '../../components/banner';
 interface Recipe {
   title: string;
   description: string;
@@ -23,7 +22,7 @@ interface Recipe {
   imageUrl: string;
 }
 const Home: React.FC = () => {
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const menuItems = [
     {
       icon: Coffee,
@@ -121,107 +120,13 @@ const Home: React.FC = () => {
         'https://uploads-ssl.webflow.com/624ff6ee2a16a1a7312e426b/62552a2c36259f3b8be4d036_Bitmap%202FITO-p-500.png',
     },
   ];
-  const sliderItems = [
-    {
-      image:
-        'https://file.hstatic.net/200000610729/file/suon-1_45d8812e98a24c97a7920ebdf8457d11.jpg',
-      title: 'Sườn xào chua ngọt',
-      description:
-        'Sườn heo được chế biến cùng sốt chua ngọt, tạo nên món ăn đậm đà, thơm ngon.',
-      date: 'April 10, 2021',
-    },
-    {
-      image:
-        'https://static-images.vnncdn.net/files/publish/canh-ga-chien-nuoc-mam-don-gian-tuyet-ngon-cho-bua-com-nha-76e74a6565574ce8b848041b0e711fe0.jpg',
-      title: 'Cánh gà chiên mắm',
-      description:
-        'Cánh gà chiên giòn, đậm đà vị mắm, là món ăn lý tưởng cho mọi bữa tiệc.',
-      date: 'March 15, 2021',
-    },
-    {
-      image:
-        'https://daynauan.info.vn/wp-content/uploads/2018/06/thit-kho-tau-1.jpg',
-      title: 'Thịt kho tàu',
-      description:
-        'Món thịt kho với hương vị đậm đà và mềm mại của trứng và thịt.',
-      date: 'February 5, 2021',
-    },
-    {
-      image:
-        'https://cdn.tgdd.vn/Files/2019/11/12/1218206/cach-lam-thit-bo-xao-hanh-tay-thom-mem-nhanh-gon-202212091417101425.jpg',
-      title: 'Thịt bò xào hành tây',
-      description:
-        'Món thịt bò xào hành tây đơn giản nhưng không kém phần hấp dẫn.',
-      date: 'January 20, 2021',
-    },
-  ];
 
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
-    dotsClass: 'slick-dots custom-dots',
-    customPaging: (i: number) => (
-      <div className="w-2 h-2 bg-gray-300 rounded-full mx-1 hover:bg-gray-500 transition-colors" />
-    ),
-  };
+
   return (
     <div className="min-h-screen  max-w-screen">
+
+      <Banner></Banner>
       <main className="container mx-auto py-8 ">
-        {/* Hero Slider Section */}
-        <div className="py-12">
-          {' '}
-          {/* Thêm padding trên dưới */}
-          <div className="w-full max-w-6xl mx-auto shadow-lg rounded-lg overflow-hidden">
-            {' '}
-            {/* Thêm overflow-hidden để tránh rounded-lg bị lỗi */}
-            <Slider {...sliderSettings}>
-              {sliderItems.map((item, index) => (
-                <div key={index} className="outline-none">
-                  <div className="flex">
-                    {/* Left side - Image */}
-                    <div className="w-1/2 h-[500px]">
-                      {' '}
-                      {/* Điều chỉnh width và height */}
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className="w-full h-full object-cover transition-transform duration-300 ease-in-out transform hover:scale-105"
-                        // Bỏ rounded-l-lg và shadow-lg vì đã có ở container
-                      />
-                    </div>
-
-                    {/* Right side - Content */}
-                    <div className="w-1/2 bg-gradient-to-b from-blue-50 to-white flex items-center">
-                      {/* Bỏ rounded-r-lg và shadow vì đã có ở container */}
-                      <div className="p-8 md:p-12 w-full">
-                        <h2 className="font-serif text-3xl font-semibold text-slate-800 mb-6">
-                          {item.title}
-                        </h2>
-                        <p className="text-slate-400 text-sm mb-6">
-                          {item.date}
-                        </p>
-                        <p className="text-slate-600 leading-relaxed mb-10">
-                          {item.description}
-                        </p>
-                        <button className="border-2 border-blue-400 px-8 py-3 text-sm font-medium uppercase tracking-wider text-blue-600 hover:bg-blue-400 hover:text-white transition-all duration-300 hover:scale-105">
-                          XEM CÔNG THỨC
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </Slider>
-          </div>
-        </div>
-
         {/* Rest of your components... */}
         <div className="py-12">
           <div className="text-center mb-8">
@@ -233,7 +138,7 @@ const Home: React.FC = () => {
             {menuItems.map(({ icon: Icon, title, description, link }) => (
               <div
                 key={title}
-                className="bg-gradient-to-b from-blue-50 to-white rounded-lg shadow-lg p-6 text-center hover:scale-105 transition-all ease-in-out"
+                className="bg-gradient-to-b from-blue-100 to-white rounded-3xl shadow-lg p-6 text-center hover:scale-105 transition-all ease-in-out"
               >
                 <div className="flex justify-center mb-4">
                   <Icon className="w-12 h-12 text-gray-700" />
@@ -256,9 +161,10 @@ const Home: React.FC = () => {
             Món ăn thịnh hành
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+
             {topRecipes.map((topRecipe, index) => (
               <div key={index} className="relative pt-20">
-                <div className="bg-gradient-to-b from-blue-50 to-white  rounded-lg shadow-lg hover:scale-105 transition-all ease-in-out">
+                <div className=" bg-gradient-to-b from-blue-100 to-white  rounded-3xl shadow-lg hover:scale-105 transition-all ease-in-out">
                   <div className="relative flex justify-center">
                     <img
                       src={topRecipe.imageUrl}
@@ -292,7 +198,7 @@ const Home: React.FC = () => {
         </div>
 
         {/* Kitchen tips ..*/}
-        <div className="w-full  mx-auto shadow-lg rounded-lg flex flex-col md:flex-row items-center md:items-stretch justify-center overflow-hidden">
+        <div className="w-full  mx-auto shadow-lg rounded-3xl flex flex-col md:flex-row items-center md:items-stretch justify-center overflow-hidden">
           {/* Hình ảnh bên trái */}
           <div className="w-full md:w-1/2 h-64 md:h-auto">
             <img
@@ -303,20 +209,20 @@ const Home: React.FC = () => {
           </div>
 
           {/* Nội dung bên phải */}
-          <div className="bg-gradient-to-b from-blue-50 to-white w-full md:w-1/2 flex flex-col items-center justify-center p-8 space-y-6 md:space-y-8">
-      <h2 className="font-serif text-2xl md:text-3xl text-slate-800 text-center leading-tight">
-        Trở thành đầu bếp tài ba ngay trong căn bếp của bạn
-      </h2>
-      <p className="text-slate-600 text-center leading-relaxed">
-        Khám phá những mẹo vặt độc đáo và bí quyết giúp bạn tự tin chế biến những món ăn ngon. Hãy cùng chúng tôi bắt đầu hành trình biến căn bếp nhỏ trở thành không gian sáng tạo đầy hương vị!
-      </p>
-      <button
-        className="bg-black rounded-lg shadow-lg px-8 py-3 text-center text-white hover:bg-gray-800 transition duration-200 ease-in-out"
-        onClick={() => navigate('/tips')}
-      >
-        ĐỌC THÊM
-      </button>
-    </div>
+          <div className="bg-gradient-to-b from-blue-100 to-white w-full md:w-1/2 flex flex-col items-center justify-center p-8 space-y-6 md:space-y-8">
+            <h2 className="font-serif text-2xl md:text-3xl text-slate-800 text-center leading-tight">
+              Trở thành đầu bếp tài ba ngay trong căn bếp của bạn
+            </h2>
+            <p className="text-slate-600 text-center leading-relaxed">
+              Khám phá những mẹo vặt độc đáo và bí quyết giúp bạn tự tin chế biến những món ăn ngon. Hãy cùng chúng tôi bắt đầu hành trình biến căn bếp nhỏ trở thành không gian sáng tạo đầy hương vị!
+            </p>
+            <button
+              className="bg-black rounded-lg shadow-lg px-8 py-3 text-center text-white hover:bg-gray-800 transition duration-200 ease-in-out"
+              onClick={() => navigate('/tips')}
+            >
+              ĐỌC THÊM
+            </button>
+          </div>
         </div>
       </main>
     </div>
