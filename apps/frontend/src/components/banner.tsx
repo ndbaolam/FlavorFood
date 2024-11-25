@@ -15,7 +15,7 @@ const Banner: React.FC = () => {
         </p>
         <button
           className="bg-red-500 px-6 py-3 text-white font-medium text-lg rounded-full shadow-md transition-transform duration-300 hover:bg-red-600 hover:scale-105"
-          onClick={() => navigate('/meals')}
+          onClick={() => navigate('/dish')}
         >
           Khám phá ngay
         </button>

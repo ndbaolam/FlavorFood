@@ -26,31 +26,31 @@ const Home: React.FC = () => {
   const menuItems = [
     {
       icon: Coffee,
-      title: 'Bữa sáng',
+      title: 'Món chính',
       description:
         'Khởi đầu ngày mới tràn đầy năng lượng với bữa sáng dinh dưỡng!',
-      link: '/meals/breakfast',
+      link: '/dish/main-course',
     },
     {
       icon: Salad,
-      title: 'Món chay',
+      title: 'Khai vị',
       description:
         'Chay thanh đạm, hương vị ngọt ngào – Sống xanh, sống khỏe mỗi ngày!',
-      link: '/meals/vegetarian',
+      link: '/dish/appetizer',
     },
     {
       icon: GlassWater,
       title: 'Đồ uống',
       description:
         'Thức uống tươi mát, bổ sung sức sống – Khơi dậy mọi giác quan!',
-      link: '/meals/drinks',
+      link: '/dish/drinks',
     },
     {
       icon: Cake,
       title: 'Tráng miệng',
       description:
         'Ngọt ngào từng miếng, thỏa mãn mọi cảm xúc – Tráng miệng là niềm vui cuối cùng!',
-      link: '/meals/desserts',
+      link: '/dish/desserts',
     },
   ];
 

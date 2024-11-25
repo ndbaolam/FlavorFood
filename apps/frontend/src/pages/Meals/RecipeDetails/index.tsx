@@ -1,6 +1,7 @@
 import { Calculator, Clock, UtensilsCrossed } from "lucide-react";
 import React from "react";
 import { useParams, Link } from "react-router-dom";
+import formatString from '../../../services/formatString';
 
 interface Recipe {
   recipe_id: number;
@@ -53,10 +54,10 @@ const recipes: Recipe[] = [
     calories: 250,
     image:
       'https://dsznjaxrxc1vh.cloudfront.net/product-images/large/Beauty+Bowl+PDP_1440x1440.png',
-      category: [
-        { tag_id: 1, name: 'Món chính' },
-        { tag_id: 6, name: 'Khai vị' },
-      ],
+    category: [
+      { tag_id: 1, name: 'Món chính' },
+      { tag_id: 6, name: 'Khai vị' },
+    ],
     ingredients: [
       { ingredient_id: 1, name: 'Avocado', description: 'Ripe avocado', unit: '1' },
       { ingredient_id: 2, name: 'Bread', description: 'Whole-grain bread slices', unit: '2 slices' },
@@ -80,7 +81,7 @@ const recipes: Recipe[] = [
     image:
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
     category: [{ tag_id: 2, name: 'Tráng miệng' },
-      { tag_id: 7, name: 'Đồ uống' },
+    { tag_id: 7, name: 'Đồ uống' },
     ],
     ingredients: [
       { ingredient_id: 3, name: 'Mixed Berries', description: 'A mix of blueberries, raspberries, strawberries', unit: '1 cup' },
@@ -148,27 +149,20 @@ const recipes: Recipe[] = [
   },
 ];
 
-// Utility to Format Title
-const formatTitleForUrl = (title: string): string =>
-  title.toLowerCase().replace(/\s+/g, '-') + '.html';
-
 const RecipeDetail: React.FC = () => {
-  const { title } = useParams<{ title: string }>();
-
-  // Find Recipe
-  const recipe = title
-    ? recipes.find((r) => formatTitleForUrl(r.title) === title)
-    : undefined;
+  const { slug } = useParams<{ slug: string }>();
+  // Tìm kiếm công thức dựa trên `formattedTitle`
+  const recipe = recipes.find((r) => formatString(r.title) === slug);
 
   if (!recipe) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center">
-        <h1 className="text-3xl font-semibold text-red-500 mb-4">Recipe Not Found</h1>
+        <h1 className="text-3xl font-semibold text-red-500 mb-4">Không tìm thấy công thức</h1>
         <p className="text-gray-600 mb-4">
-          We couldn't find the recipe you're looking for.
+          Chúng tôi không thể tìm thấy công thức bạn yêu cầu.
         </p>
-        <Link to="/meals" className="text-blue-500 hover:underline hover:text-blue-700">
-          Return to Recipes
+        <Link to="/dish" className="text-blue-500 hover:underline hover:text-blue-700">
+          Quay lại tất cả công thức
         </Link>
       </div>
     );
@@ -210,7 +204,6 @@ const RecipeDetail: React.FC = () => {
                 ))}
               </span>
             </div>
-            <span className="text-gray-400">|</span>
           </div>
 
           {/* Recipe Image */}
@@ -256,12 +249,6 @@ const RecipeDetail: React.FC = () => {
                     <li>Không có thông tin dinh dưỡng nào.</li>
                   )}
                 </ul>
-                <div className="text-center text-gray-500 mt-56">
-                  <p className="mb-1">
-                    Thông tin dinh dưỡng chỉ mang tính chất tham khảo và được tính toán theo
-                    tiêu chuẩn thông thường.
-                  </p>
-                </div>
               </div>
             </div>
           </div>
@@ -274,7 +261,7 @@ const RecipeDetail: React.FC = () => {
 
           {/* Ingredients Section */}
           <div className="mt-12">
-            <h2 className="text-2xl font-semibold mb-4">Ingredients</h2>
+            <h2 className="text-2xl font-semibold mb-4">Nguyên liệu</h2>
             <ul className="list-disc list-inside text-gray-700">
               {recipe.ingredients.map((item) => (
                 <li key={item.ingredient_id}>
@@ -286,10 +273,10 @@ const RecipeDetail: React.FC = () => {
 
           {/* Steps Section */}
           <div className="mt-12">
-            <h2 className="text-2xl font-semibold mb-4">Steps</h2>
+            <h2 className="text-2xl font-semibold mb-4">Các bước</h2>
             {recipe.step.map((step) => (
               <div key={step.step_id} className="mb-6">
-                <h3 className="font-semibold">Step {step.step_number}</h3>
+                <h3 className="font-semibold">Bước {step.step_number}</h3>
                 <p className="text-gray-600">{step.description}</p>
               </div>
             ))}
@@ -299,5 +286,6 @@ const RecipeDetail: React.FC = () => {
     </div>
   );
 };
+
 
 export default RecipeDetail;

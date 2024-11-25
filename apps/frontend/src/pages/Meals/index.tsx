@@ -152,6 +152,28 @@ const recipes: Recipe[] = [
 const Meals: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('Tất cả');
 
+  // Hàm ánh xạ tên bộ lọc sang đường dẫn URL
+  const getCategoryPath = (filter: string) => {
+    switch (filter) {
+      case 'Khai vị':
+        return '/dish/appetizer';
+      case 'Món chính':
+        return '/dish/main-course';
+      case 'Canh & Lẩu':
+        return '/dish/soup-hotpot';
+      case 'Đồ uống':
+        return '/dish/drink';
+      case 'Tráng miệng':
+        return '/dish/dessert';
+      case 'Tất cả':
+      default:
+        return '/dish'; // Đường dẫn mặc định là tất cả món ăn
+    }
+  };
+
+  const currentCategoryPath = getCategoryPath(activeFilter);
+
+  // Lọc danh sách món ăn dựa trên bộ lọc hiện tại
   const filteredRecipes = recipes.filter((recipe) => {
     if (activeFilter === 'Tất cả') return true;
     return recipe.category.some((category) => category.name === activeFilter);
@@ -177,7 +199,11 @@ const Meals: React.FC = () => {
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
           {filteredRecipes.length > 0 ? (
             filteredRecipes.map((recipe) => (
-              <RecipeCard key={recipe.recipe_id} recipe={recipe} />
+              <RecipeCard
+                key={recipe.recipe_id}
+                recipe={recipe}
+                currentCategoryPath={currentCategoryPath} // Truyền đường dẫn danh mục vào RecipeCard
+              />
             ))
           ) : (
             <p className="text-center text-gray-500 col-span-full">
@@ -189,6 +215,7 @@ const Meals: React.FC = () => {
     </div>
   );
 };
+
 
 export default Meals;
 
