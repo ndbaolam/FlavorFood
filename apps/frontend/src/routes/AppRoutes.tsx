@@ -15,17 +15,16 @@ import Storage from '../pages/Tips/Storage';
 import CookingTechniques from '../pages/Tips/CookingTechniques';
 import ToolComponent from '../pages/Tips/ToolComponent';
 import KitchenCleaning from '../pages/Tips/KitchenCleaning';
-import RecipeDetails from '../pages/Meals/RecipeDetails'; 
-
+import RecipeDetail from '../pages/Meals/RecipeDetails';
 // Route definitions
 const routes: RouteObject[] = [
   {
     path: '/',
-    element: <MainLayout />, 
+    element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        index: true, // Default route
+        index: true,
         element: <Home />,
       },
       {
@@ -38,6 +37,7 @@ const routes: RouteObject[] = [
       },
       {
         path: 'dish',
+        element: <Meals />,
         children: [
           {
             index: true,
@@ -45,7 +45,7 @@ const routes: RouteObject[] = [
           },
           {
             path: 'appetizer',
-            element: <BreakFast />, 
+            element: <BreakFast />,
           },
           {
             path: 'main-course',
@@ -60,14 +60,15 @@ const routes: RouteObject[] = [
             element: <Drinks />,
           },
           {
-            path: 'dessert', // Made path plural to match the component name
+            path: 'dessert',
             element: <Desserts />,
           },
-          {
-            path: ':title', 
-            element: <RecipeDetails />,
-          },
+          // General routes for individual recipe details within each category
         ],
+      },
+      {
+        path: 'dish/:slug.html',
+        element: <RecipeDetail />,
       },
       {
         path: 'tips',
@@ -95,14 +96,13 @@ const routes: RouteObject[] = [
         ],
       },
       {
-        path: '*', // Catch-all route for undefined paths
+        path: '*',
         element: <ErrorPage />,
       },
     ],
   },
 ];
 
-// Create the router
 const AppRoutes = createBrowserRouter(routes);
 
 export default AppRoutes;
