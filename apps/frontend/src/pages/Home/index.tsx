@@ -92,7 +92,6 @@ const Home: React.FC = () => {
     },
   ];
 
-
   const recipes: Recipe[] = [
     {
       recipe_id: 1,
@@ -119,6 +118,7 @@ const Home: React.FC = () => {
       nutrition: [
         { nutrition_id: 1, calories: '250', protein: '5', fat: '10', carbohydrates: '30' },
       ],
+      isFavorite: false, 
     },
     {
       recipe_id: 2,
@@ -128,8 +128,9 @@ const Home: React.FC = () => {
       calories: 345,
       image:
         'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
-      category: [{ tag_id: 2, name: 'Tráng miệng' },
-      { tag_id: 7, name: 'Đồ uống' },
+      category: [
+        { tag_id: 2, name: 'Tráng miệng' },
+        { tag_id: 7, name: 'Đồ uống' },
       ],
       ingredients: [
         { ingredient_id: 3, name: 'Mixed Berries', description: 'A mix of blueberries, raspberries, strawberries', unit: '1 cup' },
@@ -144,6 +145,7 @@ const Home: React.FC = () => {
       nutrition: [
         { nutrition_id: 2, calories: '345', protein: '8', fat: '12', carbohydrates: '40' },
       ],
+      isFavorite: false, 
     },
     {
       recipe_id: 3,
@@ -168,6 +170,7 @@ const Home: React.FC = () => {
       nutrition: [
         { nutrition_id: 3, calories: '520', protein: '25', fat: '15', carbohydrates: '65' },
       ],
+      isFavorite: true, 
     },
     {
       recipe_id: 4,
@@ -194,8 +197,10 @@ const Home: React.FC = () => {
       nutrition: [
         { nutrition_id: 4, calories: '330', protein: '9', fat: '14', carbohydrates: '40' },
       ],
+      isFavorite: false, // Added the `isFavorite` field
     },
   ];
+  
 
   return (
     <div className="min-h-screen  max-w-screen">
