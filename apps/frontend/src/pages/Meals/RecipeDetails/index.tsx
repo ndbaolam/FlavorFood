@@ -166,7 +166,7 @@ const RecipeDetail: React.FC = () => {
         </Link>
       </div>
     );
-  }
+  } 
 
   return (
     <div className="min-h-screen py-12 bg-gray-50">
