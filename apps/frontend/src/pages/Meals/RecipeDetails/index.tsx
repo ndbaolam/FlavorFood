@@ -1,5 +1,5 @@
-import { Calculator, Clock, UtensilsCrossed } from "lucide-react";
-import React from "react";
+import { Calculator, Clock, Heart, UtensilsCrossed } from "lucide-react";
+import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import formatString from '../../../services/formatString';
 
@@ -22,7 +22,6 @@ interface Recipe {
 
 interface Ingredient {
   ingredient_id: number;
-  description: string;
   name: string;
   unit: string;
 }
@@ -53,24 +52,25 @@ const recipes: Recipe[] = [
     time: '15 phút',
     calories: 250,
     image:
-      'https://dsznjaxrxc1vh.cloudfront.net/product-images/large/Beauty+Bowl+PDP_1440x1440.png',
+      'https://i.pinimg.com/1200x/19/f6/4d/19f64d152f8350729a31295649ccedf6.jpg',
     category: [
       { tag_id: 1, name: 'Món chính' },
       { tag_id: 6, name: 'Khai vị' },
     ],
     ingredients: [
-      { ingredient_id: 1, name: 'Avocado', description: 'Ripe avocado', unit: '1' },
-      { ingredient_id: 2, name: 'Bread', description: 'Whole-grain bread slices', unit: '2 slices' },
+      { ingredient_id: 1, name: 'Quả bơ', unit: '1' },
+      { ingredient_id: 2, name: 'Bánh mì nguyên cám', unit: '2 lát' },
     ],
     step: [
-      { step_id: 1, step_number: 1, description: 'Toast the bread.' },
-      { step_id: 2, step_number: 2, description: 'Spread avocado on bread.' },
+      { step_id: 1, step_number: 1, description: 'Nướng bánh mì.' },
+      { step_id: 2, step_number: 2, description: 'Phết bơ lên bánh mì.' },
     ],
     servings: 1,
     difficulty_level: 'Dễ',
     nutrition: [
       { nutrition_id: 1, calories: '250', protein: '5', fat: '10', carbohydrates: '30' },
     ],
+    isFavorite: true,  // Đánh dấu món này là yêu thích
   },
   {
     recipe_id: 2,
@@ -80,22 +80,21 @@ const recipes: Recipe[] = [
     calories: 345,
     image:
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
-    category: [{ tag_id: 2, name: 'Tráng miệng' },
-    { tag_id: 7, name: 'Đồ uống' },
-    ],
+    category: [{ tag_id: 2, name: 'Tráng miệng' }, { tag_id: 7, name: 'Đồ uống' }],
     ingredients: [
-      { ingredient_id: 3, name: 'Mixed Berries', description: 'A mix of blueberries, raspberries, strawberries', unit: '1 cup' },
-      { ingredient_id: 4, name: 'Greek Yogurt', description: 'Plain Greek yogurt', unit: '1/2 cup' },
+      { ingredient_id: 3, name: 'Các loại quả mọng', unit: '1 cốc' },
+      { ingredient_id: 4, name: 'Sữa chua Hy Lạp', unit: '1/2 cốc' },
     ],
     step: [
-      { step_id: 1, step_number: 1, description: 'Mix all berries in a bowl.' },
-      { step_id: 2, step_number: 2, description: 'Add Greek yogurt and serve.' },
+      { step_id: 1, step_number: 1, description: 'Trộn tất cả quả mọng vào một bát.' },
+      { step_id: 2, step_number: 2, description: 'Thêm sữa chua Hy Lạp và thưởng thức.' },
     ],
     servings: 2,
     difficulty_level: 'Dễ',
     nutrition: [
       { nutrition_id: 2, calories: '345', protein: '8', fat: '12', carbohydrates: '40' },
     ],
+    isFavorite: false,  // Món này không phải là yêu thích
   },
   {
     recipe_id: 3,
@@ -107,19 +106,20 @@ const recipes: Recipe[] = [
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
     category: [{ tag_id: 3, name: 'Canh & Lẩu' }],
     ingredients: [
-      { ingredient_id: 5, name: 'Shrimps', description: 'Fresh shrimp, deveined', unit: '200g' },
-      { ingredient_id: 6, name: 'Noodles', description: 'Rice noodles', unit: '100g' },
-      { ingredient_id: 7, name: 'Broth', description: 'Chicken or vegetable broth', unit: '500ml' },
+      { ingredient_id: 5, name: 'Tôm', unit: '200g' },
+      { ingredient_id: 6, name: 'Bún gạo', unit: '100g' },
+      { ingredient_id: 7, name: 'Nước dùng', unit: '500ml' },
     ],
     step: [
-      { step_id: 1, step_number: 1, description: 'Boil the broth.' },
-      { step_id: 2, step_number: 2, description: 'Add noodles and shrimps. Cook until done.' },
+      { step_id: 1, step_number: 1, description: 'Đun sôi nước dùng.' },
+      { step_id: 2, step_number: 2, description: 'Thêm bún và tôm. Nấu cho đến khi chín.' },
     ],
     servings: 2,
     difficulty_level: 'Trung bình',
     nutrition: [
       { nutrition_id: 3, calories: '520', protein: '25', fat: '15', carbohydrates: '65' },
     ],
+    isFavorite: true,  // Đánh dấu món này là yêu thích
   },
   {
     recipe_id: 4,
@@ -131,28 +131,45 @@ const recipes: Recipe[] = [
       'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish2-min.png',
     category: [{ tag_id: 4, name: 'Khai vị' }],
     ingredients: [
-      { ingredient_id: 8, name: 'Quinoa', description: 'Cooked quinoa', unit: '1 cup' },
-      { ingredient_id: 9, name: 'Cucumber', description: 'Chopped cucumber', unit: '1' },
-      { ingredient_id: 10, name: 'Tomato', description: 'Chopped tomatoes', unit: '2' },
-      { ingredient_id: 11, name: 'Olive Oil', description: 'Extra virgin olive oil', unit: '2 tbsp' },
+      { ingredient_id: 8, name: 'Quinoa', unit: '1 cốc' },
+      { ingredient_id: 9, name: 'Dưa leo', unit: '1 quả' },
+      { ingredient_id: 10, name: 'Cà chua', unit: '2 quả' },
+      { ingredient_id: 11, name: 'Dầu ô liu', unit: '2 muỗng canh' },
     ],
     step: [
-      { step_id: 1, step_number: 1, description: 'Cook quinoa according to package instructions.' },
-      { step_id: 2, step_number: 2, description: 'Chop vegetables and mix with quinoa.' },
-      { step_id: 3, step_number: 3, description: 'Drizzle with olive oil and serve.' },
+      { step_id: 1, step_number: 1, description: 'Nấu quinoa theo hướng dẫn trên bao bì.' },
+      { step_id: 2, step_number: 2, description: 'Cắt rau củ và trộn với quinoa.' },
+      { step_id: 3, step_number: 3, description: 'Rưới dầu ô liu lên và thưởng thức.' },
     ],
     servings: 3,
     difficulty_level: 'Dễ',
     nutrition: [
       { nutrition_id: 4, calories: '330', protein: '9', fat: '14', carbohydrates: '40' },
     ],
+    isFavorite: false,  // Món này không phải là yêu thích
   },
 ];
 
+
 const RecipeDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  // Tìm kiếm công thức dựa trên `formattedTitle`
+  
+  // Find the recipe using formatted title (slug)
   const recipe = recipes.find((r) => formatString(r.title) === slug);
+  
+  const [isLiked, setIsLiked] = useState<boolean>(recipe?.isFavorite || false); 
+  
+  const onToggleFavorite = (recipeId: number) => {
+    console.log(`Toggled favorite for recipe with ID: ${recipeId}`);
+  };
+
+  // Toggle like status
+  const handleLike = () => {
+    setIsLiked((prevLiked) => !prevLiked);
+    if (recipe) {
+      onToggleFavorite(recipe.recipe_id); // Pass the recipe_id for favorite toggling
+    }
+  };
 
   if (!recipe) {
     return (
@@ -166,7 +183,7 @@ const RecipeDetail: React.FC = () => {
         </Link>
       </div>
     );
-  } 
+  }
 
   return (
     <div className="min-h-screen py-12 bg-gray-50">
@@ -179,6 +196,7 @@ const RecipeDetail: React.FC = () => {
 
           {/* Time, Calories, and Categories Section */}
           <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
+
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
               <span>{recipe.time}</span>
@@ -204,20 +222,32 @@ const RecipeDetail: React.FC = () => {
                 ))}
               </span>
             </div>
+             
+            <span className="text-gray-400">|</span>
+            <button 
+              onClick={handleLike} 
+              className={`flex items-center justify-center p-2 rounded-full ${isLiked ? 'bg-red-300' : 'bg-gray-200'}`}
+            >
+              <Heart 
+                color={isLiked ? 'white' : 'gray'} 
+                fill={isLiked ? 'white' : 'none'}
+                size={18} 
+              />
+            </button>
           </div>
 
           {/* Recipe Image */}
-          <div className="flex justify-between w-full gap-12">
-            <div className="mt-8 w-3/4">
+          <div className="flex justify-between w-full gap-20">
+            <div className="mt-8 w-2/3">
               <img
                 src={recipe.image}
                 alt={recipe.title}
-                className="w-auto rounded-lg shadow-md"
+                className="rounded-lg shadow-md w-full h-full"
               />
             </div>
 
             {/* Nutrition Section */}
-            <div className="w-1/4 bg-blue-50 p-6 mt-8 rounded-lg shadow">
+            <div className="w-1/3 bg-blue-50 p-6 mt-8 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4">Thông tin dinh dưỡng</h2>
               <div className="flex flex-col relative">
                 <ul className="text-gray-700 space-y-2">
@@ -256,7 +286,7 @@ const RecipeDetail: React.FC = () => {
           {/* Description Section */}
           <div className="mt-12">
             <h2 className="text-2xl font-semibold mt-4">Mô tả</h2>
-            <span className="text-gray-700">{recipe.description}</span>
+            <p className="mt-4 text-gray-700">{recipe.description}</p>
           </div>
 
           {/* Ingredients Section */}
@@ -265,7 +295,7 @@ const RecipeDetail: React.FC = () => {
             <ul className="list-disc list-inside text-gray-700">
               {recipe.ingredients.map((item) => (
                 <li key={item.ingredient_id}>
-                  {item.name} ({item.description}) - {item.unit}
+                  {item.name} : {item.unit}
                 </li>
               ))}
             </ul>

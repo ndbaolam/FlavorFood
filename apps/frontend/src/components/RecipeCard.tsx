@@ -64,7 +64,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
   };
 
   const formattedTitle: string = formatString(recipe.title);
-  const linkTo = `dish/${formattedTitle}.html`;
+  const linkTo = `/dish/${formattedTitle}.html`;
 
   return (
     <Link
