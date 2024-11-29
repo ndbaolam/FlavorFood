@@ -26,16 +26,23 @@ export const Search: React.FC = () => {
       <div
         ref={searchRef}
         className={`form-control transition-transform duration-300 ease-in-out ${
-          isOpen ? "translate-x-0 opacity-100 visible" : "translate-x-full opacity-0 invisible"
+          isOpen
+            ? "translate-x-0 opacity-100 visible w-24 md:w-auto"
+            : "translate-x-full opacity-0 invisible"
         }`}
       >
         <input
           type="text"
           placeholder="Search"
-          className="input input-bordered w-24 md:w-auto rounded-full"
+          className="input input-bordered rounded-full bg-white focus:outline-none transition-colors duration-300"
+          aria-label="Search input"
         />
       </div>
-      <span onClick={handleToggle}>
+      <span
+        onClick={handleToggle}
+        aria-label={isOpen ? "Close search" : "Open search"}
+        className="cursor-pointer"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="24"
@@ -54,4 +61,8 @@ export const Search: React.FC = () => {
       </span>
     </>
   );
+  
+  
+  
+
 };

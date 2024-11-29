@@ -1,4 +1,4 @@
-import { Calculator, Clock, Heart, UtensilsCrossed } from "lucide-react";
+import { Calculator, Clock, Heart, Users, UtensilsCrossed } from "lucide-react";
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import formatString from '../../../services/formatString';
@@ -18,6 +18,9 @@ interface Recipe {
   nutrition: Nutrition[];
   ratings?: { averageRating: number; reviews: number };
   isFavorite?: boolean;
+  author?: string;
+  date?: string;
+  avatar?: string;
 }
 
 interface Ingredient {
@@ -51,8 +54,7 @@ const recipes: Recipe[] = [
     description: 'Một bữa sáng nhanh và ngon miệng với bơ chín được phết lên bánh mì nướng nguyên cám. Hoàn hảo để khởi đầu ngày mới đầy năng lượng!',
     time: '15 phút',
     calories: 250,
-    image:
-      'https://i.pinimg.com/1200x/19/f6/4d/19f64d152f8350729a31295649ccedf6.jpg',
+    image: 'https://i.pinimg.com/1200x/19/f6/4d/19f64d152f8350729a31295649ccedf6.jpg',
     category: [
       { tag_id: 1, name: 'Món chính' },
       { tag_id: 6, name: 'Khai vị' },
@@ -70,7 +72,10 @@ const recipes: Recipe[] = [
     nutrition: [
       { nutrition_id: 1, calories: '250', protein: '5', fat: '10', carbohydrates: '30' },
     ],
-    isFavorite: true,  // Đánh dấu món này là yêu thích
+    isFavorite: true,
+    author: 'Nguyễn Văn A',  // Author added
+    date: '2024-11-25',       // Date added
+    avatar: 'https://i.pinimg.com/1200x/18/78/5d/18785dd07c09465d01beef679baf1846.jpg',  // Avatar image URL
   },
   {
     recipe_id: 2,
@@ -78,8 +83,7 @@ const recipes: Recipe[] = [
     description: 'Món ăn nhẹ tươi mát với hỗn hợp các loại quả mọng và sữa chua Hy Lạp. Lựa chọn hoàn hảo cho bữa ăn nhẹ hoặc món tráng miệng nhẹ nhàng.',
     time: '15 phút',
     calories: 345,
-    image:
-      'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
+    image: 'https://i.pinimg.com/1200x/19/f6/4d/19f64d152f8350729a31295649ccedf6.jpg',
     category: [{ tag_id: 2, name: 'Tráng miệng' }, { tag_id: 7, name: 'Đồ uống' }],
     ingredients: [
       { ingredient_id: 3, name: 'Các loại quả mọng', unit: '1 cốc' },
@@ -94,7 +98,10 @@ const recipes: Recipe[] = [
     nutrition: [
       { nutrition_id: 2, calories: '345', protein: '8', fat: '12', carbohydrates: '40' },
     ],
-    isFavorite: false,  // Món này không phải là yêu thích
+    isFavorite: false,
+    author: 'Trần Thị B',  // Author added
+    date: '2024-11-24',     // Date added
+    avatar: 'https://i.pinimg.com/1200x/18/78/5d/18785dd07c09465d01beef679baf1846.jpg',
   },
   {
     recipe_id: 3,
@@ -102,8 +109,7 @@ const recipes: Recipe[] = [
     description: 'Món phở thơm ngon với tôm tươi và nước dùng đậm đà. Đây là lựa chọn hoàn hảo cho những ngày se lạnh hoặc bữa ăn bổ dưỡng.',
     time: '35 phút',
     calories: 520,
-    image:
-      'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish1-min.png',
+    image: 'https://i.pinimg.com/1200x/19/f6/4d/19f64d152f8350729a31295649ccedf6.jpg',
     category: [{ tag_id: 3, name: 'Canh & Lẩu' }],
     ingredients: [
       { ingredient_id: 5, name: 'Tôm', unit: '200g' },
@@ -119,7 +125,10 @@ const recipes: Recipe[] = [
     nutrition: [
       { nutrition_id: 3, calories: '520', protein: '25', fat: '15', carbohydrates: '65' },
     ],
-    isFavorite: true,  // Đánh dấu món này là yêu thích
+    isFavorite: true,
+    author: 'Lê Minh C',  // Author added
+    date: '2024-11-22',     // Date added
+    avatar: 'https://i.pinimg.com/1200x/18/78/5d/18785dd07c09465d01beef679baf1846.jpg',
   },
   {
     recipe_id: 4,
@@ -127,8 +136,7 @@ const recipes: Recipe[] = [
     description: 'Món salad đầy màu sắc và bổ dưỡng với rau tươi và quinoa, rưới thêm dầu ô liu. Đây là một món ăn nhẹ lý tưởng và tốt cho sức khỏe.',
     time: '20 phút',
     calories: 330,
-    image:
-      'https://www.sliderrevolution.com/wp-content/uploads/revslider/food-recipe-carousel/dish2-min.png',
+    image: 'https://i.pinimg.com/1200x/19/f6/4d/19f64d152f8350729a31295649ccedf6.jpg',
     category: [{ tag_id: 4, name: 'Khai vị' }],
     ingredients: [
       { ingredient_id: 8, name: 'Quinoa', unit: '1 cốc' },
@@ -146,19 +154,23 @@ const recipes: Recipe[] = [
     nutrition: [
       { nutrition_id: 4, calories: '330', protein: '9', fat: '14', carbohydrates: '40' },
     ],
-    isFavorite: false,  // Món này không phải là yêu thích
+    isFavorite: false,
+    author: 'Nguyễn Thị D',  // Author added
+    date: '2024-11-21',     // Date added
+    avatar: 'https://i.pinimg.com/1200x/18/78/5d/18785dd07c09465d01beef679baf1846.jpg',
   },
 ];
 
 
+
 const RecipeDetail: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  
+
   // Find the recipe using formatted title (slug)
   const recipe = recipes.find((r) => formatString(r.title) === slug);
-  
-  const [isLiked, setIsLiked] = useState<boolean>(recipe?.isFavorite || false); 
-  
+
+  const [isLiked, setIsLiked] = useState<boolean>(recipe?.isFavorite || false);
+
   const onToggleFavorite = (recipeId: number) => {
     console.log(`Toggled favorite for recipe with ID: ${recipeId}`);
   };
@@ -186,7 +198,7 @@ const RecipeDetail: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-12 bg-gray-50">
+    <div className="min-h-screen py-12 bg-white">
       <main className="container mx-auto px-4">
         {/* Recipe Title and Description */}
         <article>
@@ -196,21 +208,48 @@ const RecipeDetail: React.FC = () => {
 
           {/* Time, Calories, and Categories Section */}
           <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
+            <div className="recipe-card">
+              <img
+                src={recipe.avatar}
+                alt={recipe.title}
+                style={{
+                  width: '40px',  // Width of the avatar
+                  height: '40px',  // Height of the avatar
+                  borderRadius: '50%',  // Make the image circular
+                  objectFit: 'cover',  // Maintain aspect ratio while filling the space
+                }}
+              />
+            </div>
+            <div className=" items-center gap-2">
+              <strong className="text-black">{recipe.author}</strong>
+              <p>{recipe.date}</p>
 
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4" />
-              <span>{recipe.time}</span>
+            </div>
+            <span className="text-gray-400 ">|</span>
+            <Clock className="w-6 h-6 text-black" />
+            <div className="items-center gap-2 text-black">
+
+              <strong>Thời gian nấu</strong>
+              <p>{recipe.time}</p>
+            </div>
+            <span className="text-gray-400">|</span>
+            <Calculator className="w-6 h-6 text-black" />
+            <div className=" items-center gap-2 text-black">
+
+              <strong>Số lượng calories</strong>
+              <p>{recipe.calories} calories</p>
+            </div>
+            <span className="text-gray-400">|</span>
+
+            <Users className="w-6 h-6 text-black" />
+            <div className="items-center gap-2 text-black">
+              <strong>Khẩu phần ăn</strong>
+              <p>{recipe.servings} người</p>
             </div>
             <span className="text-gray-400">|</span>
 
             <div className="flex items-center gap-2">
-              <Calculator className="w-4 h-4" />
-              <span>{recipe.calories} calories</span>
-            </div>
-            <span className="text-gray-400">|</span>
-
-            <div className="flex items-center gap-2">
-              <UtensilsCrossed className="w-4 h-4" />
+              <UtensilsCrossed className="w-6 h-6 text-black" />
               <span className="flex flex-wrap gap-2">
                 {recipe.category.map((cat) => (
                   <span
@@ -222,16 +261,16 @@ const RecipeDetail: React.FC = () => {
                 ))}
               </span>
             </div>
-             
+
             <span className="text-gray-400">|</span>
-            <button 
-              onClick={handleLike} 
-              className={`flex items-center justify-center p-2 rounded-full ${isLiked ? 'bg-red-300' : 'bg-gray-200'}`}
+            <button
+              onClick={handleLike}
+              className={`w-7 h-7 flex items-center justify-center p-2 rounded-full ${isLiked ? 'bg-red-300' : 'bg-gray-200'}`}
             >
-              <Heart 
-                color={isLiked ? 'white' : 'gray'} 
+              <Heart
+                color={isLiked ? 'white' : 'gray'}
                 fill={isLiked ? 'white' : 'none'}
-                size={18} 
+                size={18}
               />
             </button>
           </div>

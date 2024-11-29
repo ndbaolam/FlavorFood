@@ -221,8 +221,8 @@ const Home: React.FC = () => {
                 key={title}
                 className="bg-gradient-to-b from-blue-100 to-white rounded-3xl shadow-lg p-8 text-center hover:scale-105 transition-transform duration-300 ease-in-out"
               >
-                <div className="flex justify-center mb-6">
-                  <Icon className="w-14 h-14 text-gray-700" />
+                <div className="flex justify-center mb-6 ">
+                  <Icon className="w-14 h-14 text-cyan-600" />
                 </div>
                 <h3 className="text-xl font-semibold mb-3">{title}</h3>
                 <p className="text-gray-600 mb-6">{description}</p>

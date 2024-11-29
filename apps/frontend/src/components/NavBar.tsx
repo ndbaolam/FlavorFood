@@ -31,7 +31,7 @@ const Navbar = () => {
           {/* Logo Section */}
           <div className="flex items-center">
             <img src="./logo.png" alt="Logo" className="h-20 w-20 mr-2" />
-            <a href="#" className="font-lobster text-2xl text-blue-800">
+            <a href="#" className="font-lobster text-2xl text-blue-600">
               FlavorFood
             </a>
           </div>
@@ -43,7 +43,7 @@ const Navbar = () => {
               <a
                 key={href}
                 href={href}
-                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-blue-800 hover:bg-blue-200 transition duration-200"
+                className="flex items-center px-3 py-2 rounded-md text-gray-800 hover:text-gray-900 hover:bg-gray-300 transition duration-200"
               >
                 {label}
               </a>
@@ -54,7 +54,7 @@ const Navbar = () => {
               <button
                 onClick={toggleAccountMenu}
                 aria-expanded={isAccountOpen}
-                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-blue-900 hover:bg-blue-100"
+                className="flex items-center px-3 py-2 rounded-md text-gray-800 hover:text-gray-900 hover:bg-gray-300"
               >
                 <User className="w-5 h-5 mr-2" />
                 Tài khoản
