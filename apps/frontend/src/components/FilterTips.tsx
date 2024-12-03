@@ -1,5 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import formatString from '../services/formatString';
+
+interface Filter {
+  label: string;
+  value: string;
+}
 
 interface FilterTipsProps {
   activeFilter: string;
@@ -12,41 +18,41 @@ const FilterTips: React.FC<FilterTipsProps> = ({
 }) => {
   const navigate = useNavigate();
 
-  const filters = [
-    'Tất cả',
-    'Bảo quản nguyên liệu',
-    'Kỹ thuật nấu ăn',
-    'Dụng cụ bếp',
-    'Vệ sinh nhà bếp',
+  // Define filters as an array of objects
+  const filters: Filter[] = [
+    { label: 'Tất cả', value: 'all' },
+    { label: 'Bảo quản nguyên liệu', value: 'storage' },
+    { label: 'Kỹ thuật nấu ăn', value: 'techniques' },
+    { label: 'Dụng cụ bếp', value: 'tools' },
+    { label: 'Vệ sinh nhà bếp', value: 'cleaning' },
   ];
-  // Mapping filter to pathsactiveFilter
-  const filterPaths: { [key: string]: string } = {
-    'Tất cả': '/tips',
-    'Bảo quản nguyên liệu': '/tips/storage',
-    'Kỹ thuật nấu ăn': '/tips/techniques',
-    'Dụng cụ bếp': '/tips/tools',
-    'Vệ sinh nhà bếp': '/tips/cleaning',
-  };
+
+  // Handle filter click
   const handleFilterClick = (filter: string) => {
     setActiveFilter(filter);
-    const path = filterPaths[filter] || '/tips';
+
+    // Generate the correct URL path
+    const formattedFilter = filter === 'Tất cả' ? '' : `/${formatString(filter)}`;
+    const path = `/tips${formattedFilter}`;
+    
+    // Navigate to the corresponding path
     navigate(path);
   };
 
   return (
     <div className="flex gap-2 p-4">
-      {filters.map((filter, index) => (
+      {filters.map((filter) => (
         <button
-          key={index}
-          onClick={() => handleFilterClick(filter)}
+          key={filter.value}
+          onClick={() => handleFilterClick(filter.label)}
           className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
                       ${
-                        activeFilter === filter
+                        activeFilter === filter.label
                           ? 'bg-red-700 text-white'
                           : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
                       }`}
         >
-          {filter}
+          {filter.label}
         </button>
       ))}
     </div>

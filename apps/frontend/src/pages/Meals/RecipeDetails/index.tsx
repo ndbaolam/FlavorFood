@@ -219,7 +219,7 @@ const RecipeDetail: React.FC = () => {
                   objectFit: 'cover',  // Maintain aspect ratio while filling the space
                 }}
               />
-            </div>
+            </div>  
             <div className=" items-center gap-2">
               <strong className="text-black">{recipe.author}</strong>
               <p>{recipe.date}</p>
