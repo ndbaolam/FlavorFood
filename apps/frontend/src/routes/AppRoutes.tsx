@@ -11,11 +11,8 @@ import Lunch from '../pages/Meals/Lunch';
 import Drinks from '../pages/Meals/Drinks';
 import Desserts from '../pages/Meals/Desserts';
 import Tips from '../pages/Tips';
-import Storage from '../pages/Tips/Storage';
-import CookingTechniques from '../pages/Tips/CookingTechniques';
-import ToolComponent from '../pages/Tips/ToolComponent';
-import KitchenCleaning from '../pages/Tips/KitchenCleaning';
 import RecipeDetail from '../pages/Meals/RecipeDetails';
+import TipDetails from '../pages/Tips/TipDetails';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -69,31 +66,18 @@ const routes: RouteObject[] = [
       {
         path: 'dish/:slug.html',
         element: <RecipeDetail />,
-      },
+      }, //tips/asdfasdf.html
       {
         path: 'tips',
-        children: [
-          {
-            index: true,
-            element: <Tips />,
-          },
-          {
-            path: 'storage',
-            element: <Storage />,
-          },
-          {
-            path: 'techniques',
-            element: <CookingTechniques />,
-          },
-          {
-            path: 'tools',
-            element: <ToolComponent />,
-          },
-          {
-            path: 'cleaning',
-            element: <KitchenCleaning />,
-          },
-        ],
+        element: <Tips/>
+      },
+      {
+        path: 'tips/:slug.html',
+        element: <TipDetails/>
+      },
+      {
+        path:'tips/:slug',
+        element:<Tips />
       },
       {
         path: '*',

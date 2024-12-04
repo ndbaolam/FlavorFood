@@ -64,11 +64,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
   };
 
   const formattedTitle: string = formatString(recipe.title);
-  const linkTo = `dish/${formattedTitle}.html`;
+  const linkTo = `/dish/${formattedTitle}.html`;
 
   return (
-    <Link
-      to={linkTo}
+    <a
+      href={linkTo}  
       className="block relative pt-20 cursor-pointer"
       aria-label={`Xem chi tiết cho ${recipe.title}`}
     >
@@ -115,7 +115,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
           </div>
         </div>
       </div>
-    </Link>
+    </a>
   );
 };
 
