@@ -118,7 +118,7 @@ const Home: React.FC = () => {
       nutrition: [
         { nutrition_id: 1, calories: '250', protein: '5', fat: '10', carbohydrates: '30' },
       ],
-      isFavorite: false, 
+      isFavorite: false,
     },
     {
       recipe_id: 2,
@@ -145,7 +145,7 @@ const Home: React.FC = () => {
       nutrition: [
         { nutrition_id: 2, calories: '345', protein: '8', fat: '12', carbohydrates: '40' },
       ],
-      isFavorite: false, 
+      isFavorite: false,
     },
     {
       recipe_id: 3,
@@ -170,7 +170,7 @@ const Home: React.FC = () => {
       nutrition: [
         { nutrition_id: 3, calories: '520', protein: '25', fat: '15', carbohydrates: '65' },
       ],
-      isFavorite: true, 
+      isFavorite: true,
     },
     {
       recipe_id: 4,
@@ -200,7 +200,7 @@ const Home: React.FC = () => {
       isFavorite: false, // Added the `isFavorite` field
     },
   ];
-  
+
 
   return (
     <div className="min-h-screen  max-w-screen">
@@ -243,9 +243,9 @@ const Home: React.FC = () => {
           <h2 className="text-4xl font-semibold text-center mb-8">
             Món ăn thịnh hành
           </h2>
-      {/* Recipes Grid */}
+          {/* Recipes Grid */}
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
             {recipes.length > 0 ? (
               recipes.map((recipe) => (
                 <RecipeCard key={recipe.recipe_id} recipe={recipe} />
@@ -258,32 +258,29 @@ const Home: React.FC = () => {
 
         {/* Kitchen tips ..*/}
         <div className='py-12'>
-        <div className=" w-full  mx-auto shadow-lg rounded-3xl flex flex-col md:flex-row items-center md:items-stretch justify-center overflow-hidden">
-          {/* Hình ảnh bên trái */}
-          <div className="w-full md:w-1/2 h-64 md:h-auto">
-            <img
-              src="https://www.chowhound.com/img/gallery/14-giada-de-laurentiis-cooking-tips-you-should-know-by-heart/use-salty-water-for-pasta-1728313314.jpg"
-              alt="Logo tips"
-              className="w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-tr-none "
-            />
-          </div>
+          <div className=" w-full  mx-auto shadow-lg rounded-3xl flex flex-col md:flex-row items-center md:items-stretch justify-center overflow-hidden">
+            {/* Hình ảnh bên trái */}
+            <div className="w-full md:w-1/2 h-64 md:h-auto">
+              <img
+                src="https://www.chowhound.com/img/gallery/14-giada-de-laurentiis-cooking-tips-you-should-know-by-heart/use-salty-water-for-pasta-1728313314.jpg"
+                alt="Logo tips"
+                className="w-full h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-tr-none "
+              />
+            </div>
 
-          {/* Nội dung bên phải */}
-          <div className="bg-gradient-to-b from-blue-100 to-white w-full md:w-1/2 flex flex-col items-center justify-center p-8 space-y-6 md:space-y-8">
-            <h2 className="font-serif text-2xl md:text-3xl text-slate-800 text-center leading-tight">
-              Trở thành đầu bếp tài ba ngay trong căn bếp của bạn
-            </h2>
-            <p className="text-slate-600 text-center leading-relaxed">
-              Khám phá những mẹo vặt độc đáo và bí quyết giúp bạn tự tin chế biến những món ăn ngon. Hãy cùng chúng tôi bắt đầu hành trình biến căn bếp nhỏ trở thành không gian sáng tạo đầy hương vị!
-            </p>
-            <button
-              className="bg-black px-8 py-4 text-white font-semibold text-lg rounded-full shadow-lg transform transition-transform duration-300 hover:scale-105"
-              onClick={() => navigate('/tips')}
-            >
-              Đọc thêm 
-            </button>
+            <div className="bg-gradient-to-b from-blue-100 to-white w-full md:w-1/2 flex flex-col items-center justify-center p-8 space-y-6 md:space-y-8">
+              <h2 className="font-serif text-2xl md:text-3xl text-slate-800 text-center leading-tight">
+                Trở thành đầu bếp tài ba ngay trong căn bếp của bạn
+              </h2>
+              <p className="text-slate-600 text-center leading-relaxed">
+                Khám phá những mẹo vặt độc đáo và bí quyết giúp bạn tự tin chế biến những món ăn ngon. Hãy cùng chúng tôi bắt đầu hành trình biến căn bếp nhỏ trở thành không gian sáng tạo đầy hương vị!
+              </p>
+              <a href="/tips" className="bg-black px-8 py-4 text-white font-semibold text-lg rounded-full shadow-lg transform transition-transform duration-300 hover:scale-105">
+                Đọc thêm
+              </a>
+            </div>
+
           </div>
-        </div>
         </div>
       </main>
     </div>
