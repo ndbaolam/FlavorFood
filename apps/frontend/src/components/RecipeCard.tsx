@@ -17,7 +17,7 @@ interface Recipe {
   difficulty_level: 'Dễ' | 'Trung bình' | 'Khó';
   nutrition: Nutrition[];
   ratings?: { averageRating: number; reviews: number };
-  isFavorite?: boolean; // Optional isFavorite field
+  isFavorite?: boolean;
 }
 
 interface Ingredient {
@@ -48,27 +48,28 @@ interface Nutrition {
 
 interface RecipeCardProps {
   recipe: Recipe;
-  currentCategoryPath?: string; 
-  onToggleFavorite?: (recipeId: number) => void; 
+  currentCategoryPath?: string;
+  onToggleFavorite?: (recipeId: number) => void;
 }
 
 const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, onToggleFavorite }) => {
-  const [isLiked, setIsLiked] = useState<boolean>(recipe.isFavorite || false); 
+  const [isLiked, setIsLiked] = useState<boolean>(recipe.isFavorite || false);
 
-  // Toggle like status
-  const handleLike = () => {
-    setIsLiked((prevLiked) => !prevLiked); 
+  const handleLike = (event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setIsLiked((prevLiked) => !prevLiked);
     if (onToggleFavorite) {
-      onToggleFavorite(recipe.recipe_id); 
+      onToggleFavorite(recipe.recipe_id);
     }
   };
 
   const formattedTitle: string = formatString(recipe.title);
   const linkTo = `/dish/${formattedTitle}.html`;
-
   return (
     <a
-      href={linkTo}  
+      href={linkTo}
       className="block relative pt-20 cursor-pointer"
       aria-label={`Xem chi tiết cho ${recipe.title}`}
     >
@@ -90,7 +91,6 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
           {/* Container for time, calories, and isFavorite */}
           <div className="flex justify-between items-center text-gray-500 text-sm w-full">
             <div className="flex gap-6">
-              {/* Time and calories section */}
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
                 <span>{recipe.time}</span>
@@ -102,14 +102,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
             </div>
 
             {/* Favorite icon */}
-            <button 
-              onClick={handleLike} 
-              className={`flex items-center justify-center p-2 rounded-full ${isLiked ? 'bg-red-500' : 'bg-gray-200'}`}
+            <button
+              onClick={handleLike}
+              className={`w-7 h-7 flex items-center justify-center p-2 rounded-full ${isLiked ? 'bg-red-300' : 'bg-gray-200'}`}
             >
-              <Heart 
-                color={isLiked ? 'white' : 'gray'} 
+              <Heart
+                color={isLiked ? 'white' : 'gray'}
                 fill={isLiked ? 'white' : 'none'}
-                size={18} 
+                size={18}
               />
             </button>
           </div>
