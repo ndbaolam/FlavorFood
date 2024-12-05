@@ -3,7 +3,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../users/dto/users.dto';
-import * as env from '../config/configuration';
+import * as env from '../env';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +21,7 @@ export class AuthService {
 
     const payload = { userMail: user.mail, userRole: user.role };
     const accessToken = this.jwtService.signAsync(payload, {
-      secret: env.default().jwt.JWT_SECRET,            
+      secret: env.default().JWT_SECRET,            
     });
 
     return { accessToken };

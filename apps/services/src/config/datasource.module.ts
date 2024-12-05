@@ -8,11 +8,11 @@ import { TypeOrmModule } from "@nestjs/typeorm";
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get<string>('database.POSTGRES_HOST'),
-        port: configService.get<number>('database.PORT'),
-        username: configService.get<string>('database.POSTGRES_USER'),
-        password: configService.get<string>('database.POSTGRES_PASSWORD'),
-        database: configService.get<string>('database.POSTGRES_DB'),
+        host: configService.get<string>('DATABASE_HOST'),
+        port: configService.get<number>('DATABASE_PORT'),
+        username: configService.get<string>('POSTGRES_USER'),
+        password: configService.get<string>('POSTGRES_PASSWORD'),
+        database: configService.get<string>('POSTGRES_DB'),
         entities: [__dirname + '/../**/*.entity{.ts,.js}'], // Adjust path if needed
         synchronize: true, // Set to false in production
         autoLoadEntities: true,
