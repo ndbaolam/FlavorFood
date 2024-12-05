@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString, IsEnum, IsOptional, IsStrongPassword } from 'class-validator';
 import { UserRole } from '../entity/users.entity';
 
-abstract class UserDto {
+export class CreateUserDto {
   @IsEmail()
   @IsNotEmpty()
   mail: string;
@@ -24,24 +24,19 @@ abstract class UserDto {
 
   @IsOptional()
   @IsEnum(UserRole)
-  role?: UserRole;
-}
-
-export class CreateUserDto extends UserDto {
-  
-}
-
-export class UpdateUserDto extends UserDto{
-  
-}
-
-export class UserResponseDto {
-  user_id: number;
-  mail: string;
-  first_name: string;
-  last_name: string;
-  avatar?: string;
   role: UserRole;
-  created_at: Date;
-  updated_at: Date;
+}
+
+export class UpdateUserDto {
+  @IsStrongPassword()
+  @IsOptional()
+  password: string;
+
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole;
 }
