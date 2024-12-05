@@ -80,6 +80,7 @@ export class UsersService {
       where: { mail: email },
       select: [
         'user_id',
+        'password',
         'mail',
         'first_name',
         'last_name',
