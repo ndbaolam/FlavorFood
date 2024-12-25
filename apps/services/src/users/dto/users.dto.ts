@@ -30,7 +30,7 @@ export class CreateUserDto {
 export class UpdateUserDto {
   @IsStrongPassword()
   @IsOptional()
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsString()
