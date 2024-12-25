@@ -4,26 +4,31 @@ import { JwtModule } from '@nestjs/jwt';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
+import { GoogleStrategy } from './strategies/google.strategy';
+import { JwtStrategy } from './strategies/jwt.strategy';
 
 @Module({
   imports: [
     JwtModule.registerAsync({
       global: true,
       useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('jwt.JWT_SECRET'),
-        signOptions: { 
-          expiresIn: `${configService.get<number>('jwt.JWT_EXPIRES_IN')}s` 
+        secret: configService.get<string>('JWT_SECRET'),
+        signOptions: {
+          expiresIn: '1h',
         },
       }),
-      inject: [ConfigService]
+      inject: [ConfigService],
     }),
 
-    UsersModule
+    UsersModule,
   ],
-  providers: [AuthService],
-  controllers: [AuthController]  
+  providers: [
+    AuthService,
+    GoogleStrategy,
+    JwtStrategy
+  ],
+  controllers: [AuthController],
 })
-
 export class AuthModule implements OnModuleInit {
   private readonly logger = new Logger(JwtModule.name);
 

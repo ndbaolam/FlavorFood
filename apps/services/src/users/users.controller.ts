@@ -17,12 +17,7 @@ export class UsersController {
   @Get()
   async getUsers() {
     return this.usersService.getAllUsers();
-  }
-
-  @Post('create')
-  async createUser(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.createUser(createUserDto);
-  }
+  }  
 
   @Get(':id')
   async getUser(@Param('id') id: number) {
