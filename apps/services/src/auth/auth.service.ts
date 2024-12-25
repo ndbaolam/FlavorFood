@@ -1,37 +1,96 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '../users/dto/users.dto';
-import * as env from '../env';
+import { ConfigService } from '@nestjs/config';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { UserGoogleInterface } from './interfaces/user.interface';
+import { Users } from '../users/entity/users.entity';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
-    private jwtService: JwtService,
+    private readonly usersService: UsersService,
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async login(mail: string, password: string): Promise<{ accessToken: Promise<string> }> {
+  //Normal login
+  async login(mail: string, password: string): Promise<{ accessToken: string }> {
+    // Find user by email
     const user = await this.usersService.findUserByEmail(mail);
-    
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { userMail: user.mail, userRole: user.role };
-    const accessToken = this.jwtService.signAsync(payload, {
-      secret: env.default().JWT_SECRET,            
+    // Create JWT payload
+    const payload: JwtPayload = {
+      user_id: user.user_id,
+      mail: user.mail,      
+    }
+
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
     });
 
     return { accessToken };
   }
 
+  //Google OAuth
+  async signInOAuth(user: UserGoogleInterface): Promise<string> {
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    // Check if user exists
+    let userExists = await this.usersService.findUserByEmail(user.mail);
+
+    // Register new user if not exists
+    if (!userExists) {
+      const randomPwd = Math.random().toString(36).slice(-8);
+
+      const userRegisterDto: CreateUserDto = {
+        mail: user.mail,
+        password: randomPwd,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        avatar: user.avatar,
+      };
+
+      await this.register(userRegisterDto);
+      userExists = await this.usersService.findUserByEmail(userRegisterDto.mail); // Re-fetch user after registration
+    }
+
+    const payload: JwtPayload = {
+      user_id: userExists.user_id,
+      mail: userExists.mail,      
+    }
+    
+    // Generate access token
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+    });
+
+    return accessToken;
+  }
+
   async register(createUserDto: CreateUserDto): Promise<void> {
+    // Hash password
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+    // Create user
     await this.usersService.createUser({
       ...createUserDto,
       password: hashedPassword,
     });
+  }
+
+  async getProfile(mail: string): Promise<Users> {
+    return this.usersService.findUserByEmail(mail);
   }
 }
