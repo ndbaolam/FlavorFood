@@ -13,6 +13,7 @@ import Desserts from '../pages/Meals/Desserts';
 import Tips from '../pages/Tips';
 import RecipeDetail from '../pages/Meals/RecipeDetails';
 import TipDetails from '../pages/Tips/TipDetails';
+import Profile from '../pages/Profile';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -78,6 +79,10 @@ const routes: RouteObject[] = [
       {
         path:'tips/:slug',
         element:<Tips />
+      },
+      {
+        path:'profile',
+        element:<Profile />
       },
       {
         path: '*',
