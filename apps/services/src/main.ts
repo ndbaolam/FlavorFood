@@ -17,7 +17,7 @@ async function bootstrap() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.enableCors({
-    origin: '*', // Replace frontend URL
+    origin: process.env.CLIENT_URL || "*", // Replace frontend URL
     credentials: true,
   });
 
