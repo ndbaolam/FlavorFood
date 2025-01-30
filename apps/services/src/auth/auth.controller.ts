@@ -17,6 +17,7 @@ import { CreateUserDto } from '../users/dto/users.dto';
 import { GoogleOauthGuard } from './guards/google-oauth.guard';
 import { UserGoogleInterface } from './interfaces/user.interface';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import axios from 'axios';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +43,7 @@ export class AuthController {
       res.cookie('access_token', accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'lax',
         maxAge: 3600000, //ms
       });
       
@@ -51,6 +52,42 @@ export class AuthController {
       Logger.error('Error during Google OAuth:', error);
       return res.status(HttpStatus.FORBIDDEN).json({ message: 'Invalid' });
     }    
+  }
+
+  @Post('google/verify')
+  async handleGoogleToken(@Body('access_token') access_token: string, @Res() res: Response) {
+    try {
+      // Validate the access token with Google
+      const { data } = await axios.get(
+        `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`
+      );
+
+      if (!data) {
+        throw new UnauthorizedException('Invalid credentials');
+      }
+
+      const user: UserGoogleInterface = {
+        provider: 'google',
+        providerId: data.id,
+        mail: data.email,
+        firstName: data.given_name,
+        lastName: data.family_name,
+        avatar: data.picture
+      };
+
+      const accessToken: string = await this.authService.signInOAuth(user as UserGoogleInterface);
+  
+      res.cookie('access_token', accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 3600000, //ms
+      });
+      
+      return res.status(HttpStatus.OK).json({ message: 'Login successful' });
+    } catch (error) {
+      throw new Error('Invalid access token');
+    }
   }
 
   @Post('login')
@@ -65,7 +102,7 @@ export class AuthController {
     res.cookie('access_token', accessToken, {
       httpOnly: true,
       secure: true,
-      sameSite: 'strict',
+      sameSite: 'lax',
       maxAge: 3600000, //ms
     });
 
