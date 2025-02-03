@@ -15,11 +15,15 @@ export class FavoriteController {
     @Req() req: Request,
     @Body('recipe_id') recipeId: number
   ): Promise<Favorite> {
-    const createFavoriteDto: CreateFavoriteDto = {
-      user_id: Number(req['sub']),
-      recipe_id: Number(recipeId),
-    };
-    return await this.favoriteService.createFavorite(createFavoriteDto);
+    try {
+      const createFavoriteDto: CreateFavoriteDto = {
+        user_id: Number(req['sub']),
+        recipe_id: Number(recipeId),
+      };
+      return await this.favoriteService.createFavorite(createFavoriteDto);
+    } catch (error) {
+      throw new Error(error);
+    }    
   }
 
   @Get()  

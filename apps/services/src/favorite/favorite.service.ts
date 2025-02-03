@@ -12,8 +12,12 @@ export class FavoriteService {
   ) {}
 
   async createFavorite(createFavoriteDto: CreateFavoriteDto): Promise<Favorite> {    
-    const favorite = this.favoriteRepository.create(createFavoriteDto);
-    return await this.favoriteRepository.save(favorite);
+    try {
+      const favorite = this.favoriteRepository.create(createFavoriteDto);
+      return await this.favoriteRepository.save(favorite); 
+    } catch (error) {
+      throw new Error(error);
+    }    
   }
 
   async getFavoritesByUserId(user_id: number): Promise<Favorite[]> {    
