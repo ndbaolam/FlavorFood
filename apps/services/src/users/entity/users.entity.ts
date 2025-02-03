@@ -3,9 +3,11 @@ import {
   Entity, 
   PrimaryGeneratedColumn, 
   CreateDateColumn, 
-  UpdateDateColumn 
+  UpdateDateColumn, 
+  OneToMany
 } from 'typeorm';
 import { IsEmail, IsStrongPassword } from 'class-validator';
+import { Favorite } from '../../favorite/entity/favorite.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -41,6 +43,9 @@ export class Users {
     default: UserRole.NORMAL,
   })
   role: UserRole;
+
+  @OneToMany(() => Favorite, favorite => favorite.user)
+  favorites: Favorite[];
 
   @CreateDateColumn({
     type: 'timestamp',

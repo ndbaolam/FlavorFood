@@ -2,9 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
+import { Favorite } from '../../favorite/entity/favorite.entity';
 
 export enum DifficultyLevel {
   EASY = 'Dễ',
@@ -17,7 +19,9 @@ export class Recipes {
   @PrimaryGeneratedColumn()
   recipe_id: number;
 
-  @Column()
+  @Column({
+    unique: true
+  })
   title: string;
 
   @Column()
@@ -53,6 +57,10 @@ export class Recipes {
 
   @Column('text')
   nutrition: string;
+
+  // One Recipe can be favorited many times
+  @OneToMany(() => Favorite, favorite => favorite.recipe)
+  favorites: Favorite[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

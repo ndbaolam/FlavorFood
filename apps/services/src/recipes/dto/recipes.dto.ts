@@ -1,5 +1,6 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 import { DifficultyLevel } from '../entity/recipes.entity';
+import { Type } from 'class-transformer';
 
 export class CreateRecipeDto {
   @IsNotEmpty()
@@ -25,10 +26,12 @@ export class CreateRecipeDto {
   image_detail?: string;
 
   @IsNumber()
+  @Type(() => Number)
   serving: number;
 
   @IsOptional()
   @IsNumber()
+  @Type(() => Number)
   rating?: number;
 
   @IsNotEmpty()

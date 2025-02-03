@@ -4,6 +4,7 @@ import { DataSourceModule } from './config/datasource.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RecipesModule } from './recipes/recipes.module';
+import { FavoriteModule } from './favorite/favorite.module';
 
 @Module({
   imports: [
@@ -15,7 +16,8 @@ import { RecipesModule } from './recipes/recipes.module';
     //FeatureModule
     UsersModule,
     AuthModule,
-    RecipesModule
+    RecipesModule,
+    FavoriteModule
   ],  
 })
 export class AppModule {}
