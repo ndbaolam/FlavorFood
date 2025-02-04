@@ -2,11 +2,13 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
 import { Favorite } from '../../favorite/entity/favorite.entity';
+import { Categories } from '../../categories/entity/categories.entity';
 
 export enum DifficultyLevel {
   EASY = 'Dễ',
@@ -61,6 +63,9 @@ export class Recipes {
   // One Recipe can be favorited many times
   @OneToMany(() => Favorite, favorite => favorite.recipe)
   favorites: Favorite[];
+
+  @ManyToMany(() => Categories, (categories) => categories.recipes)
+  categories: Categories[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

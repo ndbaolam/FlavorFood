@@ -1,5 +1,6 @@
-import { IsOptional, IsString, IsInt, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { IsOptional, IsString, IsInt, Min, IsEnum, IsArray } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { DifficultyLevel } from '../entity/recipes.entity';
 
 export class SearchRecipeDto {
   @IsOptional()
@@ -7,8 +8,8 @@ export class SearchRecipeDto {
   title?: string;
 
   @IsOptional()
-  @IsString()
-  description?: string;
+  @IsEnum(DifficultyLevel)
+  description?: DifficultyLevel;
 
   @IsOptional()
   @IsString()
@@ -25,4 +26,12 @@ export class SearchRecipeDto {
   @IsInt()
   @Min(1)
   limit?: number;  
+
+  @IsOptional()
+  @IsString({ each: true })
+  @Type(() => String)
+  @Transform(({ value }) => {    
+      return Array.isArray(value) ? value : [value];
+    })  
+  categories: string[];
 }
