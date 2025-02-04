@@ -3,6 +3,9 @@ import { ConfigModule } from '@nestjs/config';
 import { DataSourceModule } from './config/datasource.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { RecipesModule } from './recipes/recipes.module';
+import { FavoriteModule } from './favorite/favorite.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -13,7 +16,10 @@ import { AuthModule } from './auth/auth.module';
 
     //FeatureModule
     UsersModule,
-    AuthModule
+    AuthModule,
+    RecipesModule,
+    FavoriteModule,
+    CategoriesModule
   ],  
 })
 export class AppModule {}
