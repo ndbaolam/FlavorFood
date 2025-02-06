@@ -1,77 +1,78 @@
 import React, { useEffect, useState } from "react";
-import { faUser, faBan } from "@fortawesome/free-solid-svg-icons";
-import { FaUserAlt } from "react-icons/fa";
+import { faUser, faHeart, faNewspaper } from "@fortawesome/free-solid-svg-icons"; // Correct import for faHeart
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import axiosInstance from '../services/axiosInstance';
+import axiosInstance from "../services/axiosInstance";
 
 interface User {
-    user_id: number;
-    mail: string;
-    password: string;
-    first_name: string;
-    last_name: string;
-    avatar: string;
-    role: "Norm" | "Admin" | "Seller";
-    phone: string;
-    address: string;
-    username?: string; // Thêm username (nếu API có)
+  user_id: number;
+  mail: string;
+  first_name: string;
+  last_name: string;
+  avatar: string;
+  role: "Norm" | "Admin" | "Seller";
 }
 
 export default function UserSidebar() {
-    const [formData, setFormData] = useState<User | null>(null);
-    const [activeLink, setActiveLink] = useState<string>("profile"); 
-    const { t } = useTranslation();
+  const [formData, setFormData] = useState<User | null>(null);
+  const location = useLocation();
+  const { t } = useTranslation();
 
-    // Lấy dữ liệu từ API khi component được render
-    useEffect(() => {
-        axiosInstance
-            .get("/auth/profile") // Không cần baseURL vì axiosInstance đã có sẵn
-            .then((response) => {
-                setFormData(response.data);
-            })
-            .catch((error) => {
-                console.error("Error fetching user data:", error);
-            });
-    }, []);
+  useEffect(() => {
+    axiosInstance
+      .get("/auth/profile")
+      .then((response) => {
+        setFormData(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
 
-    return (
-        <div className="bg-[var(--color-secondary)] w-[250px] h-[535px] rounded-[10px] pl-[25px] pb-[25px] flex flex-col gap-[20px]">
-            {/* Hiển thị Avatar và Username */}
-            <div className="w-full flex flex-row items-center gap-[10px]" style={{ marginTop: "15px", paddingLeft: "10px" }}>
-                <FaUserAlt />
-                <h2 className="text-3xl font-bold">@{formData?.username || "User"}</h2>
-            </div>
+  return (
+    <div className="bg-gray-300 w-[300px]   flex flex-col gap-4">
+      <div className="flex-1 overflow-y-auto pt-14">
+        {/* Profile Link */}
+        <Link
+          to="/profile"
+          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${
+            location.pathname === "/profile"
+              ? "font-bold bg-[var(--color-secondary-dark)]"
+              : "hover:bg-gray-200"
+          }`}
+        >
+          <FontAwesomeIcon icon={faUser} />
+          <span>{t("Thông tin cá nhân")}</span>
+        </Link>
 
-            {/* Điều hướng */}
-            <div className="flex-1 overflow-y-auto">
-                {/* Link đến Profile */}
-                <Link
-                    className={`link ${activeLink === "profile" ? "font-bold bg-[var(--color-secondary-dark)]" : ""}`}
-                    to="/profile"
-                    style={{ color: "unset", textDecoration: "none", paddingLeft: "20px" }}
-                    onClick={() => setActiveLink("profile")}
-                >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "5px" }}>
-                        <FontAwesomeIcon icon={faUser} />
-                        <span className="title">{t("header.profile")}</span>
-                    </div>
-                </Link>
+        {/* Favourite List Link */}
+        <Link
+          to="/favourite"
+          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${
+            location.pathname === "/favourite"
+              ? "font-bold bg-[var(--color-secondary-dark)]"
+              : "hover:bg-gray-200"
+          }`}
+        >
+          <FontAwesomeIcon icon={faHeart} /> {/* Corrected FontAwesomeIcon usage */}
+          <span>{t("Yêu thích")}</span>
+        </Link>
 
-                {/* Link đến Danh sách yêu thích */}
-                <Link
-                    className={`link ${activeLink === "favourite" ? "font-bold bg-[var(--color-secondary-dark)]" : ""}`}
-                    to="/favourite"
-                    style={{ color: "unset", textDecoration: "none", paddingLeft: "20px" }}
-                    onClick={() => setActiveLink("favourite")}
-                >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px", padding: "5px" }}>
-                        <FontAwesomeIcon icon={faBan} />
-                        <span className="title">{t("favourite")}</span>
-                    </div>
-                </Link>
-            </div>
-        </div>
-    );
+         {/* Posts Section */}
+         <Link
+          to="/post"
+          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${
+            location.pathname === "/posts"
+              ? "font-bold bg-[var(--color-secondary-dark)]"
+              : "hover:bg-gray-200"
+          }`}
+        >
+          <FontAwesomeIcon icon={faNewspaper} />
+          <span>{t("Bài viết")}</span>
+        </Link>
+
+      </div>
+    </div>
+  );
 }

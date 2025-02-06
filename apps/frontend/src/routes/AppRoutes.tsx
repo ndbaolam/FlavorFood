@@ -14,7 +14,7 @@ import Tips from '../pages/Tips';
 import RecipeDetail from '../pages/Meals/RecipeDetails';
 import TipDetails from '../pages/Tips/TipDetails';
 import Profile from '../pages/Profile';
-import Favourite from '../pages/ Favourite';
+import Favourite from '../pages/Favourite';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -89,6 +89,7 @@ const routes: RouteObject[] = [
         path:'favourite',
         element:<Favourite />
       },
+  
       {
         path: '*',
         element: <ErrorPage />,

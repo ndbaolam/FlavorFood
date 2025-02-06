@@ -34,7 +34,7 @@ export const Search: React.FC = () => {
         <input
           type="text"
           placeholder="Search"
-          className="input input-bordered rounded-full bg-white focus:outline-none transition-colors duration-300"
+          className="border border-gray-300 rounded-full bg-gray-800 focus:outline-none transition-colors duration-300"
           aria-label="Search input"
         />
       </div>
@@ -61,8 +61,5 @@ export const Search: React.FC = () => {
       </span>
     </>
   );
-  
-  
-  
-
 };
+export default Search;
