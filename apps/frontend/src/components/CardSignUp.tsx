@@ -106,3 +106,4 @@ const CardSignUp: React.FC<CardProps> = ({ children }) => {
 };
 
 export default CardSignUp;
+

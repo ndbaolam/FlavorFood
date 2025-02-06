@@ -1,27 +1,24 @@
 /* eslint-disable */
 import React, { useState } from 'react';
-import { Menu, X, User } from 'lucide-react';
-import { Search } from './Search';
+import { Menu, X, User, Search, LogOut } from 'lucide-react';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-
   const toggleAccountMenu = () => setIsAccountOpen(!isAccountOpen);
 
   const menuItems = [
     { href: '#', label: 'Trang chủ' },
-    { href: 'dish ', label: 'Món ăn' },
+    { href: 'dish', label: 'Món ăn' },
     { href: 'tips', label: 'Mẹo nhà bếp' },
     { href: 'market', label: 'Cửa hàng' }
   ];
 
   const accountItems = [
-    { href: 'profile', label: 'Hồ sơ' },
-    { href: 'favourite', label: 'Công thức yêu thích' },
-    { href: 'signout', label: 'Đăng xuất' },
+    { href: 'profile', label: 'Thông tin tài khoản', icon: <User className="w-5 h-5 mr-2" /> },
+    { href: 'signout', label: 'Đăng xuất', icon: <LogOut className="w-5 h-5 mr-2 text-black-600" /> },
   ];
 
   return (
@@ -56,17 +53,18 @@ const Navbar = () => {
                 aria-expanded={isAccountOpen}
                 className="flex items-center px-3 py-2 rounded-md text-gray-800 hover:text-gray-900 hover:bg-gray-300"
               >
-                <User className="w-5 h-5 mr-2" />
+               
                 Tài khoản
               </button>
               {isAccountOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-50">
-                  {accountItems.map(({ href, label }) => (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  {accountItems.map(({ href, label, icon }) => (
                     <a
                       key={href}
                       href={href}
-                      className="block px-4 py-2 text-gray-700 hover:bg-blue-100"
+                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100"
                     >
+                      {icon}
                       {label}
                     </a>
                   ))}
@@ -108,16 +106,17 @@ const Navbar = () => {
 
             {/* Mobile Account Section */}
             <div className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:text-blue-900 hover:bg-blue-100">
-              <User className="w-5 h-5 mr-2" />
+              
               Tài khoản
             </div>
             <div className="pl-4 space-y-1">
-              {accountItems.map(({ href, label }) => (
+              {accountItems.map(({ href, label, icon }) => (
                 <a
                   key={href}
                   href={href}
-                  className="block px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100"
+                  className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100"
                 >
+                  {icon}
                   {label}
                 </a>
               ))}

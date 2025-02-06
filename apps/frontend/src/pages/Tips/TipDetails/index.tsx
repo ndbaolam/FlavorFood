@@ -108,18 +108,17 @@ return (
 <div className='min-h-screen py-12 bg-white'>
     <main className='container mx-auto px-4'>
     <article>
-        <div className='text-left'>
+        <div className='text-left flex flex-wrap items-center gap-20'>
             <h1 className='text-3xl font-bold mb-4'>{tips.title}</h1>
-        </div>
-
-        <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
-            <div className='flex items-center gap-2'>
+         
+            <div className='flex items-center gap-2 mb-4'>
             <ChefHat className="w-6 h-6 text-black"/>
             <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs">{tips.tag}</span>
             </div>
         </div>
 
-        <div className="flex justify-between w-fit ">
+
+        <div className="flex justify-between w-fit mt-12">
            <img 
            src={tips.image}
            alt={tips.title}
