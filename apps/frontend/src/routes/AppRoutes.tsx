@@ -14,6 +14,7 @@ import Tips from '../pages/Tips';
 import RecipeDetail from '../pages/Meals/RecipeDetails';
 import TipDetails from '../pages/Tips/TipDetails';
 import Profile from '../pages/Profile';
+import Favourite from '../pages/ Favourite';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -83,6 +84,10 @@ const routes: RouteObject[] = [
       {
         path:'profile',
         element:<Profile />
+      },
+      {
+        path:'favourite',
+        element:<Favourite />
       },
       {
         path: '*',

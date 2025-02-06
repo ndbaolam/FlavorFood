@@ -27,6 +27,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
     // Add sign-in logic here
     navigate('/');
   };
+  
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse: CodeResponse | TokenResponse) => {
@@ -156,3 +157,4 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
 };
 
 export default CardSignIn;
+
