@@ -79,8 +79,7 @@ export class UsersService {
     return this.usersRepository.findOne({
       where: { mail: email },
       select: [
-        'user_id',
-        'password',
+        'user_id',        
         'mail',
         'first_name',
         'last_name',

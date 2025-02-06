@@ -13,16 +13,16 @@ import { SearchRecipeDto } from './dto/search-recipes.dto';
 export class RecipesService {
   constructor(
     @InjectRepository(Recipes)
-    private readonly recipesRepository: Repository<Recipes>,    
-  ) {}  
+    private readonly recipesRepository: Repository<Recipes>
+  ) {}
 
   async findOne(id: number): Promise<Recipes> {
     const recipe = await this.recipesRepository
       .createQueryBuilder('recipes')
-      .leftJoin('recipes.categories', 'categories')      
+      .leftJoin('recipes.categories', 'categories')
       .addSelect('categories.title')
       .where('recipes.recipe_id = :id', { id })
-      .getOne();    
+      .getOne();
     if (!recipe) {
       throw new NotFoundException(`Recipe with id ${id} not found.`);
     }
@@ -30,10 +30,11 @@ export class RecipesService {
   }
 
   async searchRecipes(searchDto: SearchRecipeDto): Promise<Recipes[]> {
-    const { title, description, difficulty_level, offset, limit, categories } = searchDto;
+    const { title, description, difficulty_level, offset, limit, categories } =
+      searchDto;
     const qb = this.recipesRepository
       .createQueryBuilder('recipes')
-      .leftJoin('recipes.categories', 'categories')      
+      .leftJoin('recipes.categories', 'categories')
       .addSelect('categories.title');
 
     if (title) {
@@ -49,7 +50,7 @@ export class RecipesService {
         difficulty_level,
       });
     }
-    if(categories && categories.length > 0) {
+    if (categories && categories.length > 0) {
       qb.andWhere('categories.title IN (:...categories)', { categories });
     }
 
@@ -71,16 +72,16 @@ export class RecipesService {
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipes> {
     try {
-      const { title, description, categories: categoryIds } = createRecipeDto;
-      
+      const { categories: categoryIds, ...recipeDetail } = createRecipeDto;
+
       const existingRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
-        .where('recipes.title = :title', { title })
+        .where('recipes.title = :title', { title: recipeDetail.title })
         .getOne();
 
       if (existingRecipe) {
         throw new ConflictException(
-          `Recipe with title ${title} already exists.`
+          `Recipe with title ${recipeDetail.title} already exists.`
         );
       }
 
@@ -88,9 +89,9 @@ export class RecipesService {
         .createQueryBuilder()
         .insert()
         .into(Recipes)
-        .values({ title, description })
+        .values(recipeDetail)
         .execute();
-      
+
       const recipeId = insertResult.identifiers[0].recipe_id;
 
       if (categoryIds && categoryIds.length > 0) {
@@ -103,7 +104,7 @@ export class RecipesService {
 
       const createdRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
-        .leftJoin('recipes.categories', 'categories')      
+        .leftJoin('recipes.categories', 'categories')
         .addSelect('categories.title')
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
@@ -114,8 +115,11 @@ export class RecipesService {
     }
   }
 
-  async update(recipeId: number, updateRecipeDto: UpdateRecipeDto): Promise<Recipes> {
-    try {      
+  async update(
+    recipeId: number,
+    updateRecipeDto: UpdateRecipeDto
+  ): Promise<Recipes> {
+    try {
       const updateObj: Partial<Recipes> = {};
       if (updateRecipeDto.title) {
         updateObj.title = updateRecipeDto.title;
@@ -123,7 +127,7 @@ export class RecipesService {
       if (updateRecipeDto.description) {
         updateObj.description = updateRecipeDto.description;
       }
-  
+
       if (Object.keys(updateObj).length > 0) {
         await this.recipesRepository
           .createQueryBuilder()
@@ -132,32 +136,32 @@ export class RecipesService {
           .where('recipe_id = :recipeId', { recipeId })
           .execute();
       }
-  
+
       if (updateRecipeDto.categories) {
         await this.recipesRepository
           .createQueryBuilder()
           .relation(Recipes, 'categories')
           .of(recipeId)
           .remove(recipeId);
-          
+
         await this.recipesRepository
           .createQueryBuilder()
           .relation(Recipes, 'categories')
           .of(recipeId)
           .add(updateRecipeDto.categories);
       }
-  
+
       const updatedRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
-        .leftJoin('recipes.categories', 'categories')      
+        .leftJoin('recipes.categories', 'categories')
         .addSelect('categories.title')
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
-  
+
       if (!updatedRecipe) {
         throw new NotFoundException(`Recipe with id ${recipeId} not found.`);
       }
-  
+
       return updatedRecipe;
     } catch (error) {
       throw new Error(error);
@@ -171,7 +175,7 @@ export class RecipesService {
       .from(Recipes)
       .where('recipe_id = :id', { id })
       .execute();
-  
+
     if (result.affected === 0) {
       throw new NotFoundException(`Recipe with ID ${id} not found`);
     }
