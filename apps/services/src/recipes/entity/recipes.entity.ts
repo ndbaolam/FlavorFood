@@ -64,7 +64,9 @@ export class Recipes {
   @OneToMany(() => Favorite, favorite => favorite.recipe)
   favorites: Favorite[];
 
-  @ManyToMany(() => Categories, (categories) => categories.recipes)
+  @ManyToMany(() => Categories, (categories) => categories.recipes, {
+    cascade: true,
+  })
   categories: Categories[];
 
   @CreateDateColumn({ type: 'timestamp' })

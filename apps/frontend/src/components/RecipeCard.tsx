@@ -2,23 +2,8 @@ import React, { useState } from 'react';
 import { Clock, Calculator, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import formatString from '../services/formatString';
+import { Recipe } from '../pages/Meals';
 
-interface Recipe {
-  recipe_id: number;
-  title: string;
-  description: string;
-  time: string;
-  calories: number;
-  image: string;
-  category: Category[];
-  ingredients: Ingredient[];
-  step: Step[];
-  servings: number;
-  difficulty_level: 'Dễ' | 'Trung bình' | 'Khó';
-  nutrition: Nutrition[];
-  ratings?: { averageRating: number; reviews: number };
-  isFavorite?: boolean;
-}
 
 interface Ingredient {
   ingredient_id: number;
@@ -75,11 +60,18 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
     >
       <div className="bg-gradient-to-b from-blue-100 to-white rounded-3xl shadow-lg hover:scale-105 transition-all ease-in-out">
         <div className="relative flex justify-center">
-          <img
-            src={recipe.image}
-            alt={recipe.title}
-            className="w-full h-full -mt-20 object-cover transform origin-center"
-          />
+          {
+            recipe.image ? 
+              <img
+                src={recipe.image}
+                alt={recipe.title}
+                className="w-full h-full -mt-20 object-cover transform origin-center"
+            /> :
+              <img
+                src="logo.png"
+                alt={recipe.title}
+                className="w-full h-full -mt-20 object-cover transform origin-center"/>
+          }
         </div>
         <div className="pr-6 pl-6 pb-6 flex flex-col items-center h-full">
           <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-blue-500 transition-colors duration-300 cursor-pointer line-clamp-2">
