@@ -52,7 +52,7 @@ export class RecipesController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.recipesService.remove(id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.recipesService.remove(Number(id));
   }
 }
