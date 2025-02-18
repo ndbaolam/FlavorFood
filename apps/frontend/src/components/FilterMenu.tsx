@@ -1,55 +1,53 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import axiosInstance from '../services/axiosInstance';
+
 interface FilterMenuProps {
   activeFilter: string;
   setActiveFilter: (filter: string) => void;
 }
-const FilterMenu: React.FC<FilterMenuProps> = ({
-  activeFilter,
-  setActiveFilter,
-}) => {
-  const navigate = useNavigate();
-  const location = useLocation();
 
-  const filterOptions = [
-    { name: 'Tất cả', path: '/dish' },
-    { name: 'Khai vị', path: '/dish/appetizer' },
-    { name: 'Món chính', path: '/dish/main-course' },
-    { name: 'Canh & Lẩu', path: '/dish/soup-hotpot' },
-    { name: 'Đồ uống', path: '/dish/drink' },
-    { name: 'Tráng miệng', path: '/dish/dessert' },
-  ];
+const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }) => {
+  const [categories, setCategories] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
-  React.useEffect(() => {
-    const currentFilter = filterOptions.find(
-      (filter) => filter.path === location.pathname
-    );
-    if (currentFilter) {
-      setActiveFilter(currentFilter.name);
-    }
-  }, [location.pathname]);
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get<{ title: string }[]>('/categories');
+        const categoryTitles = response.data.map((category) => category.title);
+        setCategories(['Tất cả', ...categoryTitles]);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+        setError('Không thể tải danh mục');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleFilterClick = (filterName: string, path: string) => {
-    setActiveFilter(filterName);
-    navigate(path);
-  };
+    fetchCategories();
+  }, []);
 
   return (
-    <div className="flex gap-2 p-4">
-      {filterOptions.map(({ name, path }) => (
-        <button
-          key={name}
-          onClick={() => handleFilterClick(name, path)}
-          className={`px-4 py-2 rounded-full text-sm font-medium transition-colors
-            ${
-              activeFilter === name
+    <div className="flex flex-wrap justify-center gap-4 p-4">
+      {loading ? (
+        <p className="text-gray-500">Đang tải...</p>
+      ) : error ? (
+        <p className="text-red-500">{error}</p>
+      ) : (
+        categories.map((category) => (
+          <button
+            key={category}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
+              ${activeFilter === category 
                 ? 'bg-red-700 text-white'
-                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'
-            }`}
-        >
-          {name}
-        </button>
-      ))}
+                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+            onClick={() => setActiveFilter(category)}
+          >
+            {category}
+          </button>
+        ))
+      )}
     </div>
   );
 };
