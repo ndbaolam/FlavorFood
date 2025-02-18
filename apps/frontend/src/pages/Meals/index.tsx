@@ -2,49 +2,7 @@ import React, { useEffect, useState } from 'react';
 import FilterMenu from '../../components/FilterMenu';
 import RecipeCard from '../../components/RecipeCard';
 import axiosInstance from '../../services/axiosInstance';
-
-export interface Recipe {
-  recipe_id: number;
-  title: string;
-  description: string;
-  time: string;
-  calories: number;
-  image: string;
-  categories: Category[];
-  ingredients: Ingredient[];
-  step: Step[];
-  servings: number;
-  difficulty_level: 'Dễ' | 'Trung bình' | 'Khó';
-  nutrition: Nutrition[];
-  ratings?: { averageRating: number; reviews: number };
-  isFavorite?: boolean;
-}
-
-interface Ingredient {
-  ingredient_id: number;
-  description: string;
-  name: string;
-  unit: string;  
-}
-
-interface Category {
-  category_id: number;
-  title: string;
-}
-
-interface Step {
-  step_id: number;
-  step_number: number;
-  description: string;
-}
-
-interface Nutrition {
-  nutrition_id: number;
-  calories: string;
-  protein: string;
-  fat: string;
-  carbohydrates: string;
-}
+import { Recipe } from './recipe.interface';
 
 const Meals: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<string>('Tất cả');

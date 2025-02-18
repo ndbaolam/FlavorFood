@@ -2,34 +2,7 @@ import React, { useState } from 'react';
 import { Clock, Calculator, Heart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import formatString from '../services/formatString';
-import { Recipe } from '../pages/Meals';
-
-
-interface Ingredient {
-  ingredient_id: number;
-  description: string;
-  name: string;
-  unit: string;
-}
-
-interface Category {
-  tag_id: number;
-  name: string;
-}
-
-interface Step {
-  step_id: number;
-  step_number: number;
-  description: string;
-}
-
-interface Nutrition {
-  nutrition_id: number;
-  calories: string;
-  protein: string;
-  fat: string;
-  carbohydrates: string;
-}
+import { Recipe } from '../pages/Meals/recipe.interface';
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -51,7 +24,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
   };
 
   const formattedTitle: string = formatString(recipe.title);
-  const linkTo = `/dish/${formattedTitle}.html`;
+  const linkTo = `/dish/${formattedTitle}_${recipe.recipe_id}.html`;
   return (
     <a
       href={linkTo}
