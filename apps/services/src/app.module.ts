@@ -8,6 +8,7 @@ import { FavoriteModule } from './favorite/favorite.module';
 import { CategoriesModule } from './categories/categories.module';
 import { UploadModule } from './upload/upload.module';
 import { HealcheckModule } from './healcheck/healcheck.module';
+import { TipsModule } from './tips/tips.module';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { HealcheckModule } from './healcheck/healcheck.module';
     FavoriteModule,
     CategoriesModule,
     UploadModule,
-    HealcheckModule
+    HealcheckModule,
+    TipsModule
   ],  
 })
 export class AppModule {}
