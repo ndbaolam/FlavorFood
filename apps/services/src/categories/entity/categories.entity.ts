@@ -25,9 +25,12 @@ export class Categories {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
   
-  @ManyToMany(() => Recipes, (recipe) => recipe.categories)
+  @ManyToMany(() => Recipes, (recipe) => recipe.categories, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
   @JoinTable({
-    name: 'recipe_categories', // Name of the join table
+    name: 'recipe_categories',
     joinColumn: {
       name: 'category_id',
       referencedColumnName: 'category_id',

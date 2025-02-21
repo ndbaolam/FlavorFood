@@ -2,10 +2,11 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
 } from 'typeorm';
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Categories } from '../../categories/entity/categories.entity';
@@ -13,7 +14,7 @@ import { Categories } from '../../categories/entity/categories.entity';
 export enum DifficultyLevel {
   EASY = 'Dễ',
   MEDIUM = 'Trung bình',
-  HARD = 'Khó'
+  HARD = 'Khó',
 }
 
 @Entity('recipes')
@@ -22,7 +23,7 @@ export class Recipes {
   recipe_id: number;
 
   @Column({
-    unique: true
+    unique: true,
   })
   title: string;
 
@@ -38,7 +39,7 @@ export class Recipes {
 
   @Column({
     type: 'timestamp',
-    nullable: true
+    nullable: true,
   })
   time: Date;
 
@@ -61,11 +62,23 @@ export class Recipes {
   nutrition: string;
 
   // One Recipe can be favorited many times
-  @OneToMany(() => Favorite, favorite => favorite.recipe)
+  @OneToMany(() => Favorite, (favorite) => favorite.recipe)
   favorites: Favorite[];
 
   @ManyToMany(() => Categories, (categories) => categories.recipes, {
-    cascade: true,
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  @JoinTable({
+    name: 'recipe_categories',
+    joinColumn: {
+      name: 'recipe_id',
+      referencedColumnName: 'recipe_id',
+    },
+    inverseJoinColumn: {
+      name: 'category_id',
+      referencedColumnName: 'category_id',
+    },
   })
   categories: Categories[];
 
