@@ -20,6 +20,8 @@ To run the dev server, use:
 
 ```sh
 yarn dev
+#or
+yarn run dev
 ```
 
 To run the frontend, use:
@@ -38,6 +40,13 @@ To see all available targets to run for a project, run:
 
 ```sh
 yarn nx show project services
+```
+
+To run test using Jest, run: 
+
+```sh
+yarn run test
+yarn run test:cov 
 ```
 
 These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
