@@ -44,6 +44,11 @@ export class CategoriesService {
     updateCategoriesDto: UpdateCategoriesDto
   ): Promise<Categories> {
     const category = await this.findOne(id);
+
+    if(!category) {
+      throw new NotFoundException(`Category with id ${id} not found`);
+    }
+
     Object.assign(category, updateCategoriesDto);
     return this.categoriesRepository.save(category);
   }

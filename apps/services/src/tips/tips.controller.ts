@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, HttpCode } from '@nestjs/common';
 import { TipsService } from './tips.service';
 import { CreateTipDto, UpdateTipDto } from './dto/tips.dto';
 
@@ -32,6 +32,7 @@ export class TipsController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.tipsService.remove(Number(id));
   }

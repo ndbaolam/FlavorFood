@@ -1,24 +1,36 @@
-import { Controller, Get, Post, Delete, Param, Body, UseGuards, Req, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body, UseGuards, Req, ParseIntPipe, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { Favorite } from './entity/favorite.entity';
 import { CreateFavoriteDto } from './dto/favorite.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
+import { RecipesService } from '../recipes/recipes.service';
 
 @Controller('favorite')
 @UseGuards(JwtAuthGuard)
 export class FavoriteController {
-  constructor(private readonly favoriteService: FavoriteService) {}
+  constructor(
+    private readonly favoriteService: FavoriteService,
+    private readonly recipesService: RecipesService
+  ) {}
 
   @Post()
   async createFavorite(
     @Req() req: Request,
     @Body('recipe_id') recipeId: number
   ): Promise<Favorite> {
+    const user = req['user'];
+
+    if(!user) {
+      throw new UnauthorizedException();
+    }
+
+    const recipe = await this.recipesService.findOne(Number(recipeId));    
+
     try {
       const createFavoriteDto: CreateFavoriteDto = {
-        user_id: Number(req['sub']),
-        recipe_id: Number(recipeId),
+        user_id: Number(user['sub']),
+        recipe_id: recipe.recipe_id,
       };
       return await this.favoriteService.createFavorite(createFavoriteDto);
     } catch (error) {
@@ -28,7 +40,13 @@ export class FavoriteController {
 
   @Get()  
   async getFavorites(@Req() req: Request): Promise<Favorite[]> {
-    return await this.favoriteService.getFavoritesByUserId(Number(req['sub']));
+    const user = req['user'];
+
+    if(!user) {
+      throw new UnauthorizedException();
+    }
+
+    return await this.favoriteService.getFavoritesByUserId(Number(user['sub']));
   }
 
   // @Get(':id')

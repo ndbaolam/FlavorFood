@@ -12,12 +12,22 @@ export class TipsService {
   ) {}
 
   async create(createTipDto: CreateTipDto): Promise<Tips> {
-    const tip = this.tipsRepository.create(createTipDto);
-    return this.tipsRepository.save(tip);
+    try {
+      const tip = this.tipsRepository.create(createTipDto);
+      return this.tipsRepository.save(tip);
+    } catch (error) {
+      throw new Error(error);
+    }    
   }
 
   async findAll(): Promise<Tips[]> {
-    return this.tipsRepository.find();
+    const tips = this.tipsRepository.find();
+
+    if(!tips) {
+      throw new NotFoundException('No tips found');
+    }
+
+    return tips;
   }
 
   async findOne(id: number): Promise<Tips> {
@@ -27,19 +37,31 @@ export class TipsService {
   }
 
   async searchByTitle(title: string): Promise<Tips[]> {
-    return this.tipsRepository.find({
+    const searched_tip = await this.tipsRepository.find({
       where: { title: Like(`%${title}%`) },
     });
+
+    if(!searched_tip) {
+      throw new NotFoundException(`No tips found with title: ${title}`);
+    }
+
+    return searched_tip;
   }
 
   async update(id: number, updateTipDto: UpdateTipDto): Promise<Tips> {
     const tip = await this.findOne(id);
+
+    if(!tip) {
+      throw new NotFoundException(`Tip with ID ${id} not found`);
+    }
+
     Object.assign(tip, updateTipDto);
     return this.tipsRepository.save(tip);
   }
 
   async remove(id: number): Promise<void> {
     const result = await this.tipsRepository.delete(id);
-    if (result.affected === 0) throw new NotFoundException(`Tip with ID ${id} not found`);
+    if (result.affected === 0) 
+      throw new NotFoundException(`Tip with ID ${id} not found`);    
   }
 }
