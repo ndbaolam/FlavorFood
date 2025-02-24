@@ -4,6 +4,9 @@ import { useParams, Link } from "react-router-dom";
 import { Recipe } from "../recipe.interface";
 import { useLoaderData, LoaderFunctionArgs } from 'react-router-dom';
 import axiosInstance from "../../../services/axiosInstance";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { useFavorite } from "../../Favourite/FavoriteContext";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const { slug } = params;
@@ -19,21 +22,39 @@ export async function clientLoader({ params }: LoaderFunctionArgs) {
 
 const RecipeDetail: React.FC = () => {
   const recipe = useLoaderData() as Recipe;
+  const { isFavorite, toggleFavorite } = useFavorite();
 
-  const [isLiked, setIsLiked] = useState<boolean>(recipe?.isFavorite || false);
+  // Lấy trạng thái yêu thích từ context
+  const isLiked = isFavorite(recipe.recipe_id);
 
-  const onToggleFavorite = (recipeId: number) => {
-    console.log(`Toggled favorite for recipe with ID: ${recipeId}`);
-  };
-
-  // Toggle like status
+  // Toggle trạng thái yêu thích và thêm thông báo
   const handleLike = () => {
-    setIsLiked((prevLiked) => !prevLiked);
-    if (recipe) {
-      onToggleFavorite(recipe.recipe_id); // Pass the recipe_id for favorite toggling
+    toggleFavorite(recipe.recipe_id);
+
+    if (isLiked) {
+      toast.info("Đã xóa khỏi danh sách yêu thích!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+    } else {
+      toast.success("Đã thêm vào danh sách yêu thích!", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
     }
   };
-
   if (!recipe) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center">

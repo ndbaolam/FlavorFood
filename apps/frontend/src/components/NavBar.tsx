@@ -1,6 +1,7 @@
 /* eslint-disable */
 import React, { useState } from 'react';
-import { Menu, X, User, Search, LogOut } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
+import SearchBox from './Search';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,7 +36,7 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex md:items-center md:space-x-4">
-            <Search />
+            <SearchBox />
             {menuItems.map(({ href, label }) => (
               <a
                 key={href}
