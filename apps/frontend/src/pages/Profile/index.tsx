@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../services/axiosInstance";
-import { useTranslation } from "react-i18next";
 import UserSidebar from "../../components/UserSidebar";
 
 interface User {
@@ -13,12 +12,13 @@ interface User {
 }
 
 const Profile: React.FC = () => {
-  const { t } = useTranslation();
   const [formData, setFormData] = useState<User | null>(null);
 
   useEffect(() => {
     axiosInstance
-      .get("/auth/profile")
+      .get("/auth/profile", {
+        withCredentials: true, 
+      })
       .then((response) => {
         setFormData(response.data);
       })
@@ -47,7 +47,9 @@ const Profile: React.FC = () => {
 
           {/* User Information Section */}
           <div className="text-center bg-white p-6 rounded-lg w-full md:w-[850px] md:h-[500px] shadow-md">
-            <h2 className="text-lg font-bold mb-5">{t("Thông tin cá nhân")}</h2>
+            <h2 className="text-lg font-bold mb-5">
+              {"Thông tin cá nhân"}
+            </h2>
 
             <div className="mb-4 relative">
               <input

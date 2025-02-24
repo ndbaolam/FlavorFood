@@ -4,9 +4,26 @@ import { RouterProvider } from 'react-router-dom';
 import './index.css';
 import AppRoutes from './routes/AppRoutes';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
+import { FavoriteProvider } from './pages/Favourite/FavoriteContext';
 
 createRoot(document.getElementById('root')!).render(
   <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
-      <RouterProvider router={AppRoutes} />
+     <FavoriteProvider>
+        <RouterProvider router={AppRoutes} />
+      </FavoriteProvider>
+    <ToastContainer 
+      position="top-right"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+    />
   </GoogleOAuthProvider>
 );

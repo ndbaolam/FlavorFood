@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { faUser, faHeart, faNewspaper } from "@fortawesome/free-solid-svg-icons"; // Correct import for faHeart
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import axiosInstance from "../services/axiosInstance";
 
 interface User {
@@ -17,7 +16,6 @@ interface User {
 export default function UserSidebar() {
   const [formData, setFormData] = useState<User | null>(null);
   const location = useLocation();
-  const { t } = useTranslation();
 
   useEffect(() => {
     axiosInstance
@@ -36,40 +34,38 @@ export default function UserSidebar() {
         {/* Profile Link */}
         <Link
           to="/profile"
-          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${
-            location.pathname === "/profile"
+          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${location.pathname === "/profile"
               ? "font-bold bg-[var(--color-secondary-dark)]"
               : "hover:bg-gray-200"
-          }`}
+            }`}
         >
           <FontAwesomeIcon icon={faUser} />
-          <span>{t("Thông tin cá nhân")}</span>
+          <span>{"Thông tin cá nhân"}</span>
         </Link>
 
         {/* Favourite List Link */}
         <Link
           to="/favourite"
-          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${
-            location.pathname === "/favourite"
+          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${location.pathname === "/favourite"
               ? "font-bold bg-[var(--color-secondary-dark)]"
               : "hover:bg-gray-200"
-          }`}
+            }`}
         >
-          <FontAwesomeIcon icon={faHeart} /> {/* Corrected FontAwesomeIcon usage */}
-          <span>{t("Yêu thích")}</span>
+          <FontAwesomeIcon icon={faHeart} />
+          <span>{"Yêu thích"}</span>
         </Link>
 
-         {/* Posts Section */}
-         <Link
+
+        {/* Posts Section */}
+        <Link
           to="/post"
-          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${
-            location.pathname === "/posts"
+          className={`flex items-center gap-3 py-2 px-5 rounded-md transition-all ${location.pathname === "/posts"
               ? "font-bold bg-[var(--color-secondary-dark)]"
               : "hover:bg-gray-200"
-          }`}
+            }`}
         >
           <FontAwesomeIcon icon={faNewspaper} />
-          <span>{t("Bài viết")}</span>
+          <span>{"Bài viết"}</span>
         </Link>
 
       </div>

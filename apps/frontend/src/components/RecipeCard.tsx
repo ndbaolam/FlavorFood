@@ -1,30 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, Calculator, Heart } from 'lucide-react';
-import { Link } from 'react-router-dom';
 import formatString from '../services/formatString';
 import { Recipe } from '../pages/Meals/recipe.interface';
+import { toast } from 'react-toastify';
 
 interface RecipeCardProps {
   recipe: Recipe;
+  isLiked: boolean;
+  onToggleFavorite: (recipeId: number) => void;
   currentCategoryPath?: string;
-  onToggleFavorite?: (recipeId: number) => void;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, onToggleFavorite }) => {
-  const [isLiked, setIsLiked] = useState<boolean>(recipe.isFavorite || false);
+const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, isLiked, onToggleFavorite, currentCategoryPath }) =>  {
+  const [localLiked, setLocalLiked] = useState<boolean>(isLiked);
+
+  useEffect(() => {
+    setLocalLiked(isLiked);
+  }, [isLiked]);
 
   const handleLike = (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
+    setLocalLiked((prevLiked) => !prevLiked);
+    onToggleFavorite(recipe.recipe_id);  //callback
 
-    setIsLiked((prevLiked) => !prevLiked);
-    if (onToggleFavorite) {
-      onToggleFavorite(recipe.recipe_id);
+    // Hiển thị thông báo khi thêm hoặc xóa khỏi yêu thích
+    if (!localLiked) {
+      toast.success("Đã thêm vào danh sách yêu thích!", {
+        
+      });
+    } else {
+      toast.info("Đã xóa khỏi danh sách yêu thích!", {
+       
+      });
     }
   };
 
-  const formattedTitle: string = formatString(recipe.title);
+  const formattedTitle: string = recipe.title ? formatString(recipe.title) : "no-title";
   const linkTo = `/dish/${formattedTitle}_${recipe.recipe_id}.html`;
+
   return (
     <a
       href={linkTo}
@@ -58,22 +72,22 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ recipe, currentCategoryPath, on
             <div className="flex gap-6">
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4" />
-                <span>{recipe.time}</span>
+                <span>{recipe.time ?? 'Không rõ'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calculator className="w-4 h-4" />
-                <span>{recipe.calories} kcal</span>
+                <span>{recipe.calories ?? '0'} kcal</span>
               </div>
             </div>
 
             {/* Favorite icon */}
             <button
               onClick={handleLike}
-              className={`w-7 h-7 flex items-center justify-center p-2 rounded-full ${isLiked ? 'bg-red-300' : 'bg-gray-200'}`}
+              className={`w-7 h-7 flex items-center justify-center p-2 rounded-full ${localLiked ? 'bg-red-300' : 'bg-gray-200'}`}
             >
               <Heart
-                color={isLiked ? 'white' : 'gray'}
-                fill={isLiked ? 'white' : 'none'}
+                color={localLiked ? 'white' : 'gray'}
+                fill={localLiked ? 'white' : 'none'}
                 size={18}
               />
             </button>
