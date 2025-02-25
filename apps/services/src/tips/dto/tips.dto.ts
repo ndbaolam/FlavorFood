@@ -16,10 +16,9 @@ export class CreateTipDto {
 
   @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()   
-  @Transform(({ value }) => {    
-    return Array.isArray(value) ? value : [value];
-  })
+  @ArrayUnique({ message: 'Duplicate category IDs are not allowed.' })
+  @IsInt({ each: true, message: 'Each category ID must be an integer.' })
+  @ArrayNotEmpty()     
   @Type(() => Number)   
   genres?: number[];
 }
@@ -39,10 +38,9 @@ export class UpdateTipDto {
 
   @IsOptional()
   @IsArray()
-  @ArrayNotEmpty()  
-  @Transform(({ value }) => {    
-    return Array.isArray(value) ? value : [value];
-  })  
+  @ArrayUnique({ message: 'Duplicate category IDs are not allowed.' })
+  @IsInt({ each: true, message: 'Each category ID must be an integer.' })
+  @ArrayNotEmpty()    
   @Type(() => Number) 
   genres?: number[];
 }

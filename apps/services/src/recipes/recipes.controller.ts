@@ -39,15 +39,36 @@ export class RecipesController {
   }
 
   @Post()
-  async create(@Body() createRecipeDto: CreateRecipeDto): Promise<Recipes> {
+  async create(
+    @Body(
+      'categories',
+      new ParseArrayPipe({ items: Number, separator: ',' })
+    ) idCategories: any[],
+    @Body() { categories , ...recipeData}: CreateRecipeDto
+  ) {
+    const createRecipeDto = {
+      ...recipeData,
+      categories: idCategories as number[],
+    }
+
+    console.log(createRecipeDto);
+
     return this.recipesService.create(createRecipeDto);
   }
 
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,    
-    @Body() updateRecipeDto: UpdateRecipeDto
+    @Body(
+      'categories',
+      new ParseArrayPipe({ items: Number, separator: ',' })
+    ) idCategories: any[],
+    @Body() { categories , ...recipeData}: UpdateRecipeDto
   ): Promise<Recipes> {    
+    const updateRecipeDto = {
+      ...recipeData,
+      categories: idCategories,
+    }
     return this.recipesService.update(Number(id), updateRecipeDto);
   }
 

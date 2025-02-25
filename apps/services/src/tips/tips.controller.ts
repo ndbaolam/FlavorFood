@@ -13,14 +13,23 @@ import {
 } from '@nestjs/common';
 import { TipsService } from './tips.service';
 import { CreateTipDto, UpdateTipDto } from './dto/tips.dto';
-import { IntegerType } from 'typeorm';
 
 @Controller('tips')
 export class TipsController {
   constructor(private readonly tipsService: TipsService) {}
 
   @Post('create')
-  create(@Body() createTipDto: CreateTipDto) {
+  create(
+    @Body(
+      'genres', new ParseArrayPipe({items: Number, separator: ","})
+    ) genresId: number[],
+    @Body() { genres, ...tipData }: CreateTipDto
+  ) {
+    const createTipDto = {
+      ...tipData,
+      genres: genresId
+    }
+
     return this.tipsService.create(createTipDto);
   }
 
@@ -45,8 +54,16 @@ export class TipsController {
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateTipDto: UpdateTipDto
+    @Body(
+      'genres', new ParseArrayPipe({items: Number, separator: ","})
+    ) genresId: number[],
+    @Body() { genres, ...tipData }: UpdateTipDto
   ) {
+    const updateTipDto = {
+      ...tipData,
+      genres: genresId
+    }
+
     return this.tipsService.update(Number(id), updateTipDto);
   }
 

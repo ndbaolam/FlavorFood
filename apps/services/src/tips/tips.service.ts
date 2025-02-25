@@ -29,22 +29,15 @@ export class TipsService {
         );
       }
 
-      const parsedGenres = (genres || [])
-        .map((genre) => {
-          const num = Number(genre);
-          return isNaN(num) ? null : num;
-        })
-        .filter((genre) => genre !== null);
-
       const tip = this.tipsRepository.create(tipData);
 
-      if (parsedGenres.length > 0) {
+      if (genres.length > 0) {
         const genreEntities = await this.genresRepository.find({
-          where: { genre_id: In(parsedGenres) },
+          where: { genre_id: In(genres) },
         });
 
         const foundGenreIds = genreEntities.map((g) => g.genre_id);
-        const missingGenres = parsedGenres.filter(
+        const missingGenres = genres.filter(
           (id) => !foundGenreIds.includes(id)
         );
 
@@ -115,31 +108,20 @@ export class TipsService {
     Object.assign(tip, updateData);
 
     if (genres && genres.length > 0) {
-      const parsedGenres = genres
-        .map((genre) => {
-          const num = Number(genre);
-          return isNaN(num) ? null : num;
-        })
-        .filter((genre) => genre !== null);
+      const genreEntities = await this.genresRepository.find({
+        where: { genre_id: In(genres) },
+      });
 
-      if (parsedGenres.length > 0) {
-        const genreEntities = await this.genresRepository.find({
-          where: { genre_id: In(parsedGenres) },
-        });
+      const foundGenreIds = genreEntities.map((g) => g.genre_id);
+      const missingGenres = genres.filter((id) => !foundGenreIds.includes(id));
 
-        const foundGenreIds = genreEntities.map((g) => g.genre_id);
-        const missingGenres = parsedGenres.filter(
-          (id) => !foundGenreIds.includes(id)
+      if (missingGenres.length > 0) {
+        throw new NotFoundException(
+          `Genres not found: ${missingGenres.join(', ')}`
         );
-
-        if (missingGenres.length > 0) {
-          throw new NotFoundException(
-            `Genres not found: ${missingGenres.join(', ')}`
-          );
-        }
-
-        tip.genres = genreEntities;
       }
+
+      tip.genres = genreEntities;
     }
 
     return this.tipsRepository.save(tip);

@@ -72,7 +72,7 @@ export class RecipesService {
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipes> {
     try {
-      const { categories: categoryIds, ...recipeDetail } = createRecipeDto;
+      const { categories: categoryIds, ...recipeDetail } = createRecipeDto;      
 
       const existingRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
@@ -120,6 +120,14 @@ export class RecipesService {
     updateRecipeDto: UpdateRecipeDto
   ): Promise<Recipes> {
     try {
+      const exitsedRecipe = await this.recipesRepository.findOne({
+        where: { recipe_id : recipeId}
+      });
+      
+      if(!exitsedRecipe) {
+        throw new NotFoundException(`Recipe with id ${recipeId} not found.`);
+      }
+
       const updateObj: Partial<Recipes> = {};
       if (updateRecipeDto.title) {
         updateObj.title = updateRecipeDto.title;
