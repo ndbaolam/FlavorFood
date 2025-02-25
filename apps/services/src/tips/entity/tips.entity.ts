@@ -2,11 +2,14 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { TipGenres } from '../genres/entity/genres.entity';
 
-@Entity()
+@Entity('tips')
 export class Tips {
   @PrimaryGeneratedColumn({
     type: 'int',
@@ -36,4 +39,21 @@ export class Tips {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToMany(() => TipGenres, (genre) => genre.tips, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  @JoinTable({
+    name: 'tip_genres', 
+    joinColumn: {
+      name: 'tip_id',
+      referencedColumnName: 'tip_id',
+    },
+    inverseJoinColumn: {
+      name: 'genre_id',
+      referencedColumnName: 'genre_id',
+    },
+  })
+  genres: TipGenres[];
 }

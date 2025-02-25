@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsString, IsOptional } from 'class-validator';
+import { Transform, Type } from 'class-transformer';
+import { IsNotEmpty, IsString, IsOptional, IsArray, ArrayNotEmpty, ArrayUnique, IsInt, ValidateNested } from 'class-validator';
 
 export class CreateTipDto {
   @IsNotEmpty()
@@ -12,6 +13,15 @@ export class CreateTipDto {
   @IsNotEmpty()
   @IsString()
   content: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty()   
+  @Transform(({ value }) => {    
+    return Array.isArray(value) ? value : [value];
+  })
+  @Type(() => Number)   
+  genres?: number[];
 }
 
 export class UpdateTipDto {
@@ -26,4 +36,13 @@ export class UpdateTipDto {
   @IsOptional()
   @IsString()
   content?: string;
+
+  @IsOptional()
+  @IsArray()
+  @ArrayNotEmpty()  
+  @Transform(({ value }) => {    
+    return Array.isArray(value) ? value : [value];
+  })  
+  @Type(() => Number) 
+  genres?: number[];
 }

@@ -1,6 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseIntPipe, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+  ParseIntPipe,
+  HttpCode,
+  ParseArrayPipe,
+} from '@nestjs/common';
 import { TipsService } from './tips.service';
 import { CreateTipDto, UpdateTipDto } from './dto/tips.dto';
+import { IntegerType } from 'typeorm';
 
 @Controller('tips')
 export class TipsController {
@@ -17,8 +30,11 @@ export class TipsController {
   }
 
   @Get('search')
-  search(@Query('title') title: string) {
-    return this.tipsService.searchByTitle(title);
+  async search(
+    @Query('title') title?: string,
+    @Query('genres', ParseArrayPipe) genreIds?: number[]
+  ) {    
+    return this.tipsService.search(title, genreIds);
   }
 
   @Get(':id')
@@ -27,7 +43,10 @@ export class TipsController {
   }
 
   @Patch(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateTipDto: UpdateTipDto) {
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateTipDto: UpdateTipDto
+  ) {
     return this.tipsService.update(Number(id), updateTipDto);
   }
 
