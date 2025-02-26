@@ -49,9 +49,7 @@ export class RecipesController {
     const createRecipeDto = {
       ...recipeData,
       categories: idCategories as number[],
-    }
-
-    console.log(createRecipeDto);
+    }    
 
     return this.recipesService.create(createRecipeDto);
   }

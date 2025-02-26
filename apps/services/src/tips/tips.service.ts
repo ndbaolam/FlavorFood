@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository, In } from 'typeorm';
 import { CreateTipDto, UpdateTipDto } from './dto/tips.dto';
@@ -21,10 +21,10 @@ export class TipsService {
 
       const existedTip = await this.tipsRepository.findOne({
         where: { title: tipData.title },
-      });
+      });      
 
-      if (existedTip) {
-        throw new NotFoundException(
+      if (existedTip != null) {
+        throw new ConflictException(
           `Tip with title ${tipData.title} already exists`
         );
       }

@@ -12,11 +12,11 @@ export class CategoriesService {
   ) {}
 
   async create(createCategoriesDto: CreateCategoriesDto): Promise<Categories> {
-    const existedCateogry = await this.categoriesRepository.findOne({
+    const existedCateogry: Categories = await this.categoriesRepository.findOne({
       where: { title: createCategoriesDto.title },
     });
 
-    if(existedCateogry) {
+    if(existedCateogry instanceof Categories) {
       throw new ConflictException(`Category with title ${createCategoriesDto.title} already exists`);
     }
 
@@ -43,7 +43,7 @@ export class CategoriesService {
     id: number,
     updateCategoriesDto: UpdateCategoriesDto
   ): Promise<Categories> {
-    const category = await this.findOne(id);
+    const category: Categories = await this.findOne(id);
 
     if(!category) {
       throw new NotFoundException(`Category with id ${id} not found`);
