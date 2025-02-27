@@ -7,7 +7,7 @@ import Home from '../pages/Home';
 import Meals from '../pages/Meals';
 import Tips from '../pages/Tips';
 import RecipeDetail, { clientLoader as recipeLoader } from '../pages/Meals/RecipeDetails';
-import TipDetails from '../pages/Tips/TipDetails';
+import TipDetails, { clientLoader as tipLoader } from '../pages/Tips/TipDetails';
 import Profile from '../pages/Profile';
 import Favourite from '../pages/Favourite';
 // Route definitions
@@ -44,12 +44,10 @@ const routes: RouteObject[] = [
       },
       {
         path: 'tips/:slug.html',
-        element: <TipDetails/>
+        element: <TipDetails/>,
+        loader: tipLoader,
       },
-      {
-        path:'tips/:slug',
-        element:<Tips />
-      },
+    
       {
         path:'profile',
         element:<Profile />

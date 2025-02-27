@@ -5,19 +5,23 @@ import axiosInstance from '../../services/axiosInstance';
 import { Recipe } from './recipe.interface';
 import { useFavorite } from '../Favourite/FavoriteContext';
 
-
 const Meals: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<string>('Tất cả');
+  const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const { isFavorite, toggleFavorite } = useFavorite();
 
   const fetchRecipes = async () => {
     try {
-      const response = await axiosInstance.get<Recipe[]>('/recipes', {
-        withCredentials: true,
-      });
-
-      setRecipes(response.data);
+      let response;
+      if (activeFilter) {
+        response = await axiosInstance.get(`/categories/${activeFilter}`);
+        setRecipes(response.data.recipes);
+      } else {
+        response = await axiosInstance.get<Recipe[]>('/recipes', {
+          withCredentials: true,
+        });
+        setRecipes(response.data);
+      }
     } catch (error) {
       console.error('Lỗi khi lấy danh sách món ăn:', error);
     }
@@ -25,7 +29,7 @@ const Meals: React.FC = () => {
 
   useEffect(() => {
     fetchRecipes();
-  }, []);
+  }, [activeFilter]);
 
   return (
     <div className="min-h-screen">
@@ -37,9 +41,11 @@ const Meals: React.FC = () => {
           </p>
         </section>
 
-        <section className="flex justify-center items-center">
-          <FilterMenu activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
-        </section>
+        <FilterMenu
+          activeFilter={activeFilter}
+          setActiveFilter={setActiveFilter}
+        />
+
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
           {recipes.map((recipe) => (

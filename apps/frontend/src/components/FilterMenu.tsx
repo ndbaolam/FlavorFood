@@ -2,21 +2,20 @@ import React, { useEffect, useState } from 'react';
 import axiosInstance from '../services/axiosInstance';
 
 interface FilterMenuProps {
-  activeFilter: string;
-  setActiveFilter: (filter: string) => void;
+  activeFilter: number | null;
+  setActiveFilter: (filter: number | null) => void;
 }
 
 const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }) => {
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<{ category_id: number; title: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axiosInstance.get<{ title: string }[]>('/categories');
-        const categoryTitles = response.data.map((category) => category.title);
-        setCategories(['Tất cả', ...categoryTitles]);
+        const response = await axiosInstance.get<{ category_id: number; title: string }[]>('/categories');
+        setCategories(response.data);
       } catch (err) {
         console.error('Error fetching categories:', err);
         setError('Không thể tải danh mục');
@@ -35,18 +34,27 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
-        categories.map((category) => (
+        <>
           <button
-            key={category}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
-              ${activeFilter === category 
+              ${activeFilter === null
                 ? 'bg-red-700 text-white'
                 : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
-            onClick={() => setActiveFilter(category)}
+            onClick={() => setActiveFilter(null)}
           >
-            {category}
+            Tất cả
           </button>
-        ))
+          {categories.map((category) => (
+            <button
+              key={category.category_id}
+              onClick={() => setActiveFilter(category.category_id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
+                ${activeFilter === category.category_id ? 'bg-red-700 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+            >
+              {category.title}
+            </button>
+          ))}
+        </>
       )}
     </div>
   );
