@@ -8,18 +8,22 @@ import { Repository } from 'typeorm';
 import { Recipes } from './entity/recipes.entity';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
+import { CategoriesService } from '../categories/categories.service';
 
 @Injectable()
 export class RecipesService {
   constructor(
     @InjectRepository(Recipes)
-    private readonly recipesRepository: Repository<Recipes>
+    private readonly recipesRepository: Repository<Recipes>,
+
+    private readonly categoriesService: CategoriesService
   ) {}
 
   async findOne(id: number): Promise<Recipes> {
     const recipe = await this.recipesRepository
       .createQueryBuilder('recipes')
       .leftJoin('recipes.categories', 'categories')
+      .addSelect('categories.category_id')
       .addSelect('categories.title')
       .where('recipes.recipe_id = :id', { id })
       .getOne();
@@ -74,16 +78,16 @@ export class RecipesService {
     try {
       const { categories: categoryIds, ...recipeDetail } = createRecipeDto;      
 
-      const existingRecipe = await this.recipesRepository
+      const existingRecipe: Recipes = await this.recipesRepository
         .createQueryBuilder('recipes')
         .where('recipes.title = :title', { title: recipeDetail.title })
-        .getOne();
+        .getOne();        
 
-      if (existingRecipe) {
+      if (existingRecipe instanceof Recipes) {
         throw new ConflictException(
           `Recipe with title ${recipeDetail.title} already exists.`
         );
-      }
+      }      
 
       const insertResult = await this.recipesRepository
         .createQueryBuilder()
@@ -105,6 +109,7 @@ export class RecipesService {
       const createdRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
         .leftJoin('recipes.categories', 'categories')
+        .addSelect('categories.category_id')
         .addSelect('categories.title')
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
@@ -146,6 +151,27 @@ export class RecipesService {
       }
 
       if (updateRecipeDto.categories) {
+        updateRecipeDto.categories.forEach((categoryId) => {
+          if (typeof categoryId !== 'number') {
+            throw new ConflictException(
+              `Category ID ${categoryId} is not a number.`
+            );
+          }
+
+          if (!categoryId || categoryId <= 0) {
+            throw new ConflictException(
+              `Category ID ${categoryId} is not valid.`
+            );
+          }
+
+          const existedCategory = this.categoriesService.findOne(categoryId);
+          if (!existedCategory) {
+            throw new NotFoundException(
+              `Category with ID ${categoryId} not found.`
+            );
+          }
+        });
+
         await this.recipesRepository
           .createQueryBuilder()
           .relation(Recipes, 'categories')
@@ -163,6 +189,7 @@ export class RecipesService {
         .createQueryBuilder('recipes')
         .leftJoin('recipes.categories', 'categories')
         .addSelect('categories.title')
+        .addSelect('categories.category_id')
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
 
