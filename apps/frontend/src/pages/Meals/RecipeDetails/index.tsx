@@ -11,6 +11,8 @@ import { useFavorite } from "../../Favourite/FavoriteContext";
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const { slug } = params;
   const id = slug?.slice(slug?.search("_") + 1);
+  console.log('Fetching URL:', `/recipes/${id}`);
+
 
   try {
     const response = await axiosInstance.get<Recipe>(`recipes/${id}`);
@@ -91,7 +93,7 @@ const RecipeDetail: React.FC = () => {
                   objectFit: 'cover',  // Maintain aspect ratio while filling the space
                 }}
               />
-            </div>  
+            </div>
             <div className=" items-center gap-2">
               {/* <strong className="text-black">{recipe.author}</strong> */}
               {/* <p>{recipe.date}</p> */}

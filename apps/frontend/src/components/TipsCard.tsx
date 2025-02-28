@@ -1,35 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import formatString from '../services/formatString';
-
-interface TipsItem {
-  tips_id: string;
-  title: string;
-  description: string;
-  image: string;
-  tag: string;
-  isFavorite?: boolean;
-}
+import { TipsItem } from '../pages/Tips/Tip.interface';
 
 interface TipsCardProps {
   tips: TipsItem;
-  currentCategoryPath?: string; 
-  onToggleFavorite?: (tips_id: string) => void;  
+  currentCategoryPath?: string;
+  onToggleFavorite?: (tips_id: string) => void;
 }
 
 const TipsCard: React.FC<TipsCardProps> = ({ tips, currentCategoryPath, onToggleFavorite }) => {
-  const [isLiked, setIsLiked] = useState<boolean>(tips.isFavorite || false); 
-  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState<boolean>(false);
-  
+
+
   // Sử dụng formatString để tạo slug từ tiêu đề
   const formattedTitle = formatString(tips.title);
+  const linkto = `/tips/${formattedTitle}_${tips.tip_id}.html`;
 
   return (
     <div className="bg-gradient-to-b from-blue-50 to-white shadow-lg hover:scale-105 transition-all ease-in-out flex flex-col h-full">
       {/* Image Container */}
       <div className="relative w-full aspect-w-4 aspect-h-3 overflow-hidden">
         <img
-          src={tips.image}
+          src={tips.thumbnail}
           alt={tips.title}
           className="w-full h-40 object-cover"
         />
@@ -42,13 +34,12 @@ const TipsCard: React.FC<TipsCardProps> = ({ tips, currentCategoryPath, onToggle
         </h2>
 
         {/* Description */}
-        <p className={`text-gray-600 text-center mb-4 text-sm ${!isDescriptionExpanded ? 'line-clamp-3' : ''}`}>
-          {tips.description}
-        </p>
+        <p className="text-gray-600 text-center mb-4 text-sm">{tips.content}</p>
+        <div className="border-t border-gray-300 my-4 w-full"></div>
 
         {/* Read More Link */}
-        <a 
-          href={`/tips/${formattedTitle}.html`} 
+        <a
+          href={linkto}
           className="mt-4 text-blue-500 font-medium hover:underline"
         >
           Đọc thêm &gt;&gt;
