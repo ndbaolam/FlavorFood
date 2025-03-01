@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axiosInstance from "../../services/axiosInstance";
+import Cookies from "js-cookie";
 
 interface FavoriteItem {
   favorite_id: number;
@@ -17,6 +18,7 @@ const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined
 
 export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const accessToken = Cookies.get("access_token");  
 
   const fetchFavorites = async () => {
     try {
@@ -30,12 +32,13 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }));
       setFavorites(formattedData);
     } catch (error) {
-      console.error("Lỗi khi lấy danh sách yêu thích:", error);
+      console.error(error);
     }
   };
 
   useEffect(() => {
-    fetchFavorites();
+    if (accessToken)
+      fetchFavorites();
   }, []);
 
   const toggleFavorite = async (recipeId: number) => {
@@ -63,7 +66,7 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       
       fetchFavorites();
     } catch (error) {
-      console.error("Lỗi khi cập nhật yêu thích:", error);
+      console.error(error);
     }
   };
 
