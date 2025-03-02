@@ -8,12 +8,14 @@ import { useFavorite } from '../Favourite/FavoriteContext';
 const Meals: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const { isFavorite, toggleFavorite } = useFavorite();
+  // const { isFavorite, toggleFavorite } = useFavorite();
+  const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
+
 
   const fetchRecipes = async () => {
     try {
       let response;
-      if (activeFilter) {
+      if (activeFilter !== null) {
         response = await axiosInstance.get(`/categories/${activeFilter}`);
         setRecipes(response.data.recipes);
       } else {
@@ -53,7 +55,12 @@ const Meals: React.FC = () => {
               key={recipe.recipe_id}
               recipe={recipe}
               isLiked={isFavorite(recipe.recipe_id)}
-              onToggleFavorite={() => toggleFavorite(recipe.recipe_id)}
+              // onToggleFavorite={() => toggleFavorite(recipe.recipe_id)}
+              onToggleFavorite={async () => {
+                await toggleFavorite(recipe.recipe_id);
+                refreshFavorites();
+              }}
+              
             />
           ))}
         </section>
