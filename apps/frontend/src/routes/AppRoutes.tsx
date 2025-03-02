@@ -53,7 +53,7 @@ const routes: RouteObject[] = [
         element:<Profile />
       },
       {
-        path:'favourite',
+        path:'favorite',
         element:<Favourite />
       },
   
