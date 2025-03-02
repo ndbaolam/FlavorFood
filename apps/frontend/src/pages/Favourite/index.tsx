@@ -7,7 +7,6 @@ const Favourite: React.FC = () => {
     <div className="min-h-screen flex justify-center bg-gray-100">
       <UserSidebar />
       <main className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold mt-10 mb-6 text-center">Danh sách yêu thích</h2>
         <FavoriteList />
       </main>
     </div>
