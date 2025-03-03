@@ -10,6 +10,7 @@ import RecipeDetail, { clientLoader as recipeLoader } from '../pages/Meals/Recip
 import TipDetails, { clientLoader as tipLoader } from '../pages/Tips/TipDetails';
 import Profile from '../pages/Profile';
 import Favourite from '../pages/Favourite';
+import AdminLayout from '../layouts/Admin/AdminLayout';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -63,6 +64,12 @@ const routes: RouteObject[] = [
       },
     ],
   },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    errorElement: <ErrorPage />,
+    children: []
+  }
 ];
 
 const AppRoutes = createBrowserRouter(routes);
