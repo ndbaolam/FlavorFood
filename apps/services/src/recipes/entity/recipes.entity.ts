@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Categories } from '../../categories/entity/categories.entity';
+import { Review } from '../../review/entity/review.entity';
 
 export enum DifficultyLevel {
   EASY = 'Dễ',
@@ -64,6 +65,9 @@ export class Recipes {
   // One Recipe can be favorited many times
   @OneToMany(() => Favorite, (favorite) => favorite.recipe)
   favorites: Favorite[];
+
+  @OneToMany(() => Review, (review) => review.recipe)
+  reviews: Review[];
 
   @ManyToMany(() => Categories, (categories) => categories.recipes, {
     onDelete: "CASCADE",

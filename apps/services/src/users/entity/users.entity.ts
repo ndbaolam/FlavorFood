@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { IsEmail, IsStrongPassword } from 'class-validator';
 import { Favorite } from '../../favorite/entity/favorite.entity';
+import { Review } from '../../review/entity/review.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -24,7 +25,7 @@ export class Users {
   @IsEmail()
   mail: string;
 
-  @Column()
+  @Column({ select: false})
   @IsStrongPassword()
   password: string;
 
@@ -46,6 +47,9 @@ export class Users {
 
   @OneToMany(() => Favorite, favorite => favorite.user)
   favorites: Favorite[];
+
+  @OneToMany(() => Review, review => review.user)
+  reviews: Review[];
 
   @CreateDateColumn({
     type: 'timestamp',
