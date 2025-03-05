@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { Categories } from './entity/categories.entity';
@@ -23,8 +24,13 @@ export class CategoriesController {
   }
 
   @Get()
-  async findAll(): Promise<Categories[]> {
-    return this.categoriesService.findAll();
+  async findAll(
+    @Query('title') title: string
+  ): Promise<Categories[]> {
+    if(title === null)
+      return this.categoriesService.findAll();
+    else 
+      return this.categoriesService.findByTitle(title);
   }
 
   @Get(':id')

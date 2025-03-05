@@ -39,6 +39,17 @@ export class CategoriesService {
     return category;
   }  
 
+  async findByTitle(title: string): Promise<Categories[]> {
+    const category = await this.categoriesRepository.find({
+      where: { title },
+      relations: ['recipes'],
+    });
+    if (!category) {
+      throw new NotFoundException(`Category with title ${title} not found`);
+    }
+    return category;
+  }
+
   async update(
     id: number,
     updateCategoriesDto: UpdateCategoriesDto
