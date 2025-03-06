@@ -26,7 +26,7 @@ export class CreateRecipeDto {
   difficulty_level: DifficultyLevel;
 
   @IsOptional()
-  time?: Date;
+  time?: number;
 
   @IsOptional()
   @IsString()
@@ -53,11 +53,10 @@ export class CreateRecipeDto {
   @IsString()
   nutrition: string;
 
-  @IsOptional()
-  @IsArray({ message: 'Categories must be an array of numbers.' })
-  @ArrayNotEmpty({ message: 'Categories array cannot be empty if provided.' })
-  @ArrayUnique({ message: 'Duplicate category IDs are not allowed.' })
-  @IsInt({ each: true, message: 'Each category ID must be an integer.' })
+  @IsOptional()  
+  @Transform(({ value }) => {    
+    return Array.isArray(value) ? value : [value];
+  })
   @Type(() => Number)
   categories?: number[];
 }
@@ -86,10 +85,7 @@ export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {
   @IsOptional()
   @Transform(({ value }) => {    
     return Array.isArray(value) ? value : [value];
-  })
-  @IsArray({ message: 'Categories must be an array of numbers.' })
-  @ArrayUnique({ message: 'Duplicate category IDs are not allowed.' })
-  @IsInt({ each: true, message: 'Each category ID must be an integer.' })
+  })  
   @Type(() => Number)
   categories?: number[];
 }

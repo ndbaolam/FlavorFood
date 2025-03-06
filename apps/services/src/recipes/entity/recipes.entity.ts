@@ -38,11 +38,10 @@ export class Recipes {
   })
   difficulty_level: DifficultyLevel;
 
-  @Column({
-    type: 'timestamp',
+  @Column({    
     nullable: true,
   })
-  time: Date;
+  time: number;
 
   @Column({ nullable: true })
   image: string;
