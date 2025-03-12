@@ -8,10 +8,12 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  ValidateNested,
 } from 'class-validator';
 import { DifficultyLevel } from '../entity/recipes.entity';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
+import { IngredientDto } from '../../ingredient/dto/ingredient.dto';
 
 export class CreateRecipeDto {
   @IsNotEmpty()
@@ -59,6 +61,12 @@ export class CreateRecipeDto {
   })
   @Type(() => Number)
   categories?: number[];
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => IngredientDto)  
+  ingredients?: IngredientDto[];
 }
 
 export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {

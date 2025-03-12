@@ -11,6 +11,7 @@ import {
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Categories } from '../../categories/entity/categories.entity';
 import { Review } from '../../review/entity/review.entity';
+import { Ingredient } from '../../ingredient/entity/ingredient.entity';
 
 export enum DifficultyLevel {
   EASY = 'Dễ',
@@ -67,6 +68,9 @@ export class Recipes {
 
   @OneToMany(() => Review, (review) => review.recipe)
   reviews: Review[];
+
+  @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe, { cascade: true })
+  ingredients: Ingredient[];
 
   @ManyToMany(() => Categories, (categories) => categories.recipes, {
     onDelete: "CASCADE",
