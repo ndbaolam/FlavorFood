@@ -15,6 +15,9 @@ import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { IngredientDto } from '../../ingredient/dto/ingredient.dto';
 import { Nutritrion } from '../../nutrition/entity/nutrition.entity';
+import { Steps } from '../../steps/entity/step.entity';
+import { NutritionDto } from '../../nutrition/dto/nutrition.dto';
+import { StepDto } from '../../steps/dto/step.dto';
 
 export class CreateRecipeDto {
   @IsNotEmpty()
@@ -48,10 +51,6 @@ export class CreateRecipeDto {
   @Type(() => Number)
   rating?: number;
 
-  @IsNotEmpty()
-  @IsString()
-  step: string;  
-
   @IsOptional()  
   @Transform(({ value }) => {    
     return Array.isArray(value) ? value : [value];
@@ -72,8 +71,16 @@ export class CreateRecipeDto {
   @Transform(({ value }) => {    
     return Array.isArray(value) ? value : [value];
   })
-  @Type(() => Nutritrion)
-  nutrition?: Nutritrion[];
+  @Type(() => NutritionDto)
+  nutrition?: NutritionDto[];
+
+  @IsOptional()
+  @IsArray()  
+  @Transform(({ value }) => {    
+    return Array.isArray(value) ? value : [value];
+  })
+  @Type(() => StepDto)
+  steps?: StepDto[];
 }
 
 export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {

@@ -8,9 +8,9 @@ import { Repository } from 'typeorm';
 import { Recipes } from './entity/recipes.entity';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
-import { CategoriesService } from '../categories/categories.service';
 import { Ingredient } from '../ingredient/entity/ingredient.entity';
 import { Nutritrion } from '../nutrition/entity/nutrition.entity';
+import { Steps } from '../steps/entity/step.entity';
 
 @Injectable()
 export class RecipesService {
@@ -23,16 +23,22 @@ export class RecipesService {
 
     @InjectRepository(Nutritrion)
     private readonly nutritionRepository: Repository<Nutritrion>,
+
+    @InjectRepository(Steps)
+    private readonly stepRepository: Repository<Steps>,
   ) {}
 
   async findOne(id: number): Promise<Recipes> {
     const recipe = await this.recipesRepository
-      .createQueryBuilder('recipes')
-      .leftJoinAndSelect('recipes.categories', 'categories')
-      .leftJoinAndSelect('recipes.ingredients', 'ingredients')
-      .leftJoinAndSelect('recipes.nutrition', 'nutrition')
-      .where('recipes.recipe_id = :id', { id })
-      .getOne();
+    .createQueryBuilder('recipes')
+    .leftJoin('recipes.categories', 'categories')
+    .leftJoinAndSelect('recipes.ingredients', 'ingredients')
+    .leftJoinAndSelect('recipes.nutrition', 'nutrition')
+    .leftJoinAndSelect('recipes.steps', 'steps')
+    .addSelect(['categories.category_id', 'categories.title'])    
+    .addSelect(['steps.number', 'steps.step'])
+    .where('recipes.recipe_id = :id', { id })
+    .getOne();
     if (!recipe) {
       throw new NotFoundException(`Recipe with id ${id} not found.`);
     }
@@ -44,9 +50,12 @@ export class RecipesService {
       searchDto;
     const qb = this.recipesRepository
       .createQueryBuilder('recipes')
-      .leftJoinAndSelect('recipes.categories', 'categories')
+      .leftJoin('recipes.categories', 'categories')
       .leftJoinAndSelect('recipes.ingredients', 'ingredients')
-      .leftJoinAndSelect('recipes.nutrition', 'nutrition');
+      .leftJoinAndSelect('recipes.nutrition', 'nutrition')
+      .leftJoinAndSelect('recipes.steps', 'steps')
+      .addSelect(['categories.category_id', 'categories.title'])    
+      .addSelect(['steps.number', 'steps.step']);
 
     if (title) {
       qb.andWhere('recipes.title ILIKE :title', { title: `%${title}%` });
@@ -87,6 +96,7 @@ export class RecipesService {
         categories: categoryIds,
         ingredients,
         nutrition,
+        steps,
         ...recipeDetail
       } = createRecipeDto;
 
@@ -146,11 +156,28 @@ export class RecipesService {
           .execute();
       }
 
+      if (steps?.length > 0) {
+        const stepsToInsert = steps.map((nutrient) => ({
+          ...nutrient,
+          recipe: recipeId,
+        }));
+  
+        await this.stepRepository
+          .createQueryBuilder()
+          .insert()
+          .into(Steps)
+          .values(stepsToInsert)
+          .execute();
+      }
+
       const createdRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
-        .leftJoinAndSelect('recipes.categories', 'categories')
+        .leftJoin('recipes.categories', 'categories')
         .leftJoinAndSelect('recipes.ingredients', 'ingredients')
-        .leftJoinAndSelect('recipes.nutrition', 'nutrition')       
+        .leftJoinAndSelect('recipes.nutrition', 'nutrition') 
+        .leftJoin('recipes.steps', 'steps')      
+        .addSelect(['categories.category_id', 'categories.title'])    
+        .addSelect(['steps.number', 'steps.step'])
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
 
@@ -176,8 +203,7 @@ export class RecipesService {
   
       const updateObj: Partial<Recipes> = {};
       if (updateRecipeDto.title) updateObj.title = updateRecipeDto.title;
-      if (updateRecipeDto.description) updateObj.description = updateRecipeDto.description;
-      if (updateRecipeDto.step) updateObj.step = updateRecipeDto.step;      
+      if (updateRecipeDto.description) updateObj.description = updateRecipeDto.description;      
       if (updateRecipeDto.difficulty_level) updateObj.difficulty_level = updateRecipeDto.difficulty_level;
   
       if (Object.keys(updateObj).length > 0) {
@@ -248,12 +274,38 @@ export class RecipesService {
             .execute();
         }
       }
+
+      if (updateRecipeDto.steps) {
+        await this.stepRepository
+          .createQueryBuilder()
+          .delete()
+          .from(Steps)
+          .where('recipe_id = :recipeId', { recipeId })
+          .execute();
+  
+        if (updateRecipeDto.steps.length > 0) {
+          const newSteps = updateRecipeDto.steps.map((item) => ({
+            ...item,
+            recipe: { recipe_id: recipeId } as Recipes,
+          }));
+  
+          await this.stepRepository
+            .createQueryBuilder()
+            .insert()
+            .into(Ingredient)
+            .values(newSteps)
+            .execute();
+        }
+      }
   
       const updatedRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
-        .leftJoinAndSelect('recipes.categories', 'categories')
+        .leftJoin('recipes.categories', 'categories')
         .leftJoinAndSelect('recipes.ingredients', 'ingredients')
-        .leftJoinAndSelect('recipes.nutrition', 'nutrition')       
+        .leftJoinAndSelect('recipes.nutrition', 'nutrition')
+        .leftJoin('recipes.steps', 'steps')     
+        .addSelect(['categories.category_id', 'categories.title'])    
+        .addSelect(['steps.number', 'steps.step'])  
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
   

@@ -12,6 +12,7 @@ import { TipsModule } from './tips/tips.module';
 import { ReviewModule } from './review/review.module';
 import { IngredientModule } from './ingredient/ingredient.module';
 import { NutritionModule } from './nutrition/nutrition.module';
+import { StepsModule } from './steps/steps.module';
 
 @Module({
   imports: [
@@ -31,7 +32,8 @@ import { NutritionModule } from './nutrition/nutrition.module';
     TipsModule,
     ReviewModule,
     IngredientModule,
-    NutritionModule
+    NutritionModule,
+    StepsModule
   ],  
 })
 export class AppModule {}

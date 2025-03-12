@@ -13,6 +13,7 @@ import { Categories } from '../../categories/entity/categories.entity';
 import { Review } from '../../review/entity/review.entity';
 import { Ingredient } from '../../ingredient/entity/ingredient.entity';
 import { Nutritrion } from '../../nutrition/entity/nutrition.entity';
+import { Steps } from '../../steps/entity/step.entity';
 
 export enum DifficultyLevel {
   EASY = 'Dễ',
@@ -55,10 +56,7 @@ export class Recipes {
   serving: number;
 
   @Column({ type: 'float', default: 0 })
-  rating: number;
-
-  @Column('text')
-  step: string;
+  rating: number;  
 
   // One Recipe can be favorited many times
   @OneToMany(() => Favorite, (favorite) => favorite.recipe)
@@ -72,6 +70,9 @@ export class Recipes {
 
   @OneToMany(() => Nutritrion, (nutrition) => nutrition.recipe, { cascade: true })
   nutrition: Nutritrion[];
+
+  @OneToMany(() => Steps, (step) => step.recipe, { cascade: true })
+  steps: Steps[];
 
   @ManyToMany(() => Categories, (categories) => categories.recipes, {
     onDelete: "CASCADE",

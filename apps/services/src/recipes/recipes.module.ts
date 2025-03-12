@@ -6,13 +6,15 @@ import { RecipesController } from './recipes.controller';
 import { CategoriesModule } from '../categories/categories.module';
 import { Ingredient } from '../ingredient/entity/ingredient.entity';
 import { Nutritrion } from '../nutrition/entity/nutrition.entity';
+import { Steps } from '../steps/entity/step.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       Recipes, 
       Ingredient, 
-      Nutritrion
+      Nutritrion,
+      Steps
     ]),
     CategoriesModule,
   ],
