@@ -11,6 +11,7 @@ import { HealcheckModule } from './healcheck/healcheck.module';
 import { TipsModule } from './tips/tips.module';
 import { ReviewModule } from './review/review.module';
 import { IngredientModule } from './ingredient/ingredient.module';
+import { NutritionModule } from './nutrition/nutrition.module';
 
 @Module({
   imports: [
@@ -29,7 +30,8 @@ import { IngredientModule } from './ingredient/ingredient.module';
     HealcheckModule,
     TipsModule,
     ReviewModule,
-    IngredientModule
+    IngredientModule,
+    NutritionModule
   ],  
 })
 export class AppModule {}

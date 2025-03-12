@@ -9,7 +9,7 @@ export class Ingredient {
   @Column()
   ingredient: string;
 
-  @Column()
+  @Column({ type: 'double precision' })
   quantity: number;
 
   @Column()

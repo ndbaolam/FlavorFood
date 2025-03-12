@@ -5,11 +5,19 @@ import { RecipesService } from './recipes.service';
 import { RecipesController } from './recipes.controller';
 import { CategoriesModule } from '../categories/categories.module';
 import { Ingredient } from '../ingredient/entity/ingredient.entity';
+import { Nutritrion } from '../nutrition/entity/nutrition.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Recipes, Ingredient]), CategoriesModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      Recipes, 
+      Ingredient, 
+      Nutritrion
+    ]),
+    CategoriesModule,
+  ],
   controllers: [RecipesController],
   providers: [RecipesService],
-  exports: [RecipesService]
+  exports: [RecipesService],
 })
 export class RecipesModule {}

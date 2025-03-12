@@ -16,6 +16,7 @@ import { RecipesService } from './recipes.service';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { Recipes } from './entity/recipes.entity';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
+import { Ingredient } from '../ingredient/entity/ingredient.entity';
 
 @Controller('recipes')
 export class RecipesController {
@@ -43,12 +44,12 @@ export class RecipesController {
     @Body(
       'categories',
       new ParseArrayPipe({ items: Number, separator: ',' })
-    ) idCategories: any[],
+    ) idCategories: any[],    
     @Body() { categories , ...recipeData}: CreateRecipeDto
   ) {
     const createRecipeDto = {
       ...recipeData,
-      categories: idCategories as number[],
+      categories: idCategories as number[],      
     }    
 
     return this.recipesService.create(createRecipeDto);

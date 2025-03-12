@@ -10,31 +10,27 @@ import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
 import { CategoriesService } from '../categories/categories.service';
 import { Ingredient } from '../ingredient/entity/ingredient.entity';
+import { Nutritrion } from '../nutrition/entity/nutrition.entity';
 
 @Injectable()
 export class RecipesService {
   constructor(
     @InjectRepository(Recipes)
-    private readonly recipesRepository: Repository<Recipes>,
-
-    private readonly categoriesService: CategoriesService,
+    private readonly recipesRepository: Repository<Recipes>,    
 
     @InjectRepository(Ingredient)
-    private readonly ingredientsRepository: Repository<Ingredient>
+    private readonly ingredientsRepository: Repository<Ingredient>,
+
+    @InjectRepository(Nutritrion)
+    private readonly nutritionRepository: Repository<Nutritrion>,
   ) {}
 
   async findOne(id: number): Promise<Recipes> {
     const recipe = await this.recipesRepository
       .createQueryBuilder('recipes')
-      .leftJoin('recipes.categories', 'categories')
-      .leftJoin('recipes.ingredients', 'ingredients')
-      .addSelect(['categories.category_id', 'categories.title'])      
-      .addSelect([
-        'ingredients.id',
-        'ingredients.ingredient',
-        'ingredients.quantity',
-        'ingredients.unit',
-      ])
+      .leftJoinAndSelect('recipes.categories', 'categories')
+      .leftJoinAndSelect('recipes.ingredients', 'ingredients')
+      .leftJoinAndSelect('recipes.nutrition', 'nutrition')
       .where('recipes.recipe_id = :id', { id })
       .getOne();
     if (!recipe) {
@@ -48,15 +44,9 @@ export class RecipesService {
       searchDto;
     const qb = this.recipesRepository
       .createQueryBuilder('recipes')
-      .leftJoin('recipes.categories', 'categories')
-      .leftJoin('recipes.ingredients', 'ingredients')
-      .addSelect(['categories.category_id', 'categories.title'])
-      .addSelect([
-        'ingredients.id',
-        'ingredients.ingredient',
-        'ingredients.quantity',
-        'ingredients.unit',
-      ]);
+      .leftJoinAndSelect('recipes.categories', 'categories')
+      .leftJoinAndSelect('recipes.ingredients', 'ingredients')
+      .leftJoinAndSelect('recipes.nutrition', 'nutrition');
 
     if (title) {
       qb.andWhere('recipes.title ILIKE :title', { title: `%${title}%` });
@@ -96,6 +86,7 @@ export class RecipesService {
       const {
         categories: categoryIds,
         ingredients,
+        nutrition,
         ...recipeDetail
       } = createRecipeDto;
 
@@ -141,17 +132,25 @@ export class RecipesService {
           .execute();
       }
 
+      if (nutrition?.length > 0) {
+        const nutritionToInsert = nutrition.map((nutrient) => ({
+          ...nutrient,
+          recipe: recipeId,
+        }));
+  
+        await this.nutritionRepository
+          .createQueryBuilder()
+          .insert()
+          .into(Nutritrion)
+          .values(nutritionToInsert)
+          .execute();
+      }
+
       const createdRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
-        .leftJoin('recipes.categories', 'categories')
-        .leftJoin('recipes.ingredients', 'ingredients')
-        .addSelect(['categories.category_id', 'categories.title'])
-        .addSelect([
-          'ingredients.id',
-          'ingredients.ingredient',
-          'ingredients.quantity',
-          'ingredients.unit',
-        ])
+        .leftJoinAndSelect('recipes.categories', 'categories')
+        .leftJoinAndSelect('recipes.ingredients', 'ingredients')
+        .leftJoinAndSelect('recipes.nutrition', 'nutrition')       
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
 
@@ -178,8 +177,7 @@ export class RecipesService {
       const updateObj: Partial<Recipes> = {};
       if (updateRecipeDto.title) updateObj.title = updateRecipeDto.title;
       if (updateRecipeDto.description) updateObj.description = updateRecipeDto.description;
-      if (updateRecipeDto.step) updateObj.step = updateRecipeDto.step;
-      if (updateRecipeDto.nutrition) updateObj.nutrition = updateRecipeDto.nutrition;
+      if (updateRecipeDto.step) updateObj.step = updateRecipeDto.step;      
       if (updateRecipeDto.difficulty_level) updateObj.difficulty_level = updateRecipeDto.difficulty_level;
   
       if (Object.keys(updateObj).length > 0) {
@@ -227,13 +225,35 @@ export class RecipesService {
             .execute();
         }
       }
+
+      if (updateRecipeDto.nutrition) {
+        await this.nutritionRepository
+          .createQueryBuilder()
+          .delete()
+          .from(Nutritrion)
+          .where('recipe_id = :recipeId', { recipeId })
+          .execute();
+  
+        if (updateRecipeDto.nutrition.length > 0) {
+          const newNutrition = updateRecipeDto.nutrition.map((item) => ({
+            ...item,
+            recipe: { recipe_id: recipeId } as Recipes,
+          }));
+  
+          await this.nutritionRepository
+            .createQueryBuilder()
+            .insert()
+            .into(Ingredient)
+            .values(newNutrition)
+            .execute();
+        }
+      }
   
       const updatedRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
-        .leftJoin('recipes.categories', 'categories')
-        .leftJoin('recipes.ingredients', 'ingredients')
-        .addSelect(['categories.category_id', 'categories.title'])
-        .addSelect(['ingredients.id', 'ingredients.ingredient', 'ingredients.quantity', 'ingredients.unit'])
+        .leftJoinAndSelect('recipes.categories', 'categories')
+        .leftJoinAndSelect('recipes.ingredients', 'ingredients')
+        .leftJoinAndSelect('recipes.nutrition', 'nutrition')       
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
   

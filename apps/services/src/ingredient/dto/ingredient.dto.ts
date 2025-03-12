@@ -1,17 +1,17 @@
 import { Type } from "class-transformer";
-import { IsOptional, IsNumber, IsString } from "class-validator";
+import { IsOptional, IsNumber, IsString, IsNotEmpty } from "class-validator";
 
 export class IngredientDto {
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   ingredient?: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
   @Type(() => Number)
-  quantity?: number;
+  quantity: number;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
   unit?: string;
 }

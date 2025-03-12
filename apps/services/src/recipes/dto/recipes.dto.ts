@@ -14,6 +14,7 @@ import { DifficultyLevel } from '../entity/recipes.entity';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { IngredientDto } from '../../ingredient/dto/ingredient.dto';
+import { Nutritrion } from '../../nutrition/entity/nutrition.entity';
 
 export class CreateRecipeDto {
   @IsNotEmpty()
@@ -49,11 +50,7 @@ export class CreateRecipeDto {
 
   @IsNotEmpty()
   @IsString()
-  step: string;
-
-  @IsNotEmpty()
-  @IsString()
-  nutrition: string;
+  step: string;  
 
   @IsOptional()  
   @Transform(({ value }) => {    
@@ -63,10 +60,20 @@ export class CreateRecipeDto {
   categories?: number[];
 
   @IsOptional()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => IngredientDto)  
+  @IsArray()  
+  @Transform(({ value }) => {    
+    return Array.isArray(value) ? value : [value];
+  })
+  @Type(() => IngredientDto)
   ingredients?: IngredientDto[];
+
+  @IsOptional()
+  @IsArray()  
+  @Transform(({ value }) => {    
+    return Array.isArray(value) ? value : [value];
+  })
+  @Type(() => Nutritrion)
+  nutrition?: Nutritrion[];
 }
 
 export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {
@@ -80,11 +87,7 @@ export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {
 
   @IsOptional()
   @IsString()
-  step?: string;
-
-  @IsOptional()
-  @IsString()
-  nutrition?: string;
+  step?: string;  
 
   @IsOptional()
   @IsEnum(DifficultyLevel)
