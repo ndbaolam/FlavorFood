@@ -7,12 +7,9 @@ import { RecipesModule } from './recipes/recipes.module';
 import { FavoriteModule } from './favorite/favorite.module';
 import { CategoriesModule } from './categories/categories.module';
 import { UploadModule } from './upload/upload.module';
-import { HealcheckModule } from './healcheck/healcheck.module';
+import { HealthcheckModule } from './healthcheck/healthcheck.module';
 import { TipsModule } from './tips/tips.module';
 import { ReviewModule } from './review/review.module';
-import { IngredientModule } from './ingredient/ingredient.module';
-import { NutritionModule } from './nutrition/nutrition.module';
-import { StepsModule } from './steps/steps.module';
 
 @Module({
   imports: [
@@ -28,12 +25,9 @@ import { StepsModule } from './steps/steps.module';
     FavoriteModule,
     CategoriesModule,
     UploadModule,
-    HealcheckModule,
+    HealthcheckModule,
     TipsModule,
-    ReviewModule,
-    IngredientModule,
-    NutritionModule,
-    StepsModule
+    ReviewModule,    
   ],  
 })
 export class AppModule {}

@@ -13,11 +13,11 @@ import {
 import { DifficultyLevel } from '../entity/recipes.entity';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
-import { IngredientDto } from '../../ingredient/dto/ingredient.dto';
-import { Nutritrion } from '../../nutrition/entity/nutrition.entity';
-import { Steps } from '../../steps/entity/step.entity';
-import { NutritionDto } from '../../nutrition/dto/nutrition.dto';
-import { StepDto } from '../../steps/dto/step.dto';
+import { IngredientDto } from '../ingredient/dto/ingredient.dto';
+import { Nutritrion } from '../nutrition/entity/nutrition.entity';
+import { Steps } from '../steps/entity/step.entity';
+import { NutritionDto } from '../nutrition/dto/nutrition.dto';
+import { StepDto } from '../steps/dto/step.dto';
 
 export class CreateRecipeDto {
   @IsNotEmpty()

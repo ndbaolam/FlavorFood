@@ -16,7 +16,7 @@ import { RecipesService } from './recipes.service';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { Recipes } from './entity/recipes.entity';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
-import { Ingredient } from '../ingredient/entity/ingredient.entity';
+import { Ingredient } from './ingredient/entity/ingredient.entity';
 
 @Controller('recipes')
 export class RecipesController {

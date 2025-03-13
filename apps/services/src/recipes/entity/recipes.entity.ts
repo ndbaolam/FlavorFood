@@ -11,9 +11,9 @@ import {
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Categories } from '../../categories/entity/categories.entity';
 import { Review } from '../../review/entity/review.entity';
-import { Ingredient } from '../../ingredient/entity/ingredient.entity';
-import { Nutritrion } from '../../nutrition/entity/nutrition.entity';
-import { Steps } from '../../steps/entity/step.entity';
+import { Ingredient } from '../ingredient/entity/ingredient.entity';
+import { Nutritrion } from '../nutrition/entity/nutrition.entity';
+import { Steps } from '../steps/entity/step.entity';
 
 export enum DifficultyLevel {
   EASY = 'Dễ',

@@ -8,9 +8,9 @@ import { Repository } from 'typeorm';
 import { Recipes } from './entity/recipes.entity';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
-import { Ingredient } from '../ingredient/entity/ingredient.entity';
-import { Nutritrion } from '../nutrition/entity/nutrition.entity';
-import { Steps } from '../steps/entity/step.entity';
+import { Ingredient } from './ingredient/entity/ingredient.entity';
+import { Nutritrion } from './nutrition/entity/nutrition.entity';
+import { Steps } from './steps/entity/step.entity';
 
 @Injectable()
 export class RecipesService {
@@ -34,7 +34,7 @@ export class RecipesService {
     .leftJoin('recipes.categories', 'categories')
     .leftJoinAndSelect('recipes.ingredients', 'ingredients')
     .leftJoinAndSelect('recipes.nutrition', 'nutrition')
-    .leftJoinAndSelect('recipes.steps', 'steps')
+    .leftJoin('recipes.steps', 'steps')
     .addSelect(['categories.category_id', 'categories.title'])    
     .addSelect(['steps.number', 'steps.step'])
     .where('recipes.recipe_id = :id', { id })
@@ -53,7 +53,7 @@ export class RecipesService {
       .leftJoin('recipes.categories', 'categories')
       .leftJoinAndSelect('recipes.ingredients', 'ingredients')
       .leftJoinAndSelect('recipes.nutrition', 'nutrition')
-      .leftJoinAndSelect('recipes.steps', 'steps')
+      .leftJoin('recipes.steps', 'steps')
       .addSelect(['categories.category_id', 'categories.title'])    
       .addSelect(['steps.number', 'steps.step']);
 
