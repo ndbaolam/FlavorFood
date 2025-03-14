@@ -103,7 +103,7 @@ export class RecipesService {
       const existingRecipe: Recipes = await this.recipesRepository
         .createQueryBuilder('recipes')
         .where('recipes.title = :title', { title: recipeDetail.title })
-        .getOne();
+        .getOne();      
 
       if (existingRecipe instanceof Recipes) {
         throw new ConflictException(
@@ -157,8 +157,8 @@ export class RecipesService {
       }
 
       if (steps?.length > 0) {
-        const stepsToInsert = steps.map((nutrient) => ({
-          ...nutrient,
+        const stepsToInsert = steps.map((step) => ({
+          ...step,
           recipe: recipeId,
         }));
   

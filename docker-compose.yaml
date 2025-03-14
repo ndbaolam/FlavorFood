@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgresql:
     # Set wal_level from replica (default) to logical

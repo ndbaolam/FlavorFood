@@ -9,14 +9,12 @@ import {
   Query,
   BadRequestException,
   Patch,
-  ParseIntPipe,
-  ParseArrayPipe,
+  ParseIntPipe,  
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { Recipes } from './entity/recipes.entity';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
-import { Ingredient } from './ingredient/entity/ingredient.entity';
 
 @Controller('recipes')
 export class RecipesController {
@@ -40,34 +38,17 @@ export class RecipesController {
   }
 
   @Post()
-  async create(
-    @Body(
-      'categories',
-      new ParseArrayPipe({ items: Number, separator: ',' })
-    ) idCategories: any[],    
-    @Body() { categories , ...recipeData}: CreateRecipeDto
-  ) {
-    const createRecipeDto = {
-      ...recipeData,
-      categories: idCategories as number[],      
-    }    
-
+  async create(    
+    @Body() createRecipeDto: CreateRecipeDto
+  ) {    
     return this.recipesService.create(createRecipeDto);
   }
 
   @Patch(':id')
   async update(
     @Param('id', ParseIntPipe) id: number,    
-    @Body(
-      'categories',
-      new ParseArrayPipe({ items: Number, separator: ',' })
-    ) idCategories: any[],
-    @Body() { categories , ...recipeData}: UpdateRecipeDto
-  ): Promise<Recipes> {    
-    const updateRecipeDto = {
-      ...recipeData,
-      categories: idCategories,
-    }
+    @Body() updateRecipeDto: UpdateRecipeDto
+  ): Promise<Recipes> {        
     return this.recipesService.update(Number(id), updateRecipeDto);
   }
 
