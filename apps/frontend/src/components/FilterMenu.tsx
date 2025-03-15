@@ -11,6 +11,8 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const selectedCategories = ["Soup", "Main dish", "Appetizer", "Side dish", "Drink"];
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -44,16 +46,22 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter }
           >
             Tất cả
           </button>
-          {categories.map((category) => (
-            <button
-              key={category.category_id}
-              onClick={() => setActiveFilter(category.category_id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
-                ${activeFilter === category.category_id ? 'bg-red-700 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
-            >
-              {category.title}
-            </button>
-          ))}
+
+          {categories
+            .filter(category => selectedCategories.includes(
+              category.title.charAt(0).toUpperCase() + category.title.slice(1)
+            ))
+            .map((category) => (
+              <button
+                key={category.category_id}
+                onClick={() => setActiveFilter(category.category_id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
+        ${activeFilter === category.category_id ? 'bg-red-700 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+              >
+                {category.title.charAt(0).toUpperCase() + category.title.slice(1)}
+              </button>
+            ))}
+
         </>
       )}
     </div>
