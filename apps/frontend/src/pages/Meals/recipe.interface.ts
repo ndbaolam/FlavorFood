@@ -8,8 +8,8 @@ export interface Recipe {
     image: string;
     categories: Category[];
     ingredients: Ingredient[];
-    step: Step[];
-    servings: number;
+    steps: Step[];
+    serving: number;
     difficulty_level: 'Dễ' | 'Trung bình' | 'Khó';
     nutrition: Nutrition[];
     ratings?: { averageRating: number; reviews: number };
@@ -17,9 +17,9 @@ export interface Recipe {
 }
 
 export interface Ingredient {
-    ingredient_id: number;
-    description: string;
-    name: string;
+    id: number;
+    ingredient: string;
+    quantity: string;
     unit: string;
 }
 
@@ -29,15 +29,13 @@ export interface Category {
 }
 
 export interface Step {
-    step_id: number;
-    step_number: number;
-    description: string;
+    number: number;
+    step: string;
 }
 
 export interface Nutrition {
-    nutrition_id: number;
-    calories: string;
-    protein: string;
-    fat: string;
-    carbohydrates: string;
+    id: number;        
+    name: string;      
+    amount: number;     
+    unit: string; 
 }
