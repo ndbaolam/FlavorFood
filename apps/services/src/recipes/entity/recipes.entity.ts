@@ -26,9 +26,7 @@ export class Recipes {
   @PrimaryGeneratedColumn()
   recipe_id: number;
 
-  @Column({
-    unique: true,
-  })
+  @Column()
   title: string;
 
   @Column()
