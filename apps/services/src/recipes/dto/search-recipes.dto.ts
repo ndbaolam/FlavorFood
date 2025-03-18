@@ -1,6 +1,6 @@
 import { IsOptional, IsString, IsInt, Min, IsEnum, IsArray } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { DifficultyLevel } from '../entity/recipes.entity';
+import { DifficultyLevel, Lang } from '../entity/recipes.entity';
 
 export class SearchRecipeDto {
   @IsOptional()
@@ -13,7 +13,11 @@ export class SearchRecipeDto {
 
   @IsOptional()
   @IsString()
-  difficulty_level?: string;    
+  difficulty_level?: string;  
+  
+  @IsOptional()
+  @IsEnum(Lang)
+  lang?: Lang;
 
   @IsOptional()
   @Type(() => Number)

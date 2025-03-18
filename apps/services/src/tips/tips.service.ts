@@ -75,7 +75,7 @@ export class TipsService {
     return tip;
   }
 
-  async search(title?: string, genreIds?: number[]): Promise<Tips[]> {
+  async search(title?: string, genreIds?: number[], offset?: number, limit?: number): Promise<Tips[]> {
     const query = this.tipsRepository
       .createQueryBuilder('tips')
       .leftJoinAndSelect('tips.genres', 'genre');
@@ -86,6 +86,13 @@ export class TipsService {
 
     if (genreIds && genreIds.length > 0) {
       query.andWhere('genre.genre_id IN (:...genreIds)', { genreIds });
+    }
+
+    if (offset) {
+      query.skip(offset);
+    }
+    if (limit) {
+      query.take(limit);
     }
 
     const tips = await query.getMany();

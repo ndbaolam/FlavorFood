@@ -10,7 +10,7 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { DifficultyLevel } from '../entity/recipes.entity';
+import { DifficultyLevel, Lang } from '../entity/recipes.entity';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { IngredientDto } from '../ingredient/dto/ingredient.dto';
@@ -30,6 +30,10 @@ export class CreateRecipeDto {
 
   @IsEnum(DifficultyLevel)
   difficulty_level: DifficultyLevel;
+
+  @IsOptional()
+  @IsEnum(Lang)
+  lang?: Lang;
 
   @IsOptional()
   time?: number;

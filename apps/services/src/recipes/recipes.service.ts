@@ -46,7 +46,7 @@ export class RecipesService {
   }
 
   async searchRecipes(searchDto: SearchRecipeDto): Promise<Recipes[]> {
-    const { title, description, difficulty_level, offset, limit, categories } =
+    const { title, description, difficulty_level, offset, limit, categories, lang } =
       searchDto;
     const qb = this.recipesRepository
       .createQueryBuilder('recipes')

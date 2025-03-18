@@ -41,9 +41,11 @@ export class TipsController {
   @Get('search')
   async search(
     @Query('title') title?: string,
-    @Query('genres', ParseArrayPipe) genreIds?: number[]
+    @Query('genres', ParseArrayPipe) genreIds?: number[],
+    @Query('offset', ParseIntPipe) offset?: number, 
+    @Query('limit', ParseIntPipe) limit?: number,
   ) {    
-    return this.tipsService.search(title, genreIds);
+    return this.tipsService.search(title, genreIds, offset, limit);
   }
 
   @Get(':id')
