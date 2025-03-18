@@ -2,9 +2,9 @@ import { Controller, Get, Post, Delete, Param, Body, UseGuards, Req, ParseIntPip
 import { FavoriteService } from './favorite.service';
 import { Favorite } from './entity/favorite.entity';
 import { CreateFavoriteDto } from './dto/favorite.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 import { RecipesService } from '../recipes/recipes.service';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @Controller('favorite')
 @UseGuards(JwtAuthGuard)
