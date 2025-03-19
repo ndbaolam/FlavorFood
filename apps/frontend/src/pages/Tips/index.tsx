@@ -3,10 +3,15 @@ import FilterTips from '../../components/FilterTips';
 import TipsCard from '../../components/TipsCard';
 import { TipsItem } from './Tip.interface';
 import axiosInstance from '../../services/axiosInstance';
+import SearchBox from '../../components/Search';
+
 
 const Tips: React.FC = () => {
   const [activeGenre, setActiveGenre] = useState<number | null>(null);
   const [tips, setTips] = useState<TipsItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalTips, setTotalTips] = useState(0);
+  const [searchTitle, setSearchTitle] = useState<string>('');
 
   // Hàm lấy dữ liệu Tips và lọc theo Genre
   const fetchTips = async () => {
@@ -44,12 +49,9 @@ const Tips: React.FC = () => {
           </p>
         </section>
 
-        <section className="flex justify-center items-center">
-          <FilterTips
-            activeFilter={activeGenre}
-            setActiveFilter={setActiveGenre}
-          />
-        </section>
+        <div className="justify-center items-center flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+          <SearchBox onSearch={setSearchTitle}/>
+        </div>
 
         {/* Tips Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">

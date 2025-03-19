@@ -11,6 +11,7 @@ import TipDetails, { clientLoader as tipLoader } from '../pages/Tips/TipDetails'
 import Profile from '../pages/Profile';
 import Favourite from '../pages/Favourite';
 import AdminLayout from '../layouts/Admin/AdminLayout';
+import Market from '../pages/Market';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -61,6 +62,10 @@ const routes: RouteObject[] = [
       {
         path: '*',
         element: <ErrorPage />,
+      },
+      {
+        path:'market',
+        element:<Market />
       },
     ],
   },
