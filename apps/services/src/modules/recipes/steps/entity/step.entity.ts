@@ -6,7 +6,7 @@ export class Steps {
   @PrimaryGeneratedColumn()
   id: number  
 
-  @Column()
+  @Column({ nullable: true })
   number: number
 
   @Column('text')

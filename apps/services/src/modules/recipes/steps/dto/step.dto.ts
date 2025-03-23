@@ -1,9 +1,11 @@
-import { IsNumber, IsString, IsNotEmpty } from "class-validator";
+import { Type } from "class-transformer";
+import { IsNumber, IsString, IsNotEmpty, IsOptional } from "class-validator";
 
 export class StepDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  number: number;
+  @Type(() => Number)
+  number?: number;
 
   @IsNotEmpty()  
   step: string;

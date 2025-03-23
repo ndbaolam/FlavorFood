@@ -36,6 +36,7 @@ export class CreateRecipeDto {
   lang?: Lang;
 
   @IsOptional()
+  @Type(() => Number)
   time?: number;
 
   @IsOptional()
