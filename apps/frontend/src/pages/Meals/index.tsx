@@ -6,7 +6,7 @@ import { Recipe } from './recipe.interface';
 import { useFavorite } from '../Favourite/FavoriteContext';
 import SearchBox from '../../components/Search';
 
-const LIMIT = 12;
+const LIMIT = 24;
 
 const Meals: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
@@ -19,7 +19,6 @@ const Meals: React.FC = () => {
 
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
 
-  // Fetch danh sách công thức
   const fetchRecipes = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -59,7 +58,6 @@ const Meals: React.FC = () => {
     fetchRecipes();
   }, [fetchRecipes]);
 
-  // Tính tổng số trang
   const totalPages = Math.ceil(totalRecipe / LIMIT);
 
   return (

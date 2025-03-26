@@ -2,7 +2,7 @@ import React from 'react';
 
 const AdminFooter: React.FC = () => {
   return (
-    <footer className="text-base-content p-10 mt-20" style={{ backgroundColor: '#f0f0f0' }}>
+    <footer className="text-base-content p-10 " style={{ backgroundColor: '#f0f0f0' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-3 gap-6">
         {/* Services Section */}
         <nav>
