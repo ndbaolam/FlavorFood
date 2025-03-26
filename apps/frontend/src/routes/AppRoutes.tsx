@@ -12,6 +12,10 @@ import Profile from '../pages/Profile';
 import Favourite from '../pages/Favourite';
 import AdminLayout from '../layouts/Admin/AdminLayout';
 import Market from '../pages/Market';
+import Dashboard from '../pages/Admin/Dashboard';
+import Accounts from '../pages/Admin/Account';
+import Posts from '../pages/Admin/Post';
+import Tip from '../pages/Admin/Tip';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -39,7 +43,7 @@ const routes: RouteObject[] = [
         path: 'dish/:slug.html',
         element: <RecipeDetail />,
         loader: recipeLoader,
-      }, //tips/asdfasdf.html
+      }, 
       {
         path: 'tips',
         element: <Tips/>
@@ -73,7 +77,13 @@ const routes: RouteObject[] = [
     path: '/admin',
     element: <AdminLayout />,
     errorElement: <ErrorPage />,
-    children: []
+    children: [
+      { path: "", element: <Dashboard /> },
+      { path: "accounts", element: <Accounts /> },
+      { path: "posts", element: <Posts /> },
+      { path: "tips", element: <Tip /> },
+     
+    ],
   }
 ];
 
