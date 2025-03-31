@@ -3,8 +3,7 @@ export interface Recipe {
     recipe_id: number;
     title: string;
     description: string;
-    time: string;
-    calories: number;
+    time: number; 
     image: string;
     categories: Category[];
     ingredients: Ingredient[];
@@ -12,14 +11,16 @@ export interface Recipe {
     serving: number;
     difficulty_level: 'Dễ' | 'Trung bình' | 'Khó';
     nutrition: Nutrition[];
-    ratings?: { averageRating: number; reviews: number };
+    rating: { averageRating: number; reviews: number };
     isFavorite?: boolean;
+    created_at: Date;
+    updated_at: Date;
 }
 
 export interface Ingredient {
     id: number;
     ingredient: string;
-    quantity: string;
+    quantity: number;
     unit: string;
 }
 
