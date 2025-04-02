@@ -4,6 +4,7 @@ import { Recipe } from '../../Meals/recipe.interface';
 import SearchBox from "../../../components/Search";
 import { PencilRuler, SquarePlus, Trash2 } from 'lucide-react';
 import CreatePost from "../../../components/Admin/Post/CreatePost";
+import RecipeDetailPopup from "../../../components/Admin/Post/RecipeDetailPopup";
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Recipe[]>([
     {
@@ -70,6 +71,7 @@ const Posts: React.FC = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState<number[]>([]);
   const [editingPost, setEditingPost] = useState<Recipe | null>(null);
+  const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
 
   const handleAddPost = (newPost: Recipe) => {
     if (editingPost) {
@@ -81,6 +83,13 @@ const Posts: React.FC = () => {
     setIsPopupOpen(false);
   };
 
+  const handleRecipeClick = (recipe: Recipe) => {
+    setSelectedRecipe(recipe);
+  };
+
+  const closeRecipePopup = () => {
+    setSelectedRecipe(null);
+  };
 
   { isPopupOpen && <CreatePost onClose={() => setIsPopupOpen(false)} onSubmit={handleAddPost} /> }
 
@@ -161,7 +170,8 @@ const Posts: React.FC = () => {
       <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">
         <table className="min-w-full bg-white shadow-md rounded-lg border">
           <thead>
-            <tr className="bg-blue-700 text-white text-left">
+            <tr
+             className="bg-blue-700 text-white text-left">
               <th className="p-3">
                 <input
                   type="checkbox"
@@ -181,7 +191,10 @@ const Posts: React.FC = () => {
           <tbody>
             {filteredPosts.length > 0 ? (
               filteredPosts.map((post) => (
-                <tr key={post.recipe_id} className="border-b hover:bg-gray-100 ">
+                <tr 
+                key={post.recipe_id} 
+                className="border-b hover:bg-gray-100 "
+                onClick={() => handleRecipeClick(post)} >
                   <td className="p-3">
                     <input
                       type="checkbox"
@@ -195,13 +208,20 @@ const Posts: React.FC = () => {
                   <td className="p-3">{new Date(post.updated_at).toLocaleDateString()}</td>
                   <td className="p-3 flex justify-center space-x-3">
                     <button
-                      onClick={() => handleEdit(post.recipe_id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEdit(post.recipe_id);
+                      }}
                       className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
                     >
                       <PencilRuler className="text-blue-600 hover:text-blue-800" size={18} />
                     </button>
                     <button
-                      onClick={() => handleDelete(post.recipe_id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(post.recipe_id);
+                      }}
+            
                       className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
                     >
                       <Trash2 className="text-red-600 hover:text-red-800" size={18} />
@@ -219,6 +239,9 @@ const Posts: React.FC = () => {
           </tbody>
         </table>
       </div>
+      {selectedRecipe && (
+        <RecipeDetailPopup recipe={selectedRecipe} onClose={closeRecipePopup} />
+      )}
     </div>
   );
 };
