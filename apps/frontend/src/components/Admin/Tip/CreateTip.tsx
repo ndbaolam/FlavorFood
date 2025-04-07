@@ -10,7 +10,7 @@ interface TipDetailPopupProps {
     isEditing?: boolean;
 }
 
-const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubmit, isEditing }) => {
+const CreateTip: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubmit, isEditing }) => {
     const [title, setTitle] = useState<string>(initialData?.title || "");
     const [thumbnail, setThumbnail] = useState<string | null>(initialData?.thumbnail || null);
     const [content, setContent] = useState<string>(initialData?.content || "");
@@ -21,6 +21,9 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, o
         let errors: { [key: string]: string } = {};
         if (!title.trim()) {
             errors.title = "Tên mẹo vặt là bắt buộc.";
+        }
+        if (!content.trim()) {
+            errors.content = "Nội dung mẹo vặt là bắt buộc.";
         }
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
@@ -41,13 +44,14 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, o
         if (validateForm()) {
             const newTip: TipsItem = {
                 tip_id: initialData?.tip_id || 0, 
-                title: title,
+                title,
                 thumbnail: thumbnail || "",
-                content: content,
+                content,
                 genres: initialData?.genres || [],
-                createdAt: initialData?.createdAt || new Date(),
+                createdAt: initialData?.createdAt ? new Date(initialData.createdAt) : new Date(),
                 updatedAt: new Date(),
-            };
+              };
+              
             onSubmit(newTip);
             if (isEditing) {
                 toast.success("Đã sửa mẹo vặt thành công!");
@@ -71,7 +75,7 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, o
                 </div>
                 <div className="grid grid-cols-1 gap-4">
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">Tiêu đề</label>
+                    <label className="block  font-medium ">Tiêu đề</label>
                     <input
                         type="text"
                         value={title}
@@ -81,7 +85,7 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, o
                     {formErrors.title && <p className="text-red-500 text-xs italic">{formErrors.title}</p>}
                 </div>
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">Ảnh Thumbnail</label>
+                    <label className="block  font-medium ">Ảnh Thumbnail</label>
                     {imageInputType === "url" ? (
                         <input
                             type="text"
@@ -109,12 +113,13 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, o
                     {thumbnail && <img src={thumbnail} alt="Thumbnail" className="mt-2 w-full rounded-md" />}
                 </div>
                 <div className="mb-4">
-                    <label className="block text-sm font-medium text-gray-700">Nội dung</label>
+                    <label className="block  font-medium ">Nội dung</label>
                     <textarea
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
                     />
+                     {formErrors.content && <p className="text-red-500 text-xs italic">{formErrors.content}</p>}
                 </div>
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
@@ -127,4 +132,4 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, o
     );
 };
 
-export default TipDetailPopup;
+export default  CreateTip;
