@@ -7,4 +7,6 @@ export interface TipsItem {
     genre_id: number;
     title: string;
   }[];
+  createdAt: String, 
+  updatedAt: String,
 }

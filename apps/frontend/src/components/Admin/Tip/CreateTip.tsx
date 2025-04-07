@@ -1,0 +1,130 @@
+import { TipsItem } from "apps/frontend/src/pages/Tips/Tip.interface";
+import { X } from "lucide-react";
+import React, { useState } from "react";
+import { toast } from 'react-toastify'; // Import toast
+
+interface TipDetailPopupProps {
+    initialData?: TipsItem;
+    onClose: () => void;
+    onSubmit: (data: TipsItem) => void;
+    isEditing?: boolean;
+}
+
+const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubmit, isEditing }) => {
+    const [title, setTitle] = useState<string>(initialData?.title || "");
+    const [thumbnail, setThumbnail] = useState<string | null>(initialData?.thumbnail || null);
+    const [content, setContent] = useState<string>(initialData?.content || "");
+    const [imageInputType, setImageInputType] = useState<"url" | "file">("url");
+    const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
+    const validateForm = (): boolean => {
+        let errors: { [key: string]: string } = {};
+        if (!title.trim()) {
+            errors.title = "Tên mẹo vặt là bắt buộc.";
+        }
+        setFormErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setThumbnail(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    const handleSubmit = () => {
+        if (validateForm()) {
+            const newTip: TipsItem = {
+                tip_id: initialData?.tip_id || 0, 
+                title: title,
+                thumbnail: thumbnail || "",
+                content: content,
+                genres: initialData?.genres || [],
+                createdAt: initialData?.createdAt || new Date(),
+                updatedAt: new Date(),
+            };
+            onSubmit(newTip);
+            if (isEditing) {
+                toast.success("Đã sửa mẹo vặt thành công!");
+            } else {
+                toast.success("Đã tạo mẹo vặt thành công!");
+            }
+            onClose();
+        }
+    };
+
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50  ">
+             <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-4xl overflow-y-auto max-h-[90vh]">
+             <div className="flex justify-between items-center mb-4">
+             <div className="flex-grow text-center">
+                <h2 className="text-3xl font-semibold text-black">{isEditing ? "Sửa mẹo vặt" : "Tạo mẹo vặt"}</h2>
+                </div>
+                <button onClick={onClose} className="text-black font-bold text-2xl">
+            <X size={36} />
+          </button>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Tiêu đề</label>
+                    <input
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    />
+                    {formErrors.title && <p className="text-red-500 text-xs italic">{formErrors.title}</p>}
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Ảnh Thumbnail</label>
+                    {imageInputType === "url" ? (
+                        <input
+                            type="text"
+                            value={thumbnail || ""}
+                            onChange={(e) => setThumbnail(e.target.value)}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        />
+                    ) : (
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                        />
+                    )}
+                    <div className="mt-2">
+                        <button
+                            type="button"
+                            onClick={() => setImageInputType(imageInputType === "url" ? "file" : "url")}
+                            className="text-blue-600 hover:text-blue-800"
+                        >
+                            {imageInputType === "url" ? "Upload File" : "Enter URL"}
+                        </button>
+                    </div>
+                    {thumbnail && <img src={thumbnail} alt="Thumbnail" className="mt-2 w-full rounded-md" />}
+                </div>
+                <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700">Nội dung</label>
+                    <textarea
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                    />
+                </div>
+                </div>
+                <div className="flex justify-end gap-2 mt-4">
+          <button onClick={handleSubmit} className="text-white bg-blue-600 px-4 py-2 rounded-lg">
+            {isEditing ? 'Cập nhật công thức' : 'Tạo công thức'}
+          </button>
+        </div>
+            </div>
+        </div>
+    );
+};
+
+export default TipDetailPopup;

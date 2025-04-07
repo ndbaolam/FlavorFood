@@ -1,12 +1,13 @@
 import { toast } from "react-toastify";
 import { Recipe, Ingredient, Category, Step, Nutrition } from "../../../pages/Meals/recipe.interface";
 import React, { useState } from "react";
+import { X } from "lucide-react";
 
 interface CreatePostProps {
   initialData?: Recipe;
   onClose: () => void;
   onSubmit: (data: Recipe) => void;
-  isEditing?: boolean; 
+  isEditing?: boolean;
 }
 
 const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData, isEditing }) => {
@@ -125,63 +126,71 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
         toast.success("Đã tạo công thức thành công!");
       }
       onClose();
-      
+
     }
   };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50  ">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-4xl overflow-y-auto max-h-[90vh]">
-        <h2 className="text-2xl font-semibold mb-4 text-center text-blue-700">Tạo công thức</h2>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-5xl overflow-y-auto max-h-[90vh] ml-32">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex-grow text-center">
+            <h2 className="text-3xl font-semibold text-black">{isEditing ? "Sửa công thức" : "Tạo công thức"}</h2>
+          </div>
+          <button onClick={onClose} className="text-black font-bold text-2xl">
+            <X size={36} />
+          </button>
+        </div>
+
         <div className="grid grid-cols-1 gap-4">
-         
-            <div>
-              <label className="block font-medium">Tên món ăn</label>
-              <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border rounded-lg p-2 w-full min-h-[40px]" />
-              {formErrors.title && <p className="text-red-500">{formErrors.title}</p>}
+
+          <div>
+            <label className="block font-medium">Tên món ăn</label>
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="border rounded-lg p-2 w-full min-h-[40px]" />
+            {formErrors.title && <p className="text-red-500">{formErrors.title}</p>}
+          </div>
+          <div>
+            <label className="block font-medium">Hình ảnh</label>
+            <div className="flex space-x-4">
+              <label>
+                <input
+                  type="radio"
+                  value="url"
+                  checked={imageInputType === "url"}
+                  onChange={() => setImageInputType("url")}
+                />
+                URL
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="file"
+                  checked={imageInputType === "file"}
+                  onChange={() => setImageInputType("file")}
+                />
+                Tải ảnh lên
+              </label>
             </div>
-            <div>
-  <label className="block font-medium">Hình ảnh</label>
-  <div className="flex space-x-4">
-    <label>
-      <input
-        type="radio"
-        value="url"
-        checked={imageInputType === "url"}
-        onChange={() => setImageInputType("url")}
-      />
-      URL
-    </label>
-    <label>
-      <input
-        type="radio"
-        value="file"
-        checked={imageInputType === "file"}
-        onChange={() => setImageInputType("file")}
-      />
-      Tải lên
-    </label>
-  </div>
-  {imageInputType === "url" ? (
-    <input
-      type="text"
-      value={image}
-      onChange={(e) => setImage(e.target.value)}
-      className="border rounded-lg p-2 w-full min-h-[40px] mt-2"
-      placeholder="Nhập URL hình ảnh"
-    />
-  ) : (
-    <input
-      type="file"
-      accept="image/*"
-      onChange={handleImageUpload}
-      className="border rounded-lg p-2 w-full min-h-[40px] mt-2"
-    />
-  )}
-  {formErrors.image && <p className="text-red-500">{formErrors.image}</p>}
-  {image && <img src={image} alt="Preview" className="mt-2 max-w-full max-h-40" />}
-</div>
-         
+            {imageInputType === "url" ? (
+              <input
+                type="text"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+                className="border rounded-lg p-2 w-full min-h-[40px] mt-2"
+                placeholder="Nhập URL hình ảnh"
+              />
+            ) : (
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="border rounded-lg p-2 w-full min-h-[40px] mt-2"
+              />
+            )}
+            {formErrors.image && <p className="text-red-500">{formErrors.image}</p>}
+            {image && <img src={image} alt="Preview" className="mt-2 max-w-full max-h-40" />}
+          </div>
+
           <div>
             <label className="block font-medium">Mô tả</label>
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} className="border rounded-lg p-2 w-full h-20" />
@@ -387,61 +396,59 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
             </div>
           </div>
           <div>
-          <label className="block font-medium">Các bước thực hiện</label>
-          <ul>
-            {steps.map((step, index) => (
-              <li key={index} className="flex items-center justify-between">
-                <span
-                  onClick={() => {
-                    const editedStep = prompt(
-                      "Chỉnh sửa bước thực hiện",
-                      step.step
-                    );
-                    if (editedStep && editedStep.trim()) {
-                      const updatedSteps = [...steps];
-                      updatedSteps[index] = {
-                        ...step,
-                        step: editedStep.trim(),
-                      };
-                      setSteps(updatedSteps);
-                    }
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {step.number}. {step.step}
-                </span>
-                <button
-                  onClick={() => setSteps(steps.filter((_, i) => i !== index))}
-                  className="text-red-500 px-2"
-                >
-                  X
-                </button>
-              </li>
-            ))}
-          </ul>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newStep}
-              onChange={(e) => setNewStep(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && newStep.trim()) {
-                  setSteps([...steps, { number: steps.length + 1, step: newStep.trim() }]);
-                  setNewStep("");
-                }
-              }}
-              placeholder="Nhập bước thực hiện nhấn Enter để thêm bước mới"
-              className="border rounded-lg p-2 w-full mt-2"
-            />
+            <label className="block font-medium">Các bước thực hiện</label>
+            <ul>
+              {steps.map((step, index) => (
+                <li key={index} className="flex items-center justify-between">
+                  <span
+                    onClick={() => {
+                      const editedStep = prompt(
+                        "Chỉnh sửa bước thực hiện",
+                        step.step
+                      );
+                      if (editedStep && editedStep.trim()) {
+                        const updatedSteps = [...steps];
+                        updatedSteps[index] = {
+                          ...step,
+                          step: editedStep.trim(),
+                        };
+                        setSteps(updatedSteps);
+                      }
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {step.number}. {step.step}
+                  </span>
+                  <button
+                    onClick={() => setSteps(steps.filter((_, i) => i !== index))}
+                    className="text-red-500 px-2"
+                  >
+                    X
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newStep}
+                onChange={(e) => setNewStep(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && newStep.trim()) {
+                    setSteps([...steps, { number: steps.length + 1, step: newStep.trim() }]);
+                    setNewStep("");
+                  }
+                }}
+                placeholder="Nhập bước thực hiện nhấn Enter để thêm bước mới"
+                className="border rounded-lg p-2 w-full mt-2"
+              />
+            </div>
           </div>
         </div>
-        </div>
         <div className="flex justify-end gap-2 mt-4">
-          <button onClick={onClose} className="text-white bg-gray-500 px-4 py-2 rounded-lg">Hủy</button>
           <button onClick={handleSubmit} className="text-white bg-blue-600 px-4 py-2 rounded-lg">
-            {isEditing ? 'Cập nhật' : 'Tạo'}
+            {isEditing ? 'Cập nhật công thức' : 'Tạo công thức'}
           </button>
-
         </div>
       </div>
     </div>

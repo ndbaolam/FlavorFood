@@ -11,10 +11,10 @@ interface RecipeDetailPopupProps {
 const RecipeDetailPopup: React.FC<RecipeDetailPopupProps> = ({ recipe, onClose }) => {
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50  ">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-6xl overflow-y-auto max-h-[90vh] ml-32">
+      <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-6xl overflow-y-auto max-h-[90vh] ml-44">
         <article>
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-4xl font-bold mb-4">{recipe.title}</h1>
+            <h2 className="text-3xl font-bold mb-4">{recipe.title}</h2>
             <button onClick={onClose} className="text-black  font-bold text-2xl">
               <X size={36} />
             </button>
