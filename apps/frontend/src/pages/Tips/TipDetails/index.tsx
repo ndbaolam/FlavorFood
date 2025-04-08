@@ -1,5 +1,5 @@
 import { LoaderFunctionArgs, useLoaderData } from "react-router-dom";
-import { TipsItem } from '../Tip.interface';
+import { TipsItem } from '../tip.interface';
 import axiosInstance from "../../../services/axiosInstance";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {

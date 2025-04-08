@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import FilterTips from '../../components/FilterTips';
 import TipsCard from '../../components/TipsCard';
-import { TipsItem } from './Tip.interface';
+import { TipsItem } from './tip.interface';
 import axiosInstance from '../../services/axiosInstance';
 import SearchBox from '../../components/Search';
 

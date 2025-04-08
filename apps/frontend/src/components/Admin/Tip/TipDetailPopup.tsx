@@ -1,19 +1,13 @@
-import { TipsItem } from "apps/frontend/src/pages/Tips/Tip.interface";
+import { TipsItem } from "apps/frontend/src/pages/Tips/tip.interface";
 import { X } from "lucide-react";
 import React from "react";
 
 interface TipDetailPopupProps {
     tip: TipsItem;
     onClose: () => void;
-
-
 }
 
 const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ tip, onClose }) => {
-
-
-
-
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50 ">
             <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-6xl overflow-y-auto max-h-[90vh] ml-44">
@@ -32,7 +26,7 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ tip, onClose }) => {
                         />
                     </div>
                     <div
-                        className="w-full text-lg leading-relaxed"
+                        className="prose max-w-none"
                         dangerouslySetInnerHTML={{ __html: tip.content }}
                     />
                 </article>

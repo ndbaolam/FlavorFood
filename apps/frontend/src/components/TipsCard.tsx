@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import formatString from '../services/formatString';
-import { TipsItem } from '../pages/Tips/Tip.interface';
+import { TipsItem } from '../pages/Tips/tip.interface';
 
 interface TipsCardProps {
   tips: TipsItem;

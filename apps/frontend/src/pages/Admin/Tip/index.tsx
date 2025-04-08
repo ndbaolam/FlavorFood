@@ -1,38 +1,63 @@
-import React, { useState } from 'react';
-import { TipsItem } from '../../Tips/Tip.interface';
+import React, { useEffect, useState } from 'react';
+import { TipsItem } from '../../Tips/tip.interface';
 import { SquarePlus, Trash2, PencilRuler } from 'lucide-react';
 import CreateTip from "../../../components/Admin/Tip/CreateTip";
 import SearchBox from "../../../components/Search";
 import TipDetailPopup from "../../../components/Admin/Tip/TipDetailPopup";
-import { toast } from 'react-toastify'; // Import toast
+import { toast } from 'react-toastify';
+import axiosInstance from '../../../services/axiosInstance';
 
 const Tip: React.FC = () => {
-  const [tip, setTip] = useState<TipsItem[]>([
-    {
-      "tip_id": 125,
-      "title": "MẸO NẤU MÓN HẦM NHANH",
-      "thumbnail": "https://assets.unileversolutions.com/v1/1188474.jpg",
-      "content": "<div class=\"cmp-text cmp-text-login-detail\" data-cmp-data-layer='{\"text-1d4709c66d\":{\"@type\":\"unilever/components/text\",\"repo:modifyDate\":\"2023-07-13T08:20:03Z\",\"xdm:text\":\"&lt;p&gt;Món hầm là món ăn giàu dinh dưỡng. Thế nhưng, công việc hầm xương luôn khiến các bà nội trợ cảm thấy nôn nóng tốn khá nhiều thời gian. Knorr sẽ tư vấn vài mẹo giúp bạn hầm xương nhanh nhừ mà vẫn đảm bảo dinh dưỡng cho món ăn.&lt;/p&gt;\\r\\n&lt;h2 class=\\\"sr-only\\\"&gt;nhanh&lt;/h2&gt;\\r\\n&lt;h3&gt;Sơ chế&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;p&gt;Phải làm sạch xương trước khi hầm để nước dùng trong hơn, ít bọt bẩn.&lt;/p&gt;\\r\\n&lt;p&gt;Cách làm sạch đơn giản nhất là rửa xương bằng nước muối loãng. Sau đó chần qua xương với nước sôi.&lt;/p&gt;\\r\\n&lt;h3 style=\\\"text-align: left;\\\"&gt;Để nồi nước hầm xương trong và thơm ngon, bạn có thể cho vào nồi một ít củ hành tím đã nướng chín. Nhớ thường xuyên hớt bọt trong quá trình hầm để nước dùng được trong.&lt;/h3&gt;\\r\\n&lt;h3 style=\\\"text-align: center;\\\"&gt;&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;h3&gt;Chế biến&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;h3&gt;&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;h3&gt;1.Sử dụng nồi áp suất&amp;nbsp;&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;p&gt;Cho xương đã rửa sạch vào nồi áp suất, đậy kín.Tùy theo số lượng xương cần hầm mà điều chỉnh thời gian cho phù hợp, sau đó tắt bếp để nguội. Ưu điểm của cách làm này là tiết kiệm nhiên liệu và thời gian, không làm mất đi chất dinh dưỡng của xương.&lt;/p&gt;\\r\\n&lt;h3&gt;2.Sử dụng nồi thường&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;p&gt;Cho xương vào hầm trong nồi, đợi nước sôi thì hạ lửa, đun liu riu. Lưu ý không đậy kín nắp trong quá trình hầm xương, vì sẽ làm nước dùng bị đục. Lửa hầm xương cũng để nhỏ để lấy hết nước ngọt trong xương tiết ra, giúp nước dùng ngon hơn.&lt;/p&gt;\\r\\n&lt;p&gt;Nên hầm xương tối thiểu trong một tiếng, nhưng tốt nhất là hầm cho đến khi phần thịt bám quanh xương chín mềm, nước dùng sẽ ngọt ngon hơn. Cũng không nên hầm xương quá lâu vì nước dùng sẽ bị đục và có vị chua..&lt;/p&gt;\\r\\n&lt;h3&gt;3.Sử dụng giấm ăn&amp;nbsp;&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;p&gt;Một cách khác giúp xương nhanh mềm, thịt ngon ngọt là cho vào nồi một chút giấm ăn, Tác dụng của giấm là giảm đi sự phân hủy vitamin trong quá trình đun nấu.&lt;/p&gt;\\r\\n&lt;h3&gt;4.Sử dụng các loại thực phẩm dinh dưỡng&amp;nbsp;&amp;nbsp;&lt;/h3&gt;\\r\\n&lt;p&gt;Bạn có thể cho vào nồi một vài miếng thơm, hành tây, gừng, sả, khoai tây, cà rốt…để hầm cùng xương. Những thực phẩm dinh dưỡng này sẽ giúp cho xương nhanh mềm và nước dùng thì ngon ngọt hơn.&lt;/p&gt;\\r\\n\"}}' id=\"text-1d4709c66d\">\n<div class=\"nonLoggedIn\">\n<p>Món hầm là món ăn giàu dinh dưỡng. Thế nhưng, công việc hầm xương luôn khiến các bà nội trợ cảm thấy nôn nóng tốn khá nhiều thời gian. Knorr sẽ tư vấn vài mẹo giúp bạn hầm xương nhanh nhừ mà vẫn đảm bảo dinh dưỡng cho món ăn.</p>\n<h2 class=\"sr-only\">nhanh</h2>\n<h3>Sơ chế </h3>\n<p>Phải làm sạch xương trước khi hầm để nước dùng trong hơn, ít bọt bẩn.</p>\n<p>Cách làm sạch đơn giản nhất là rửa xương bằng nước muối loãng. Sau đó chần qua xương với nước sôi.</p>\n<h3 style=\"text-align: left;\">Để nồi nước hầm xương trong và thơm ngon, bạn có thể cho vào nồi một ít củ hành tím đã nướng chín. Nhớ thường xuyên hớt bọt trong quá trình hầm để nước dùng được trong.</h3>\n<h3 style=\"text-align: center;\"> </h3>\n<h3>Chế biến </h3>\n<h3> </h3>\n<h3>1.Sử dụng nồi áp suất  </h3>\n<p>Cho xương đã rửa sạch vào nồi áp suất, đậy kín.Tùy theo số lượng xương cần hầm mà điều chỉnh thời gian cho phù hợp, sau đó tắt bếp để nguội. Ưu điểm của cách làm này là tiết kiệm nhiên liệu và thời gian, không làm mất đi chất dinh dưỡng của xương.</p>\n<h3>2.Sử dụng nồi thường </h3>\n<p>Cho xương vào hầm trong nồi, đợi nước sôi thì hạ lửa, đun liu riu. Lưu ý không đậy kín nắp trong quá trình hầm xương, vì sẽ làm nước dùng bị đục. Lửa hầm xương cũng để nhỏ để lấy hết nước ngọt trong xương tiết ra, giúp nước dùng ngon hơn.</p>\n<p>Nên hầm xương tối thiểu trong một tiếng, nhưng tốt nhất là hầm cho đến khi phần thịt bám quanh xương chín mềm, nước dùng sẽ ngọt ngon hơn. Cũng không nên hầm xương quá lâu vì nước dùng sẽ bị đục và có vị chua..</p>\n<h3>3.Sử dụng giấm ăn  </h3>\n<p>Một cách khác giúp xương nhanh mềm, thịt ngon ngọt là cho vào nồi một chút giấm ăn, Tác dụng của giấm là giảm đi sự phân hủy vitamin trong quá trình đun nấu.</p>\n<h3>4.Sử dụng các loại thực phẩm dinh dưỡng  </h3>\n<p>Bạn có thể cho vào nồi một vài miếng thơm, hành tây, gừng, sả, khoai tây, cà rốt…để hầm cùng xương. Những thực phẩm dinh dưỡng này sẽ giúp cho xương nhanh mềm và nước dùng thì ngon ngọt hơn.</p>\n</div>\n</div>",
-      "createdAt": "2025-04-02T10:46:30.992Z",
-      "updatedAt": "2025-04-02T10:46:30.992Z",
-      "genres": []
-    }
-  ]);
-
+  const [tip, setTip] = useState<TipsItem[]>([]);
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedTip, setSelectedTip] = useState<TipsItem | null>(null);
   const [selectedTipIds, setSelectedTipIds] = useState<number[]>([]);
   const [editingTip, setEditingTip] = useState<TipsItem | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleAddTip = (newTip: TipsItem) => {
-    if (editingTip) {
-      setTip(tip.map((t) => (t.tip_id === editingTip.tip_id ? newTip : t)));
+  useEffect(() => {
+    const fetchTip = async () => {
+      setLoading(true);
+      setError(null); 
+      try {
+        const response = await axiosInstance.get<TipsItem[]>('/tips/all', {
+          withCredentials: true,
+        });
+        setTip(response.data);
+      } catch (err: any) {
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTip();
+  }, []);
+
+  const handleAddTip = async (newTip: TipsItem) => {
+    setError(null);
+    try {
+      const method = editingTip ? 'PUT' : 'POST';
+      const url = editingTip ? `` : 'tips/create';
+
+      await axiosInstance({
+        method,
+        url,
+        data: newTip,
+        withCredentials: true,
+      });
+
+      const response = await axiosInstance.get<TipsItem[]>('/tips/all', {
+        withCredentials: true,
+      });
+      setTip(response.data);
+
+      setIsPopupOpen(false);
       setEditingTip(null);
-    } else {
-      setTip([...tip, { ...newTip, tip_id: tip.length + 1 }]);
+    } catch (err: any) {
+      setError(err.message || '');
     }
-    setIsPopupOpen(false);
   };
 
   const handleTipClick = (tip: TipsItem) => {
@@ -49,13 +74,39 @@ const Tip: React.FC = () => {
     );
   };
 
-  const handleDelete = (tipId: number) => {
-    setTip(tip.filter((t) => t.tip_id !== tipId));
+  const handleDelete = async (tipId: number) => {
+    setError(null);
+    try {
+      await axiosInstance.delete(`/tips/${tipId}`, {
+        withCredentials: true,
+      });
+
+      const response = await axiosInstance.get<TipsItem[]>('/tips/all', {
+        withCredentials: true,
+      });
+      setTip(response.data);
+    } catch (err: any) {
+    }
   };
 
-  const handleBulkDelete = () => {
-    setTip(tip.filter((t) => !selectedTipIds.includes(t.tip_id)));
-    setSelectedTipIds([]);
+  const handleBulkDelete = async () => {
+    setError(null);
+    try {
+      await Promise.all(
+        selectedTipIds.map((id) =>
+          axiosInstance.delete(`/tips/${id}`, { withCredentials: true })
+        )
+      );
+
+      const response = await axiosInstance.get<TipsItem[]>('/tips/all', {
+        withCredentials: true,
+      });
+      setTip(response.data);
+
+      setSelectedTipIds([]);
+    } catch (err: any) {
+     
+    }
   };
 
   const handleEdit = (tipId: number) => {
@@ -69,7 +120,6 @@ const Tip: React.FC = () => {
   const filteredTips = tip.filter((t) =>
     t.title.toLowerCase().includes(searchTitle.toLowerCase())
   );
-
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
       <div className="mb-4 flex items-center justify-between p-4">
@@ -147,8 +197,8 @@ const Tip: React.FC = () => {
                     />
                   </td>
                   <td className="p-3">{t.title}</td>
-                  <td className="p-3">{new Date(t.createdAt.toString()).toLocaleDateString()}</td>
-                  <td className="p-3">{new Date(t.updatedAt.toString()).toLocaleDateString()}</td>
+                  <td className="p-3"> {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="p-3">{t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : 'N/A'}</td>
 
                   <td className="p-3 flex justify-center space-x-3">
                     <button
