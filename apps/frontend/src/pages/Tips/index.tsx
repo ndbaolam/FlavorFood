@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import FilterTips from '../../components/FilterTips';
 import TipsCard from '../../components/TipsCard';
-import { TipsItem } from './Tip.interface';
+import { TipsItem } from './tip.interface';
 import axiosInstance from '../../services/axiosInstance';
 import SearchBox from '../../components/Search';
 
@@ -50,7 +50,7 @@ const Tips: React.FC = () => {
         </section>
 
         <div className="justify-center items-center flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          <SearchBox onSearch={setSearchTitle}/>
+        <SearchBox onSearch={setSearchTitle} isPopupOpen={false}/>
         </div>
 
         {/* Tips Grid */}
