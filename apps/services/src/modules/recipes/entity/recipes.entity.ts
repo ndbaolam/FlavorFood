@@ -31,7 +31,7 @@ export class Recipes {
   @PrimaryGeneratedColumn()
   recipe_id: number;
 
-  @Column()
+  @Column({ nullable: false })
   title: string;
 
   @Column()

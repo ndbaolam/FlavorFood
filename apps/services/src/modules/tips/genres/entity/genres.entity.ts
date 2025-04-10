@@ -14,9 +14,7 @@ export class TipGenres {
   @PrimaryGeneratedColumn({ name: 'genre_id' })
   genre_id: number;
 
-  @Column({
-    unique: true
-  })
+  @Column({ nullable: false })
   title: string;
 
   @CreateDateColumn({ type: 'timestamp' })

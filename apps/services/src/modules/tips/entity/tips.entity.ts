@@ -20,6 +20,7 @@ export class Tips {
   @Column({
     type: 'varchar',
     length: 255,
+    nullable: false
   })
   title: string;
 
