@@ -1,48 +1,86 @@
-import { Controller, Get, Post, Body, Param, Patch, Delete, ParseIntPipe, Query, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Patch,
+  Delete,
+  ParseIntPipe,
+  Query,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { Request } from 'express';
 import { ReviewService } from './review.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 import { Review } from './entity/review.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
-import { Request } from 'express';
 
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiParam,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger';
+
+@ApiTags('reviews')
 @Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}
 
   @Post()
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Create a new review (authenticated)' })
+  @ApiBody({ type: CreateReviewDto })
+  @ApiResponse({ status: 201, description: 'Review created successfully', type: Review })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async createReview(
     @Req() req: Request,
     @Body() { ...dto }: CreateReviewDto
   ): Promise<Review> {
     const user = req['user'];
-    if(!user || user === null) {
+    if (!user) {
       throw new UnauthorizedException('Please log in to continue');
     }
 
     dto.userId = user['sub'];
-
     return this.reviewService.createReview(dto);
   }
 
-  @Get()  
+  @Get()
+  @ApiOperation({ summary: 'Get list of reviews, optionally filter by userId, recipeId, or reviewId' })
+  @ApiQuery({ name: 'userId', required: false, type: Number })
+  @ApiQuery({ name: 'recipeId', required: false, type: Number })
+  @ApiQuery({ name: 'reviewId', required: false, type: Number })
+  @ApiResponse({ status: 200, description: 'List of reviews', type: [Review] })
   async getReviews(
     @Query('userId', ParseIntPipe) userId?: number,
     @Query('recipeId', ParseIntPipe) recipeId?: number,
     @Query('reviewId', ParseIntPipe) reviewId?: number
   ): Promise<Review[]> {
     return this.reviewService.getReviews(
-      userId ? Number(userId) : undefined, //filter by userId
-      recipeId ? Number(recipeId) : undefined, //filter by recipeId
-      reviewId ? Number(reviewId) : undefined //filter by reviewId
+      userId,
+      recipeId,
+      reviewId
     );
-  }  
+  }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update a review by ID (authenticated)' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiBody({ type: UpdateReviewDto })
+  @ApiResponse({ status: 200, description: 'Review updated successfully', type: Review })
   async updateReview(
-    @Param('id', ParseIntPipe) id: number, 
+    @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdateReviewDto
   ): Promise<Review> {
     return this.reviewService.updateReview(id, dto);
@@ -50,6 +88,10 @@ export class ReviewController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Delete a review by ID (authenticated)' })
+  @ApiParam({ name: 'id', type: Number })
+  @ApiResponse({ status: 204, description: 'Review deleted successfully' })
   async deleteReview(
     @Param('id', ParseIntPipe) id: number
   ): Promise<void> {

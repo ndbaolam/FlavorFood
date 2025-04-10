@@ -20,6 +20,7 @@
     "@nestjs/mapped-types": "^2.1.0",
     "@nestjs/passport": "^10.0.3",
     "@nestjs/platform-express": "^10.0.2",
+    "@nestjs/swagger": "^7",
     "@nestjs/typeorm": "^10.0.2",
     "@react-oauth/google": "^0.12.1",
     "axios": "^1.6.0",
@@ -46,6 +47,7 @@
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.0",
     "slugify": "^1.6.6",
+    "swagger-ui-express": "^5.0.1",
     "typeorm": "^0.3.21"
   },
   "devDependencies": {

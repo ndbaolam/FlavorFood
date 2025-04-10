@@ -11,8 +11,10 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { AdminGuard } from '../auth/guards/admin.guard';
+import { ApiTags, ApiBody } from '@nestjs/swagger';
 
 //@UseGuards(AdminGuard)
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -28,11 +30,13 @@ export class UsersController {
   }
 
   @Post()
+  @ApiBody({ type: CreateUserDto})
   async createUser(@Body() createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
   }
 
   @Put(':id')
+  @ApiBody({ type: UpdateUserDto})
   async updateUser(
     @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto
