@@ -11,10 +11,10 @@ export interface Recipe {
     serving: number;
     difficulty_level: 'Dễ' | 'Trung bình' | 'Khó';
     nutrition: Nutrition[];
-    rating: { averageRating: number; reviews: number };
+    rating: number;
     isFavorite?: boolean;
-    created_at: Date;
-    updated_at: Date;
+    created_at: string;
+    updated_at: string;
 }
 
 export interface Ingredient {

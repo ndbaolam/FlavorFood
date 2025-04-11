@@ -1,86 +1,76 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Recipe } from '../../Meals/recipe.interface';
 import SearchBox from "../../../components/Search";
 import { PencilRuler, SquarePlus, Trash2 } from 'lucide-react';
 import CreatePost from "../../../components/Admin/Post/CreatePost";
 import RecipeDetailPopup from "../../../components/Admin/Post/RecipeDetailPopup";
+import axiosInstance from '../../../services/axiosInstance';
+
 const Posts: React.FC = () => {
-  const [posts, setPosts] = useState<Recipe[]>([
-    {
-      recipe_id: 431,
-      title: "Cá Trắm Kho Riềng Vũ Đại - Món Ngon Với Nước Mắm",
-      description: "Cách làm món cá trắm kho riềng Vũ Đại với Nước mắm Ngon Nguyên Bản. Ướp và nấu với nước mắm, món thêm đậm đà khó cưỡng.",
-      difficulty_level: "Trung bình",
-      time: 120,
-      image: "https://assets.unileversolutions.com/recipes-v3/248001-default.jpg",
-      serving: 4,
-      rating: { averageRating: 0, reviews: 0 },
-      created_at: new Date("2025-03-24T11:05:42.676Z"),
-      updated_at: new Date("2025-03-30T11:05:42.676Z"),
-      categories: [
-        { category_id: 51, title: "Món chính" }
-      ],
-      ingredients: [
-        { id: 1766, ingredient: "riềng giã nát", quantity: 75, unit: "gram" },
-        { id: 1765, ingredient: "cá trắm đen", quantity: 400, unit: "gram" },
-        { id: 1768, ingredient: "ớt cay cắt nhỏ", quantity: 2, unit: "quả" },
-        { id: 1767, ingredient: "riềng củ đập dập", quantity: 25, unit: "gram" }
-      ],
-      nutrition: [
-        { id: 1025, name: "Năng lượng (kcal)", amount: 153.68, unit: "kcal" },
-        { id: 1026, name: "Chất đạm (g)", amount: 14.11, unit: "g" }
-      ],
-      steps: [
-        { number: 1, step: "Khử mùi tanh của cá cùng muối, gừng và nước cốt chanh. Cắt thành khoanh, để ráo nước." },
-        { number: 2, step: "Lót riềng củ đập dập xuống đáy niêu, xếp cá thành lớp. Rải ớt, gừng và riềng lên trên." },
-        { number: 3, step: "Kho cá trên lửa to, sau đó nhỏ lửa, đun liu riu đến khi cá mềm rục." }
-      ]
-    },
-    {
-      recipe_id: 432,
-      title: "Ốc Bưu Nhồi Thịt",
-      description: "Cách làm món ốc bưu nhồi thịt với Nước mắm Ngon Nguyên Bản. Đậm đà hương vị truyền thống.",
-      difficulty_level: "Trung bình",
-      time: 120,
-      image: "https://assets.unileversolutions.com/recipes-v3/248002-default.jpg",
-      rating: { averageRating: 0, reviews: 0 },
-
-      created_at: new Date("2025-03-24T11:05:42.721Z"),
-      updated_at: new Date("2025-03-25T11:05:42.721Z"),
-      serving: 4,
-      categories: [
-        { category_id: 51, title: "Món chính" }
-      ],
-      ingredients: [
-        { id: 1775, ingredient: "ốc bưu", quantity: 1, unit: "kilogram" },
-        { id: 1776, ingredient: "thịt xay", quantity: 100, unit: "gram" }
-      ],
-      nutrition: [
-        { id: 1031, name: "Chất đạm (g)", amount: 53.16, unit: "g" },
-        { id: 1032, name: "Đường (g)", amount: 10.55, unit: "g" }
-      ],
-      steps: [
-        { number: 1, step: "Pha nước mắm Knorr cùng hỗn hợp đường và nước lọc theo tỉ lệ 1:1:1." },
-        { number: 2, step: "Đun sôi hỗn hợp trên lửa vừa phải, khuấy đều và vớt bọt." }
-      ]
-    }
-  ]);
-
+  const [posts, setPosts] = useState<Recipe[]>([]);
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState<number[]>([]);
   const [editingPost, setEditingPost] = useState<Recipe | null>(null);
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalRecipe, setTotalRecipe] = useState<number>(0);
+  
+  useEffect(() => {
+    const fetchPosts = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axiosInstance.get<Recipe[]>('/recipes', {
+          withCredentials: true,
+        });
+        setPosts(response.data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch recipes.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPosts();
+  }, []);
 
-  const handleAddPost = (newPost: Recipe) => {
-    if (editingPost) {
-      setPosts(posts.map((post) => post.recipe_id === editingPost.recipe_id ? newPost : post));
+  const handleAddPost = async (newPost: Recipe) => {
+    setError(null);
+    try {
+      console.log("Dữ liệu newPost nhận được từ CreatePost (Posts.tsx):", newPost); 
+
+      const method = editingPost ? 'PATCH' : 'POST';
+      const url = editingPost ? `/recipes/${editingPost.recipe_id}` : '/recipes';
+  
+      await axiosInstance({
+        method,
+        url,
+        data: newPost,
+        withCredentials: true,
+      });
+  
+      if (editingPost) {
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+            post.recipe_id === editingPost.recipe_id ? { ...post, ...newPost } : post
+          )
+        );
+      } else {
+        const response = await axiosInstance.get<Recipe[]>('/recipes', {
+          withCredentials: true,
+        });
+        setPosts(response.data);
+      }
+  
+      setIsPopupOpen(false);
       setEditingPost(null);
-    } else {
-      setPosts([...posts, { ...newPost, recipe_id: posts.length + 1 }]);
+    } catch (err: any) {
+      setError(err.message);
     }
-    setIsPopupOpen(false);
   };
 
   const handleRecipeClick = (recipe: Recipe) => {
@@ -91,31 +81,56 @@ const Posts: React.FC = () => {
     setSelectedRecipe(null);
   };
 
-  { isPopupOpen && <CreatePost onClose={() => setIsPopupOpen(false)} onSubmit={handleAddPost} /> }
-
-  const toggleSelect = (postId: number) => {
+  const toggleSelect = (recipeId: number) => {
     setSelectedPosts((prev) =>
-      prev.includes(postId) ? prev.filter((id) => id !== postId) : [...prev, postId]
+      prev.includes(recipeId) ? prev.filter((id) => id !== recipeId) : [...prev, recipeId]
     );
   };
-
-  const handleDelete = (postId: number) => {
-    setPosts(posts.filter((post) => post.recipe_id !== postId));
+  
+  const handleDelete = async (recipeId: number) => {
+    setError(null);
+    try {
+      await axiosInstance.delete(`/recipes/${recipeId}`, {
+        withCredentials: true,
+      });
+  
+      const response = await axiosInstance.get<Recipe[]>('/recipes', {
+        withCredentials: true,
+      });
+      setPosts(response.data);
+  
+      setSelectedPosts(selectedPosts.filter(id => id !== recipeId));
+  
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
+  
+  const handleBulkDelete = async () => {
+    setError(null);
+    try {
+      await Promise.all(selectedPosts.map(recipeId =>
+        axiosInstance.delete(`/recipes/${recipeId}`, { withCredentials: true })
+      ));
 
-  const handleBulkDelete = () => {
-    setPosts(posts.filter((post) => !selectedPosts.includes(post.recipe_id)));
-    setSelectedPosts([]);
+      const response = await axiosInstance.get<Recipe[]>('/recipes', {
+        withCredentials: true,
+      });
+      setPosts(response.data);
+  
+      setSelectedPosts([]);
+    } catch (err: any) {
+      setError(err.message);
+    }
   };
-
-  const handleEdit = (postId: number) => {
-    const postToEdit = posts.find((post) => post.recipe_id === postId);
+  
+  const handleEdit = (recipeId: number) => {
+    const postToEdit = posts.find((post) => post.recipe_id === recipeId);
     if (postToEdit) {
       setEditingPost(postToEdit);
       setIsPopupOpen(true);
     }
   };
- 
 
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
