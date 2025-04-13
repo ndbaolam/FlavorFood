@@ -7,7 +7,9 @@ import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  const globalPrefix = 'api';
+  app.setGlobalPrefix(globalPrefix);
+  
   const config = new DocumentBuilder()
     .setTitle('Flavor Food API')
     .setDescription('The API description')
@@ -16,10 +18,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('docs', app, document);
-
-
-  const globalPrefix = 'api';
-  app.setGlobalPrefix(globalPrefix);
+  
   const port = process.env.PORT || 3000;
 
   app.useGlobalPipes(new ValidationPipe({
