@@ -16,6 +16,7 @@ import Dashboard from '../pages/Admin/Dashboard';
 import Accounts from '../pages/Admin/Account';
 import Posts from '../pages/Admin/Post';
 import Tip from '../pages/Admin/Tip';
+import LogIn from '../components/Admin/LogIn';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -73,12 +74,16 @@ const routes: RouteObject[] = [
       },
     ],
   },
+  {path:"admin/login", 
+  element:<LogIn />,
+   errorElement: <ErrorPage />,},
   {
     path: '/admin',
     element: <AdminLayout />,
     errorElement: <ErrorPage />,
     children: [
       { path: "", element: <Dashboard /> },
+     
       { path: "accounts", element: <Accounts /> },
       { path: "posts", element: <Posts /> },
       { path: "tips", element: <Tip /> },

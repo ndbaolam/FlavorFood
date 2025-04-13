@@ -6,6 +6,8 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Users } from '../users/entity/users.entity';
 
 @Module({
   imports: [
@@ -21,6 +23,9 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     }),
 
     UsersModule,
+    TypeOrmModule.forFeature([
+      Users
+    ]),
   ],
   providers: [
     AuthService,
