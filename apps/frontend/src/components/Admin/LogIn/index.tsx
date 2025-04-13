@@ -1,3 +1,5 @@
+import axiosInstance from 'apps/frontend/src/services/axiosInstance';
+import axios from 'axios';
 import React, { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,11 +15,15 @@ const LogIn: React.FC<CardProps> = ({ children }) => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Add sign-in logic here (e.g., API call)
-    // For now, just navigate to /admin
-    navigate('/admin/accounts');
+    // Handle login logic here 
+    // const accessToken = await axiosInstance.post('users', {
+    //   mail: '',
+    //   password: ''
+    // });
+
+    
   };
 
   return (
