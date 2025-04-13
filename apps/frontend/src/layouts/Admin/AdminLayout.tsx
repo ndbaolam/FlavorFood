@@ -6,14 +6,14 @@ import AdminHeader from "../../components/Admin/Header";
 import AdminSidebar from "../../components/Admin/Sidebar";
 
 const AdminLayout: FC = () => {
-  const [activePage, setActivePage] = useState("Dashboard");
+ 
 
   return (
     <div >
     <div className="flex h-screen bg-gray-100">
-      <AdminSidebar setActivePage={setActivePage} />
+      <AdminSidebar  setActivePage={() => {}} />
       <div className="flex-1 flex flex-col">
-        <AdminHeader activePage={activePage} />
+        <AdminHeader />
         <main>
         <Outlet /> {}
         </main>

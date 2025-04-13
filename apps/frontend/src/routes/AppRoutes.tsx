@@ -82,8 +82,6 @@ const routes: RouteObject[] = [
     element: <AdminLayout />,
     errorElement: <ErrorPage />,
     children: [
-      { path: "", element: <Dashboard /> },
-     
       { path: "accounts", element: <Accounts /> },
       { path: "posts", element: <Posts /> },
       { path: "tips", element: <Tip /> },

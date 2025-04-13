@@ -17,7 +17,7 @@ const LogIn: React.FC<CardProps> = ({ children }) => {
     e.preventDefault();
     // Add sign-in logic here (e.g., API call)
     // For now, just navigate to /admin
-    navigate('/admin');
+    navigate('/admin/accounts');
   };
 
   return (
