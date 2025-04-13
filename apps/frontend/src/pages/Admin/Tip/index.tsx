@@ -27,6 +27,7 @@ const Tip: React.FC = () => {
         });
         setTip(response.data);
       } catch (err: any) {
+        setError(err.message);
       } finally {
         setLoading(false);
       }
@@ -38,8 +39,8 @@ const Tip: React.FC = () => {
   const handleAddTip = async (newTip: TipsItem) => {
     setError(null);
     try {
-      const method = editingTip ? 'PUT' : 'POST';
-      const url = editingTip ? `` : 'tips/create';
+      const method = editingTip ? 'PATCH' : 'POST';
+      const url = editingTip ? `/tips/${editingTip.tip_id}` : '/tips/create';
 
       await axiosInstance({
         method,
@@ -56,7 +57,8 @@ const Tip: React.FC = () => {
       setIsPopupOpen(false);
       setEditingTip(null);
     } catch (err: any) {
-      setError(err.message || '');
+      setError(err.message );
+    
     }
   };
 
@@ -86,6 +88,8 @@ const Tip: React.FC = () => {
       });
       setTip(response.data);
     } catch (err: any) {
+      setError(err.message);
+     
     }
   };
 
@@ -105,7 +109,7 @@ const Tip: React.FC = () => {
 
       setSelectedTipIds([]);
     } catch (err: any) {
-     
+      setError(err.message );
     }
   };
 

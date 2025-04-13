@@ -11,6 +11,12 @@ interface CreatePostProps {
 }
 
 const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData, isEditing }) => {
+  const defaultCategories: Category[] = [
+    { category_id: 51, title: "Món chính" },
+    { category_id: 49, title: "Tráng miệng" },
+    { category_id: 50, title: "Ăn vặt" },
+    { category_id: 48, title: "Khai vị" },
+  ];
   const [title, setTitle] = useState<string>(initialData?.title || "");
   const [description, setDescription] = useState<string>(initialData?.description || "");
   const [time, setTime] = useState<number>(initialData?.time || 0);
@@ -19,7 +25,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
   const [difficulty, setDifficulty] = useState<Recipe["difficulty_level"]>(initialData?.difficulty_level || "Dễ");
   const [ingredients, setIngredients] = useState<Ingredient[]>(initialData?.ingredients || []);
   const [steps, setSteps] = useState<Step[]>(initialData?.steps || []);
-  const [categories, setCategories] = useState<Category[]>(initialData?.categories || []);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number>(
+    initialData?.categories?.[0]?.category_id || defaultCategories[0].category_id
+  );
   const [nutrition, setNutrition] = useState<Nutrition[]>(initialData?.nutrition || []);
   const [timeError, setTimeError] = useState('');
   const [servingError, setServingError] = useState('');
@@ -53,12 +61,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
     }
   };
 
-  const defaultCategories: Category[] = [
-    { category_id: 51, title: "Món chính" },
-    { category_id: 49, title: "Tráng miệng" },
-    { category_id: 50, title: "Ăn vặt" },
-    { category_id: 48, title: "Khai vị" },
-  ];
+
 
   const validateForm = (): boolean => {
     let errors: { [key: string]: string } = {};
@@ -84,9 +87,9 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
     if (steps.length === 0) {
       errors.steps = "Các bước thực hiện là bắt buộc.";
     }
-    if (categories.length === 0) {
-        errors.categories = "Danh mục là bắt buộc.";
-    }
+    // if (categories.length === 0) {
+    //     errors.categories = "Danh mục là bắt buộc.";
+    // }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -105,6 +108,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
 
   const handleSubmit = () => {
     if (validateForm()) {
+      const selectedCategory = defaultCategories.find(cat => cat.category_id === selectedCategoryId);
       const newRecipe: Recipe = {
         recipe_id: initialData?.recipe_id || Date.now(),
         title,
@@ -115,7 +119,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
         difficulty_level: difficulty,
         ingredients,
         steps,
-        categories,
+        categories: selectedCategory ? [selectedCategory] : [],
         nutrition,
         rating: initialData?.rating ? initialData.rating : 0,
         isFavorite: initialData?.isFavorite || false,
@@ -242,20 +246,17 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
             <div>
               <label className="block font-medium">Danh mục  <span className="text-red-500">* </span></label>
               <select
-                value={categories.length > 0 ? categories[0].category_id : ""}
-                onChange={(e) => {
-                  const filteredCategories = defaultCategories.filter((cat) => cat.category_id === Number(e.target.value));
-                  console.log("Giá trị categories sau khi lọc:", filteredCategories);
-                  setCategories(filteredCategories);
-                }}
-                className="border rounded-lg p-2 w-full min-h-[40px]"
-              >
-                {defaultCategories.map((category) => (
-                  <option key={category.category_id} value={category.category_id}>
-                    {category.title}
-                  </option>
-                ))}
-              </select>
+  value={selectedCategoryId}
+  onChange={(e) => setSelectedCategoryId(Number(e.target.value))}
+  className="border rounded-lg p-2 w-full min-h-[40px]"
+>
+  {defaultCategories.map((category) => (
+    <option key={category.category_id} value={category.category_id}>
+      {category.title}
+    </option>
+  ))}
+</select>
+
               {formErrors.categories && <p className="text-red-500">{formErrors.categories}</p>}
             </div>
           </div>
