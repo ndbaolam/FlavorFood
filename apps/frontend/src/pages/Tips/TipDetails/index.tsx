@@ -29,7 +29,7 @@ const TipDetails: React.FC = () => {
           />
         </div>
         <div
-          className="w-full text-lg leading-relaxed"
+            className="prose max-w-none"
           dangerouslySetInnerHTML={{ __html: tips.content }}
         />
       </main>

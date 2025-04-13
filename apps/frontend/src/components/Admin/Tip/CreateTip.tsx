@@ -24,7 +24,7 @@ const CreateTip: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubm
             errors.title = "Tên mẹo vặt là bắt buộc.";
         }
         if (!content.trim()) {
-            errors.content = "Nội dung mẹo vặt là bắt buộc.";
+            errors.content = "Nội dung là bắt buộc.";
         }
         setFormErrors(errors);
         return Object.keys(errors).length === 0;
