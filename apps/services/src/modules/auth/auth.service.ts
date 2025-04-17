@@ -10,19 +10,27 @@ import { ConfigService } from '@nestjs/config';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UserGoogleInterface } from './interfaces/user.interface';
 import { Users } from '../users/entity/users.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly usersService: UsersService,
+
+    @InjectRepository(Users)
+    private readonly usersRepository: Repository<Users>,
   ) {}
 
   //Normal login
   async login(mail: string, password: string): Promise<{ accessToken: string }> {
     // Find user by email
-    const user = await this.usersService.findUserByEmail(mail);
+    const user = await this.usersRepository.findOne({
+      where: { mail },
+      select: ['user_id', 'mail', 'password', 'role'],
+    });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
