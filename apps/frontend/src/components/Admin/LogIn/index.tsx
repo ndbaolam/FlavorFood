@@ -1,5 +1,5 @@
-import axiosInstance from 'apps/frontend/src/services/axiosInstance';
-import axios from 'axios';
+import { User } from 'apps/frontend/src/pages/Profile/Profile.interface';
+import axiosInstance from "../../../services/axiosInstance";
 import React, { ReactNode, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,26 +9,52 @@ interface CardProps {
 
 const LogIn: React.FC<CardProps> = ({ children }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [mail, setMail] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
+  const handleMailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle login logic here 
-    // const accessToken = await axiosInstance.post('users', {
-    //   mail: '',
-    //   password: ''
-    // });
+    setErrorMessage(null);
 
-    
+    try {
+      await axiosInstance.post('/auth/login', {
+        mail,
+        password,
+      }, {
+        withCredentials: true,
+      });
+
+      const profileResponse = await axiosInstance.get<User>('/auth/profile');
+      const loginUsers = profileResponse.data;
+      if (loginUsers.role === 'admin') {
+        navigate('/admin/accounts');
+      } else {
+        setErrorMessage('Chỉ tài khoản Admin mới được phép đăng nhập.');
+      }
+    } catch (error: any) {
+      console.error('Lỗi đăng nhập:', error);
+      setErrorMessage('Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.');
+    }
   };
+
 
   return (
     <div className="flex justify-center items-center h-screen relative">
-      <div className="bg-gray-100 shadow-lg rounded-lg overflow-hidden w-fit max-w-2xl z-20 flex">
+      <div className="bg-gray-100 shadow-lg rounded-lg overflow-hidden w-fit max-w-xl z-20 flex">
         <div className="hidden sm:block">
           <img
             src="https://www.elle.vn/wp-content/uploads/2017/09/21/JW-Marriott-Hanoi4.jpg"
@@ -36,16 +62,18 @@ const LogIn: React.FC<CardProps> = ({ children }) => {
             className="rounded-l-lg h-full"
           />
         </div>
-        <div className="p-8 bg-white">
+        <div className="p-8 bg-white mt-12">
           {children}
           <h2 className="text-2xl font-bold text-center mb-6">ĐĂNG NHẬP</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="Tên đăng nhập"
+                placeholder="Mail đăng nhập"
                 className="border rounded-lg px-4 py-2 w-full"
                 required
+                value={mail}
+                onChange={handleMailChange}
               />
             </div>
             <div className="relative mb-6">
@@ -54,6 +82,8 @@ const LogIn: React.FC<CardProps> = ({ children }) => {
                 placeholder="Mật khẩu"
                 className="border rounded-lg px-4 py-2 w-full"
                 required
+                value={password}
+                onChange={handlePasswordChange}
               />
               <button
                 type="button"
@@ -86,6 +116,7 @@ const LogIn: React.FC<CardProps> = ({ children }) => {
                 )}
               </button>
             </div>
+            {errorMessage && <p className="text-red-500 mb-2">{errorMessage}</p>}
             <button
               type="submit"
               className="bg-black text-white rounded-lg px-4 py-2 w-full"

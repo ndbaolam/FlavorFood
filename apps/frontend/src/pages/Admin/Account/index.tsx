@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 const Account: React.FC = () => {
   const [accounts, setAccounts] = useState<User[]>([]);
+  const [filteredAccounts, setFilteredAccounts] = useState<User[]>([]);
   const [searchTitle, setSearchTitle] = useState("");
   const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
 
@@ -16,15 +17,27 @@ const Account: React.FC = () => {
         const response = await axiosInstance.get<User[]>("/users", {
           withCredentials: true,
         });
-        setAccounts(response.data);
+        const nonAdminAccounts = response.data.filter(account => account.role !== 'admin');
+        setAccounts(response.data); 
+        setFilteredAccounts(nonAdminAccounts);
       } catch (error) {
         console.error("Error fetching accounts:", error);
       }
     };
-  
-    fetchAccounts(); 
+
+    fetchAccounts();
   }, []);
-  
+
+  useEffect(() => {
+    const searchedAccounts = accounts.filter((account) =>
+      (account.first_name?.toLowerCase().includes(searchTitle.toLowerCase()) ||
+        account.last_name?.toLowerCase().includes(searchTitle.toLowerCase()) ||
+        account.mail?.toLowerCase().includes(searchTitle.toLowerCase())) &&
+      account.role !== 'admin'
+    );
+    setFilteredAccounts(searchedAccounts);
+  }, [searchTitle, accounts]);
+
   const handleDelete = async (id: number) => {
     try {
       await axiosInstance.delete(`/users/${id}`, {
@@ -32,13 +45,12 @@ const Account: React.FC = () => {
       });
       toast.success("Xóa tài khoản thành công");
       setAccounts((prev) => prev.filter((account) => account.user_id !== id));
-      setSelectedAccounts((prev) => prev.filter((uid) => uid !== id)); 
+      setFilteredAccounts((prev) => prev.filter((account) => account.user_id !== id));
+      setSelectedAccounts((prev) => prev.filter((uid) => uid !== id));
     } catch (error) {
       console.error("Lỗi khi xóa tài khoản:", error);
     }
   };
-  
-
 
   const toggleSelect = (id: number) => {
     setSelectedAccounts((prev) =>
@@ -55,28 +67,21 @@ const Account: React.FC = () => {
       );
       toast.success("Xóa tài khoản thành công");
       setAccounts((prev) => prev.filter((account) => !selectedAccounts.includes(account.user_id)));
+      setFilteredAccounts((prev) => prev.filter((account) => !selectedAccounts.includes(account.user_id)));
       setSelectedAccounts([]);
     } catch (error) {
       console.error("Lỗi khi xóa hàng loạt tài khoản:", error);
     }
   };
-  
 
-  const filteredAccounts = accounts.filter((account) =>
-    account.first_name.toLowerCase().includes(searchTitle.toLowerCase()) ||
-    account.last_name.toLowerCase().includes(searchTitle.toLowerCase()) ||
-    account.mail.toLowerCase().includes(searchTitle.toLowerCase())
-  );
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg  bg-white">
-
       <div className="mb-4 flex items-center justify-between p-4">
         <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
         <div className="flex space-x-3">
-        
           <button
             onClick={handleBulkDelete}
-           className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
+            className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
             disabled={selectedAccounts.length === 0}
           >
             <Trash2 className="text-red-600 hover:text-red-800" size={18} />
@@ -84,7 +89,7 @@ const Account: React.FC = () => {
           </button>
         </div>
       </div>
-      <div className="overflow-x-auto ml-4 mr-4 rounded-lg ">
+      <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">
         <table className="min-w-full bg-white shadow-md rounded-lg border items-center">
           <thead>
             <tr className="bg-blue-700 text-white text-left items-center justify-center">
@@ -92,9 +97,14 @@ const Account: React.FC = () => {
                 <input
                   type="checkbox"
                   onChange={(e) =>
-                    setSelectedAccounts(e.target.checked ? accounts.map((a) => a.user_id) : [])
+                    setSelectedAccounts(
+                      e.target.checked ? filteredAccounts.map((a) => a.user_id) : []
+                    )
                   }
-                  checked={selectedAccounts.length === accounts.length && accounts.length > 0}
+                  checked={
+                    selectedAccounts.length === filteredAccounts.length &&
+                    filteredAccounts.length > 0
+                  }
                 />
               </th>
               <th className="p-3">ID</th>
@@ -120,7 +130,6 @@ const Account: React.FC = () => {
                   <td className="p-3">{account.last_name}</td>
                   <td className="p-3">{account.mail}</td>
                   <td className="p-3 flex justify-center space-x-3">
-
                     <button
                       onClick={() => handleDelete(account.user_id)}
                       className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
@@ -138,7 +147,6 @@ const Account: React.FC = () => {
               </tr>
             )}
           </tbody>
-
         </table>
       </div>
     </div>

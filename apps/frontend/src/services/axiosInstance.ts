@@ -25,7 +25,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     if (error.response && error.response.status === 401) {
       // Redirect to the sign-in page when a 401 error occurs
-      window.location.href = `${import.meta.env.VITE_CLIENT_URL}/sign-in`;
+    
     }
     return Promise.reject(error);
   }
