@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
-  CodeResponse,  
+  CodeResponse,
   TokenResponse,
   useGoogleLogin,
 } from '@react-oauth/google';
@@ -11,10 +11,11 @@ import axiosInstance from '../services/axiosInstance';
 
 interface CardProps {
   children?: ReactNode;
+  onSignInSuccess?: () => void;
 }
 
-const CardSignIn: React.FC<CardProps> = ({ children }) => {
-  const [showPassword, setShowPassword] = useState(false);    
+const CardSignIn: React.FC<CardProps> = ({ children, onSignInSuccess }) => {
+  const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
@@ -27,29 +28,30 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
     // Add sign-in logic here
     navigate('/');
   };
-  
+
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse: CodeResponse | TokenResponse) => {
-      //Send user data & ID token to the BE         
       const { access_token } = codeResponse as TokenResponse;
 
-      try {        
+      try {
         const response = await axiosInstance.post(
           '/auth/google/verify',
-          { access_token },          
+          { access_token },
         );
-    
+
         console.log('Server response:', response.data);
-        navigate('/'); // Redirect to the home page upon successful login
+        localStorage.setItem('authToken', response.data.token);
+        window.dispatchEvent(new CustomEvent('userLoggedIn'));
+        navigate('/');
       } catch (error) {
         console.error('Login Failed:', error);
         alert('Login Failed');
-      }    
+      }
     },
-    
     onError: (error) => console.log('Login Failed:', error),
   });
+
 
   return (
     <div className="flex justify-center items-center h-screen relative">

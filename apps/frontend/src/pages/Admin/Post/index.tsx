@@ -6,6 +6,7 @@ import { PencilRuler, SquarePlus, Trash2 } from 'lucide-react';
 import CreatePost from "../../../components/Admin/Post/CreatePost";
 import RecipeDetailPopup from "../../../components/Admin/Post/RecipeDetailPopup";
 import axiosInstance from '../../../services/axiosInstance';
+import { toast } from 'react-toastify';
 
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Recipe[]>([]);
@@ -16,10 +17,9 @@ const Posts: React.FC = () => {
   const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [totalRecipe, setTotalRecipe] = useState<number>(0);
-  
+  const LIMIT = 6;
+
   useEffect(() => {
     const fetchPosts = async () => {
       setLoading(true);
@@ -41,18 +41,16 @@ const Posts: React.FC = () => {
   const handleAddPost = async (newPost: Recipe) => {
     setError(null);
     try {
-      console.log("Dữ liệu newPost nhận được từ CreatePost (Posts.tsx):", newPost); 
-
       const method = editingPost ? 'PATCH' : 'POST';
       const url = editingPost ? `/recipes/${editingPost.recipe_id}` : '/recipes';
-  
+
       await axiosInstance({
         method,
         url,
         data: newPost,
         withCredentials: true,
       });
-  
+
       if (editingPost) {
         setPosts((prevPosts) =>
           prevPosts.map((post) =>
@@ -65,7 +63,7 @@ const Posts: React.FC = () => {
         });
         setPosts(response.data);
       }
-  
+
       setIsPopupOpen(false);
       setEditingPost(null);
     } catch (err: any) {
@@ -86,26 +84,26 @@ const Posts: React.FC = () => {
       prev.includes(recipeId) ? prev.filter((id) => id !== recipeId) : [...prev, recipeId]
     );
   };
-  
+
   const handleDelete = async (recipeId: number) => {
     setError(null);
     try {
       await axiosInstance.delete(`/recipes/${recipeId}`, {
         withCredentials: true,
       });
-  
+
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
       setPosts(response.data);
-  
+      toast.success("Xóa bài viết thành công");
       setSelectedPosts(selectedPosts.filter(id => id !== recipeId));
-  
+
     } catch (err: any) {
       setError(err.message);
     }
   };
-  
+
   const handleBulkDelete = async () => {
     setError(null);
     try {
@@ -116,14 +114,15 @@ const Posts: React.FC = () => {
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
+      toast.success("Xóa bài viết thành công");
       setPosts(response.data);
-  
+
       setSelectedPosts([]);
     } catch (err: any) {
       setError(err.message);
     }
   };
-  
+
   const handleEdit = (recipeId: number) => {
     const postToEdit = posts.find((post) => post.recipe_id === recipeId);
     if (postToEdit) {
@@ -138,6 +137,11 @@ const Posts: React.FC = () => {
       category.title.toLowerCase().includes(searchTitle.toLowerCase())
     )
   );
+  const totalPages = Math.ceil(filteredPosts.length / LIMIT);
+  const paginatedPosts = filteredPosts.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTitle]);
 
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
@@ -145,12 +149,12 @@ const Posts: React.FC = () => {
         <div className="flex space-x-3">
           <div>
             <button
-             onClick={() => {
-              setEditingPost(null);
-              setIsPopupOpen(true);
-            }}
-            className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2"
-          >
+              onClick={() => {
+                setEditingPost(null);
+                setIsPopupOpen(true);
+              }}
+              className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2"
+            >
               <SquarePlus className="text-white" size={18} />
               <span>Tạo công thức</span>
             </button>
@@ -181,12 +185,11 @@ const Posts: React.FC = () => {
         <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} />
       </div>
 
-
       <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">
         <table className="min-w-full bg-white shadow-md rounded-lg border">
           <thead>
             <tr
-             className="bg-blue-700 text-white text-left">
+              className="bg-blue-700 text-white text-left">
               <th className="p-3">
                 <input
                   type="checkbox"
@@ -204,12 +207,12 @@ const Posts: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredPosts.length > 0 ? (
-              filteredPosts.map((post) => (
-                <tr 
-                key={post.recipe_id} 
-                className="border-b hover:bg-gray-100 "
-                onClick={() => handleRecipeClick(post)} >
+            {paginatedPosts.length > 0 ? (
+              paginatedPosts.map((post) => (
+                <tr
+                  key={post.recipe_id}
+                  className="border-b hover:bg-gray-100 "
+                  onClick={() => handleRecipeClick(post)} >
                   <td className="p-3">
                     <input
                       type="checkbox"
@@ -236,7 +239,7 @@ const Posts: React.FC = () => {
                         e.stopPropagation();
                         handleDelete(post.recipe_id);
                       }}
-            
+
                       className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
                     >
                       <Trash2 className="text-red-600 hover:text-red-800" size={18} />
@@ -253,6 +256,22 @@ const Posts: React.FC = () => {
             )}
           </tbody>
         </table>
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-4  space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`px-3 py-1 rounded-md ${currentPage === index + 1
+                    ? 'bg-blue-500 text-white font-bold'
+                    : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
+                  }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       {selectedRecipe && (
         <RecipeDetailPopup recipe={selectedRecipe} onClose={closeRecipePopup} />

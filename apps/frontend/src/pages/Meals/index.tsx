@@ -6,19 +6,18 @@ import { Recipe } from './recipe.interface';
 import { useFavorite } from '../Favourite/FavoriteContext';
 import SearchBox from '../../components/Search';
 
-const LIMIT = 24;
+const LIMIT = 12;
 
 const Meals: React.FC = () => {
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalRecipe, setTotalRecipe] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searchTitle, setSearchTitle] = useState<string>('');
+  const [hasNextPage, setHasNextPage] = useState(false);
 
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
-
   const fetchRecipes = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -33,18 +32,21 @@ const Meals: React.FC = () => {
       }
 
       if (activeFilter !== null) {
-        response = await axiosInstance.get<{ recipes: Recipe[] }>(`/categories/${activeFilter}`);
+        const filterQuery = `/categories/${activeFilter}?offset=${offset}&limit=${LIMIT}`;
+        response = await axiosInstance.get<{ recipes: Recipe[] }>(filterQuery);
         setRecipes(response.data.recipes || []);
-        setTotalRecipe(response.data.recipes.length || 0);
+        setHasNextPage((response.data.recipes?.length || 0) === LIMIT);
       } else {
-        response = await axiosInstance.get<{ data?: Recipe[]; total?: number }>(query);
-
+        response = await axiosInstance.get<{ data?: Recipe[] }>(query);
         const recipesData = Array.isArray(response.data) ? response.data : response.data?.data;
         setRecipes(recipesData || []);
-        setTotalRecipe(response.data?.total || recipesData?.length || 0);
+
+        setHasNextPage((recipesData?.length || 0) === LIMIT);
       }
     } catch (error) {
       setError('Lỗi khi tải công thức. Vui lòng thử lại!');
+      console.error("Fetch Error:", error);
+      setHasNextPage(false);
     } finally {
       setLoading(false);
     }
@@ -58,8 +60,21 @@ const Meals: React.FC = () => {
     fetchRecipes();
   }, [fetchRecipes]);
 
-  const totalPages = Math.ceil(totalRecipe / LIMIT);
+  const goToNextPage = () => {
+    setCurrentPage(prev => {
+      const newPage = prev + 1;
+      window.scrollTo({ top: 80, behavior: 'smooth' });
+      return newPage;
+    });
+  };
 
+  const goToPreviousPage = () => {
+    setCurrentPage(prev => {
+      const newPage = Math.max(1, prev - 1);
+      window.scrollTo({ top: 80, behavior: 'smooth' });
+      return newPage;
+    });
+  };
   return (
     <div className="min-h-screen">
       <main className="container mx-auto">
@@ -69,53 +84,67 @@ const Meals: React.FC = () => {
         </section>
 
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
-          <FilterMenu 
-            activeFilter={activeFilter} 
-            setActiveFilter={setActiveFilter} 
-            setCurrentPage={setCurrentPage} 
+          <FilterMenu
+            activeFilter={activeFilter}
+            setActiveFilter={setActiveFilter}
+            setCurrentPage={setCurrentPage}
           />
-           <SearchBox onSearch={setSearchTitle} isPopupOpen={false}/>
+          <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
         </div>
 
-            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
-              {recipes.length > 0 ? (
-                recipes.map((recipe) => (
-                  <RecipeCard
-                    key={recipe.recipe_id}
-                    recipe={recipe}
-                    isLiked={isFavorite(recipe.recipe_id)}
-                    onToggleFavorite={async () => {
-                      await toggleFavorite(recipe.recipe_id);
-                      refreshFavorites();
-                    }}
-                  />
-                ))
-              ) : (
-                <p className="text-center text-gray-500">Không có công thức nào.</p>
-              )}
-            </section>
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+          {recipes.length > 0 ? (
+            recipes.map((recipe) => (
+              <RecipeCard
+                key={recipe.recipe_id}
+                recipe={recipe}
+                isLiked={isFavorite(recipe.recipe_id)}
+                onToggleFavorite={async () => {
+                  await toggleFavorite(recipe.recipe_id);
+                  refreshFavorites();
+                }}
+              />
+            ))
+          ) : (
+            <p className="text-center text-gray-500">Không có công thức nào.</p>
+          )}
+        </section>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center mt-8">
-                <ul className="flex space-x-2">
-                  {[...Array(totalPages)].map((_, index) => (
-                    <li key={index}>
-                      <button
-                        onClick={() => setCurrentPage(index + 1)}
-                        className={`px-3 py-1 rounded-md ${
-                          currentPage === index + 1
-                            ? 'bg-blue-500 text-black'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        {index + 1}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+        <div className="flex justify-center mt-8 items-center space-x-2">
+          <button
+            onClick={goToPreviousPage}
+            disabled={currentPage === 1}
+            className="p-2 rounded hover:bg-gray-200 disabled:opacity-50"
+          >
+            ‹
+          </button>
+
+          {Array.from({ length: hasNextPage ? currentPage + 1 : currentPage }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => {
+                setCurrentPage(index + 1);
+                window.scrollTo({ top: 80, behavior: 'smooth' });
+              }}
+              className={`px-3 py-1 rounded font-medium transition ${currentPage === index + 1
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+
+          <button
+            onClick={goToNextPage}
+            disabled={!hasNextPage}
+            className="p-2 rounded hover:bg-gray-200 disabled:opacity-50"
+          >
+            ›
+          </button>
+        </div>
+
+
       </main>
     </div>
   );

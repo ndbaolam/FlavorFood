@@ -10,6 +10,8 @@ const Account: React.FC = () => {
   const [filteredAccounts, setFilteredAccounts] = useState<User[]>([]);
   const [searchTitle, setSearchTitle] = useState("");
   const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const LIMIT = 6;
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -37,6 +39,7 @@ const Account: React.FC = () => {
     );
     setFilteredAccounts(searchedAccounts);
   }, [searchTitle, accounts]);
+
 
   const handleDelete = async (id: number) => {
     try {
@@ -73,6 +76,11 @@ const Account: React.FC = () => {
       console.error("Lỗi khi xóa hàng loạt tài khoản:", error);
     }
   };
+  const totalPages = Math.ceil(filteredAccounts.length / LIMIT);
+  const paginatedAccounts= filteredAccounts.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTitle]);
 
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg  bg-white">
@@ -115,8 +123,8 @@ const Account: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAccounts.length > 0 ? (
-              filteredAccounts.map((account) => (
+            {paginatedAccounts.length > 0 ? (
+              paginatedAccounts.map((account) => (
                 <tr key={account.user_id} className="border-b hover:bg-gray-100 items-center">
                   <td className="p-3">
                     <input
@@ -148,6 +156,22 @@ const Account: React.FC = () => {
             )}
           </tbody>
         </table>
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-4  space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`px-3 py-1 rounded-md ${currentPage === index + 1
+                    ? 'bg-blue-500 text-white font-bold'
+                    : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
+                  }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
