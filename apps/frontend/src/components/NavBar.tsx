@@ -1,93 +1,162 @@
-/* eslint-disable */
-import React, { useState } from "react";
-import { Menu, X, User, LogOut, Home, ChefHat, Lightbulb, ShoppingBasket } from "lucide-react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import {
+  Menu,
+  X,
+  Users,
+  LogOut,
+  Home,
+  ChefHat,
+  Lightbulb,
+  ShoppingBasket,
+} from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import axiosInstance from "../services/axiosInstance";
+import { User } from "../pages/Profile/Profile.interface";
 
+interface NavbarProps {
+  setActivePage: (page: string) => void;
+  onUserLoggedIn?: () => void;
+}
 
-const Navbar = () => {
+const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const accountRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAccountMenu = () => setIsAccountOpen(!isAccountOpen);
 
+  const closeMenus = () => {
+    setIsMenuOpen(false);
+    setIsAccountOpen(false);
+  };
+
+  const handlePageChange = (label: string) => {
+    setActivePage(label);
+    setIsMenuOpen(false);
+  };
+
+  const fetchUserProfile = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get<User>('/auth/profile');
+      setAvatarUrl(response.data.avatar || null);
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      setAvatarUrl(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, [fetchUserProfile]);
+
+  useEffect(() => {
+    const handleUserLoggedIn = () => {
+      fetchUserProfile();
+    };
+
+    window.addEventListener('userLoggedIn', handleUserLoggedIn);
+    return () => {
+      window.removeEventListener('userLoggedIn', handleUserLoggedIn);
+    };
+  }, [fetchUserProfile]);
+
   const menuItems = [
-    { href: "#", label: "Trang chủ", icon: <Home className="w-7 h-7 mr-2" /> },
-    { href: "dish", label: "Món ăn", icon: <ChefHat className="w-7 h-7 mr-2" /> },
-    { href: "tips", label: "Mẹo vào bếp", icon: <Lightbulb className="w-7 h-7 mr-2" /> },
-    { href: "market", label: "Cửa hàng", icon: <ShoppingBasket className="w-7 h-7 mr-2" /> },
+    { to: "/", label: "Trang chủ", icon: <Home className="w-5 h-5 mr-2" /> },
+    { to: "/dish", label: "Món ăn", icon: <ChefHat className="w-5 h-5 mr-2" /> },
+    { to: "/tips", label: "Mẹo vào bếp", icon: <Lightbulb className="w-5 h-5 mr-2" /> },
+    { to: "/market", label: "Cửa hàng", icon: <ShoppingBasket className="w-5 h-5 mr-2" /> },
   ];
 
   const accountItems = [
     {
-      href: "profile",
+      href: "/profile",
       label: "Thông tin tài khoản",
-      icon: <User className="w-7 h-7 mr-2" />,
+      icon: <Users className="w-5 h-5 mr-2" />,
     },
     {
-      href: "signout",
+      href: "/signout",
       label: "Đăng xuất",
-      icon: <LogOut className="w-7 h-7 mr-2 text-black-600" />,
+      icon: <LogOut className="w-5 h-5 mr-2 text-gray-600" />,
     },
   ];
 
   return (
-    <nav className="relative bg-white border-b border-gray-300">
+    <nav className="relative bg-white border-b border-gray-200 shadow-sm" role="navigation" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-20">
-       
-          <div className="flex items-center space-x-6">
 
-            <a href="/" className="flex items-center">
-              <img src="./logo1.png" alt="Logo" className="h-16" />
-            </a>
+          <Link to="/" className="flex items-center space-x-2" onClick={() => handlePageChange("Trang chủ")}>
+            <img src="./logo1.png" alt="Logo" className="h-16" />
+          </Link>
 
-            {/* Desktop Menu */}
-            <div className="hidden md:flex md:items-center space-x-4">
-              {menuItems.map(({ href, label, icon }) => (
-                <a
-                  key={href}
-                  href={href}
-                  className="flex items-center px-3 py-2 rounded-md text-gray-800 hover:text-blue-900 hover:bg-blue-100 transition duration-200"
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-4">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.to;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => handlePageChange(item.label)}
+                  className={`flex items-center px-3 py-2 duration-200 rounded-lg text-left transition ${isActive ? "bg-blue-500 text-white" : "hover:bg-blue-300"
+                    }`}
                 >
-                  {icon} {label}
-                </a>
-              ))}
-            </div>
+                  {item.icon}
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
 
-          {/* Account Section */}
-          <div className="hidden md:flex items-center space-x-4">
-            <div className="relative">
-              <button
-                onClick={toggleAccountMenu}
-                aria-expanded={isAccountOpen}
-                className="flex items-center px-3 py-2 rounded-md text-gray-800  hover:text-blue-900 hover:bg-blue-100"
+          <div className="hidden md:flex items-center space-x-4" ref={accountRef}>
+            {avatarUrl ? (
+              <>
+                <button
+                  onClick={toggleAccountMenu}
+                  className="flex items-center w-10 h-10 rounded-full overflow-hidden border focus:outline-none"
+                >
+                  <img
+                    src={avatarUrl || "../../logo1.png"}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+
+                {isAccountOpen && (
+                  <div className="absolute right-4 top-20 w-48 bg-white rounded-md shadow-lg z-50">
+                    {accountItems.map(({ href, label, icon }) => (
+                      <a
+                        key={href}
+                        href={href}
+                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100"
+                      >
+                        {icon}
+                        {label}
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <Link
+                to="/sign-in"
+                className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition"
               >
-                <User className="w-5 h-5 mr-2" />
-                Tài khoản
-              </button>
-              {isAccountOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                  {accountItems.map(({ href, label, icon }) => (
-                    <a
-                      key={href}
-                      href={href}
-                      className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100"
-                    >
-                      {icon} {label}
-                    </a>
-                  ))}
-                </div>
-              )}
-            </div>
+                Đăng nhập
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              aria-expanded={isMenuOpen}
               className="p-2 rounded-md text-gray-700 hover:text-blue-900 hover:bg-blue-100"
+              aria-label="Toggle menu"
+              aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -97,32 +166,46 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden px-2 pt-2 pb-3 space-y-1">
-          {menuItems.map(({ href, label, icon }) => (
-            <a
-              key={href}
-              href={href}
-              className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100"
-            >
-              {icon} {label}
-            </a>
-          ))}
-
-          {/* Mobile Account Section */}
-          <div className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100">
-            <User className="w-5 h-5 mr-2" />
-            Tài khoản
-          </div>
-          <div className="pl-4 space-y-1">
-            {accountItems.map(({ href, label, icon }) => (
-              <a
-                key={href}
-                href={href}
-                className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100"
+        <div className="md:hidden px-4 pt-4 pb-6 space-y-2 bg-white border-t border-gray-200">
+          {menuItems.map((item) => {
+            const isActive = location.pathname === item.to;
+            return (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => handlePageChange(item.label)}
+                className={`flex items-center px-3 py-2 duration-200 rounded-lg text-left transition ${isActive ? "bg-blue-500 text-white" : "hover:bg-blue-300"
+                  }`}
               >
-                {icon} {label}
-              </a>
-            ))}
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+
+          <div className="mt-4 border-t border-gray-200 pt-2">
+            <p className="text-gray-500 mb-2 font-medium">Tài khoản</p>
+            {avatarUrl ? (
+              accountItems.map(({ href, label, icon }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100"
+                  onClick={closeMenus}
+                >
+                  {icon}
+                  {label}
+                </a>
+              ))
+            ) : (
+              <Link
+                to="/sign-in"
+                className="text-blue-600 hover:underline font-medium"
+                onClick={closeMenus}
+              >
+                Đăng nhập
+              </Link>
+            )}
           </div>
         </div>
       )}
