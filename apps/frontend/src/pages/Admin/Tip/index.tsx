@@ -16,6 +16,8 @@ const Tip: React.FC = () => {
   const [editingTip, setEditingTip] = useState<TipsItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const LIMIT = 6;
 
   useEffect(() => {
     const fetchTip = async () => {
@@ -86,6 +88,7 @@ const Tip: React.FC = () => {
       const response = await axiosInstance.get<TipsItem[]>('/tips/all', {
         withCredentials: true,
       });
+      toast.success("Xóa tip thành công");
       setTip(response.data);
     } catch (err: any) {
       setError(err.message);
@@ -105,6 +108,7 @@ const Tip: React.FC = () => {
       const response = await axiosInstance.get<TipsItem[]>('/tips/all', {
         withCredentials: true,
       });
+      toast.success("Xóa tip thành công");
       setTip(response.data);
 
       setSelectedTipIds([]);
@@ -124,6 +128,12 @@ const Tip: React.FC = () => {
   const filteredTips = tip.filter((t) =>
     t.title.toLowerCase().includes(searchTitle.toLowerCase())
   );
+  const totalPages = Math.ceil(filteredTips.length / LIMIT);
+
+  const paginatedTips = filteredTips.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTitle]);
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
       <div className="mb-4 flex items-center justify-between p-4">
@@ -186,8 +196,8 @@ const Tip: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredTips.length > 0 ? (
-              filteredTips.map((t) => (
+            {paginatedTips.length > 0 ? (
+              paginatedTips.map((t) => (
                 <tr
                   key={t.tip_id}
                   className="border-b hover:bg-gray-100 cursor-pointer"
@@ -235,6 +245,22 @@ const Tip: React.FC = () => {
             )}
           </tbody>
         </table>
+        {totalPages > 1 && (
+          <div className="flex justify-center mt-4  space-x-2">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => setCurrentPage(index + 1)}
+                className={`px-3 py-1 rounded-md ${currentPage === index + 1
+                    ? 'bg-blue-500 text-white font-bold'
+                    : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
+                  }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
       {selectedTip && (<TipDetailPopup tip={selectedTip} onClose={closeTipPopup} />)}
     </div>
