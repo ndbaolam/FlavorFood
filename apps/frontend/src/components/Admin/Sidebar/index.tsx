@@ -1,10 +1,23 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Home, Users, FileText, Lightbulb, Settings, LogOut, Menu } from "lucide-react";
 import { useState } from "react";
+import axiosInstance from "../../../services/axiosInstance";
 
 const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ setActivePage }) => {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false); 
+  const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axiosInstance.post("/auth/logout", {}, {  });
+    
+      navigate("/admin/login"); 
+    } catch (error) {
+      console.error("Đăng xuất thất bại:", error);
+    }
+  };
+
 
   const menuItems = [
     { to: "/admin/accounts", icon: <Users className="w-5 h-5" />, label: "Quản lý tài khoản" },
@@ -56,7 +69,10 @@ const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ set
         </nav>
 
         <div className="mt-auto">
-          <button className="flex items-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+          <button
+           className="flex items-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+           onClick={handleLogout}
+           >
             <LogOut className="w-5 h-5 mr-2" /> Đăng xuất
           </button>
         </div>

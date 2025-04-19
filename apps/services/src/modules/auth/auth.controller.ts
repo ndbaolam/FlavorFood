@@ -138,8 +138,8 @@ export class AuthController {
   @Post('logout')
   @ApiOperation({ summary: 'Logout and clear access token cookie' })
   @ApiResponse({ status: 200, description: 'User logged out' })
-  async logout(@Res() res: Response) {
-    res.clearCookie('access_token');
+  async logout(@Res() res: Response, @Req() req: Request) {
+    return this.authService.logout(res, req);    
   }
 
   @Get('profile')

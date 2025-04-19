@@ -12,6 +12,7 @@ import { UserGoogleInterface } from './interfaces/user.interface';
 import { Users } from '../users/entity/users.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Response, Request } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -100,5 +101,28 @@ export class AuthService {
 
   async getProfile(mail: string): Promise<Users> {
     return this.usersService.findUserByEmail(mail);
+  }
+
+  async logout(res: Response, req: Request): Promise<any> {
+    const accessToken = req.cookies['access_token'];
+    if (!accessToken) {
+      throw new UnauthorizedException('No access token found');
+    }
+
+    // Verify token
+    const payload = this.jwtService.verify(accessToken, {
+      secret: this.configService.get<string>('JWT_SECRET'),
+    });
+    if (!payload) {
+      throw new UnauthorizedException('Invalid access token');
+    }
+    
+    res.clearCookie('access_token', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'lax',
+    });
+
+    return res.status(200).json({ message: 'Logout successful' });
   }
 }
