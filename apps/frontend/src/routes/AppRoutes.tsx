@@ -12,11 +12,12 @@ import Profile from '../pages/Profile';
 import Favourite from '../pages/Favourite';
 import AdminLayout from '../layouts/Admin/AdminLayout';
 import Market from '../pages/Market';
-import Dashboard from '../pages/Admin/Dashboard';
 import Accounts from '../pages/Admin/Account';
 import Posts from '../pages/Admin/Post';
 import Tip from '../pages/Admin/Tip';
 import LogIn from '../components/Admin/LogIn';
+import SellerLayout from '../layouts/Seller/SellerLayout';
+import SellerHome from '../pages/Seller/Home';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -74,9 +75,11 @@ const routes: RouteObject[] = [
       },
     ],
   },
-  {path:"admin/login", 
+  {
+  path:"admin/login", 
   element:<LogIn />,
-   errorElement: <ErrorPage />,},
+   errorElement: <ErrorPage />,
+  },
   {
     path: '/admin',
     element: <AdminLayout />,
@@ -87,7 +90,19 @@ const routes: RouteObject[] = [
       { path: "tips", element: <Tip /> },
      
     ],
+  },
+  {
+  path :'/seller',
+  element:<SellerLayout />,
+  errorElement: <ErrorPage />,
+  children: [
+    {
+      element: <SellerHome />,
+      index: true,
+    },
+  ]
   }
+
 ];
 
 const AppRoutes = createBrowserRouter(routes);

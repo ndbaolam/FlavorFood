@@ -63,6 +63,19 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
     };
   }, [fetchUserProfile]);
 
+  const handleLogout = async () => {
+    try {
+      const response =  axiosInstance
+      .post("/auth/logout", { withCredentials: true })
+      .then((response) => {
+        setAvatarUrl(null);
+        window.location.href = '/sign-in';
+      })
+ 
+    } catch (error) {
+      console.error("Đăng xuất thất bại:", error);
+    }
+  };
   const menuItems = [
     { to: "/", label: "Trang chủ", icon: <Home className="w-5 h-5 mr-2" /> },
     { to: "/dish", label: "Món ăn", icon: <ChefHat className="w-5 h-5 mr-2" /> },
@@ -77,9 +90,9 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
       icon: <Users className="w-5 h-5 mr-2" />,
     },
     {
-      href: "/signout",
       label: "Đăng xuất",
       icon: <LogOut className="w-5 h-5 mr-2 text-gray-600" />,
+      onClick: handleLogout,
     },
   ];
 
@@ -127,16 +140,24 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
 
                 {isAccountOpen && (
                   <div className="absolute right-4 top-20 w-48 bg-white rounded-md shadow-lg z-50">
-                    {accountItems.map(({ href, label, icon }) => (
+                    {accountItems.map(({ href, label, icon, onClick }) => (
                       <a
-                        key={href}
-                        href={href}
+                        key={label}
+                        href={href || "#"}
+                        onClick={(e) => {
+                          if (onClick) {
+                            e.preventDefault(); // Ngăn chặn chuyển trang
+                            closeMenus();       // Đóng menu
+                            onClick();
+                          }
+                        }}
                         className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100"
                       >
                         {icon}
                         {label}
                       </a>
                     ))}
+
                   </div>
                 )}
               </>
@@ -186,12 +207,18 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
           <div className="mt-4 border-t border-gray-200 pt-2">
             <p className="text-gray-500 mb-2 font-medium">Tài khoản</p>
             {avatarUrl ? (
-              accountItems.map(({ href, label, icon }) => (
+              accountItems.map(({ href, label, icon ,onClick}) => (
                 <a
                   key={href}
                   href={href}
-                  className="flex items-center px-3 py-2 rounded-md text-gray-700 hover:bg-blue-100"
-                  onClick={closeMenus}
+                  onClick={(e) => {
+                    if (onClick) {
+                      e.preventDefault(); // Ngăn chặn chuyển trang
+                      closeMenus();       // Đóng menu
+                      onClick();
+                    }
+                  }}
+                  className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100"
                 >
                   {icon}
                   {label}
