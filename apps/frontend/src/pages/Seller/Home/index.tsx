@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import SearchBox from "../../../components/Search";
 import CreateIngredient from "../../../components/Seller/CreateForm/CreateIngredient";
 import { on } from "events";
+import { Ingredient } from "../../Market/store.interface";
 
 const SellerHome = () => {
   const [food, setFood] = useState<FoodIngredient[]>([]);
@@ -12,11 +13,11 @@ const SellerHome = () => {
   const [selectedIngredientId, setIngredientId] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [editingId, setEditingId] = useState<number | null>(null);
-const [editingData, setEditingData] = useState<Partial<FoodIngredient>>({});
+const [editingData, setEditingData] = useState<Partial<Ingredient>>({});
 
   const LIMIT = 6;
 
-  const products: FoodIngredient[] = [
+  const products: Ingredient[] = [
     {
       food_id: 1,
       title: "Thịt heo ba chỉ",

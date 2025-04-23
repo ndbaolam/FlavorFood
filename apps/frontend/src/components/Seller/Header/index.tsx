@@ -70,7 +70,9 @@ const SellerHeader: React.FC = () => {
 
           <Link to="/" className="flex items-center space-x-2">
             <img src="./logo1.png" alt="Logo" className="h-16" />
+            <span className="text-3xl font-bold text-blue-800">Flavor Food</span>
           </Link>
+
 
           {/* Desktop Menu */}
 

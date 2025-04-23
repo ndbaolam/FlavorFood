@@ -1,10 +1,10 @@
-import { FoodIngredient } from "apps/frontend/src/pages/Seller/Home/foodIngredientinterface";
+import { Ingredient } from "apps/frontend/src/pages/Market/store.interface";
 import { X } from "lucide-react";
 import { useState } from "react";
 
 interface CreateIngredientProps {
-    initialData?: FoodIngredient;
-    onSubmit: (data: FoodIngredient) => void;
+    initialData?: Ingredient;
+    onSubmit: (data: Ingredient) => void;
     onClose: () => void;
 }
 
@@ -50,7 +50,7 @@ const CreateIngredient = ({ initialData, onSubmit, onClose }: CreateIngredientPr
 
         setIsSubmitting(true);
 
-        const data: FoodIngredient = {
+        const data: Ingredient = {
             food_id: initialData?.food_id || Date.now(),
             title,
             price,

@@ -111,7 +111,11 @@ const RecipeDetail: React.FC = () => {
 
           {/* Recipe Image */}
           <div className="flex justify-between w-full gap-20">
-            <img src={recipe.image} alt={recipe.title} className="w-2/3 rounded-lg shadow-md" />
+            <img
+              src={recipe.image}
+              alt={recipe.title}
+              className="w-2/3 max-h-[500px] object-cover rounded-lg shadow-md"
+            />
 
             {/* Nutrition Section */}
             <div className="w-1/3 bg-blue-50 p-6 rounded-lg shadow">
@@ -145,46 +149,46 @@ const RecipeDetail: React.FC = () => {
           </div>
 
           <div className="flex gap-8 ">
-      {/* Thành phần */}
-      <div className="bg-gray-50 p-4 rounded-lg shadow flex-1 min-w-[300px]">  
-        <h3 className="text-lg font-semibold text-green-700 flex items-center">
-          <Vegan className="mr-2" /> {/* Icon cho Thành phần */}
-          Thành phần
-        </h3>
-        <ul className="text-gray-700 space-y-1 mt-4">
-          {recipe.ingredients.map((item) => (
-            <li key={item.id} className="flex items-center gap-2">
-              <Check size={16} className="text-green-600" /> {/* Icon cho từng thành phần */}
-              {item.ingredient}: {item.quantity} {item.unit}
-            </li>
-          ))}
-        </ul>
-      </div>
-      
-     {/* Hướng dẫn nấu ăn */}
-     <div className="bg-gray-50 p-4 rounded-lg shadow flex-1 min-w-[300px]"> 
-     <h3 className="text-lg font-semibold text-blue-700 flex items-center">
-          <BookOpen className="mr-2" /> {/* Icon cho Hướng dẫn nấu ăn */}
-          Hướng dẫn nấu ăn
-        </h3>
-        <ul className="text-gray-700 space-y-2 mt-4">
-          {recipe.steps.map((item) => (
-            <li key={item.number} className="flex items-start gap-2">
-              <span 
-                className={`bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs font-bold cursor-pointer ${completedSteps[item.number] ? 'line-through' : ''}`}
-                onClick={() => setCompletedSteps((prev) => ({
-                  ...prev,
-                  [item.number]: !prev[item.number],
-                }))}
-              >
-                {item.number}
-              </span>
-              {item.step}
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+            {/* Thành phần */}
+            <div className="bg-gray-50 p-4 rounded-lg shadow flex-1 min-w-[300px]">
+              <h3 className="text-lg font-semibold text-green-700 flex items-center">
+                <Vegan className="mr-2" /> 
+                Thành phần
+              </h3>
+              <ul className="text-gray-700 space-y-1 mt-4">
+                {recipe.ingredients.map((item) => (
+                  <li key={item.id} className="flex items-center gap-2">
+                    <Check size={16} className="text-green-600" /> 
+                    {item.ingredient}: {item.quantity} {item.unit}
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Hướng dẫn nấu ăn */}
+            <div className="bg-gray-50 p-4 rounded-lg shadow flex-1 min-w-[300px]">
+              <h3 className="text-lg font-semibold text-blue-700 flex items-center">
+                <BookOpen className="mr-2" /> 
+                Hướng dẫn nấu ăn
+              </h3>
+              <ul className="text-gray-700 space-y-2 mt-4">
+                {recipe.steps.map((item) => (
+                  <li key={item.number} className="flex items-start gap-2">
+                    <span
+                      className={`bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs font-bold cursor-pointer ${completedSteps[item.number] ? 'line-through' : ''}`}
+                      onClick={() => setCompletedSteps((prev) => ({
+                        ...prev,
+                        [item.number]: !prev[item.number],
+                      }))}
+                    >
+                      {item.number}
+                    </span>
+                    {item.step}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </article>
       </main>
     </div>
