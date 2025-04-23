@@ -25,7 +25,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-@ApiTags('favorite')
+@ApiTags('Favorite')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('favorite')

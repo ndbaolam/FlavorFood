@@ -29,7 +29,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-@ApiTags('reviews')
+@ApiTags('Reviews')
 @Controller('reviews')
 export class ReviewController {
   constructor(private readonly reviewService: ReviewService) {}

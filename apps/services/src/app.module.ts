@@ -10,6 +10,7 @@ import { UploadModule } from './modules/upload/upload.module';
 import { HealthcheckModule } from './modules/healthcheck/healthcheck.module';
 import { TipsModule } from './modules/tips/tips.module';
 import { ReviewModule } from './modules/review/review.module';
+import { StoresModule } from './modules/stores/stores.module';
 
 @Module({
   imports: [
@@ -27,7 +28,8 @@ import { ReviewModule } from './modules/review/review.module';
     UploadModule,
     HealthcheckModule,
     TipsModule,
-    ReviewModule,    
+    ReviewModule,
+    StoresModule,    
   ],  
 })
 export class AppModule {}

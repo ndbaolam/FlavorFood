@@ -20,7 +20,7 @@ import {
   ApiBadRequestResponse,
 } from '@nestjs/swagger';
 
-@ApiTags('Tip Genres') // Hiển thị nhóm ở Swagger UI
+@ApiTags('Tip Genres')
 @Controller('tip-genres')
 export class GenresController {
   constructor(private readonly genresService: GenresService) {}

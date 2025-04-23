@@ -24,7 +24,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 
-@ApiTags('recipes')
+@ApiTags('Recipes')
 @Controller('recipes')
 export class RecipesController {
   constructor(private readonly recipesService: RecipesService) {}
