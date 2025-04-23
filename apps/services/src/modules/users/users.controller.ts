@@ -13,8 +13,8 @@ import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { AdminGuard } from '../auth/guards/admin.guard';
 import { ApiTags, ApiBody } from '@nestjs/swagger';
 
-//@UseGuards(AdminGuard)
-@ApiTags('users')
+@UseGuards(AdminGuard)
+@ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}

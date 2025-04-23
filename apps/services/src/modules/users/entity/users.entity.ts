@@ -4,11 +4,13 @@ import {
   PrimaryGeneratedColumn, 
   CreateDateColumn, 
   UpdateDateColumn, 
-  OneToMany
+  OneToMany,
+  OneToOne
 } from 'typeorm';
 import { IsEmail, IsStrongPassword } from 'class-validator';
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Review } from '../../review/entity/review.entity';
+import { Stores } from 'apps/services/src/modules/stores/entity/store.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -50,6 +52,9 @@ export class Users {
 
   @OneToMany(() => Review, review => review.user)
   reviews: Review[];
+
+  @OneToOne(() => Stores, (store) => store.user)
+  store: Stores;
 
   @CreateDateColumn({
     type: 'timestamp',
