@@ -9,7 +9,7 @@ import {
   Lightbulb,
   ShoppingBasket,
 } from "lucide-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../services/axiosInstance";
 import { User } from "../pages/Profile/Profile.interface";
 
@@ -24,6 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const accountRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAccountMenu = () => setIsAccountOpen(!isAccountOpen);
@@ -41,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
   const fetchUserProfile = useCallback(async () => {
     try {
       const response = await axiosInstance.get<User>('/auth/profile');
-      setAvatarUrl(response.data.avatar || null);
+      setAvatarUrl(response.data.avatar ||  "../../avatar.jpg");
     } catch (error) {
       console.error("Error fetching user profile:", error);
       setAvatarUrl(null);
@@ -69,7 +70,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
       .post("/auth/logout", { withCredentials: true })
       .then((response) => {
         setAvatarUrl(null);
-        window.location.href = '/sign-in';
+        navigate("/sign-in");
       })
  
     } catch (error) {
@@ -95,6 +96,21 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
       onClick: handleLogout,
     },
   ];
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        accountRef.current &&
+        !accountRef.current.contains(event.target as Node)
+      ) {
+        setIsAccountOpen(false); 
+      }
+    };
+  
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="relative bg-white border-b border-gray-200 shadow-sm" role="navigation" aria-label="Main navigation">
@@ -132,7 +148,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                   className="flex items-center w-10 h-10 rounded-full overflow-hidden border focus:outline-none"
                 >
                   <img
-                    src={avatarUrl || "../../logo1.png"}
+                    src={avatarUrl}
                     alt="Avatar"
                     className="w-full h-full object-cover"
                   />
@@ -146,8 +162,8 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                         href={href || "#"}
                         onClick={(e) => {
                           if (onClick) {
-                            e.preventDefault(); // Ngăn chặn chuyển trang
-                            closeMenus();       // Đóng menu
+                            e.preventDefault(); 
+                            closeMenus();      
                             onClick();
                           }
                         }}
@@ -213,8 +229,8 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                   href={href}
                   onClick={(e) => {
                     if (onClick) {
-                      e.preventDefault(); // Ngăn chặn chuyển trang
-                      closeMenus();       // Đóng menu
+                      e.preventDefault(); 
+                      closeMenus();     
                       onClick();
                     }
                   }}

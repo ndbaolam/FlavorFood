@@ -1,13 +1,11 @@
 import { PencilRuler, SquarePlus, Trash2 } from "lucide-react";
-import { FoodIngredient } from "./foodIngredientinterface";
 import { useEffect, useState } from "react";
 import SearchBox from "../../../components/Search";
 import CreateIngredient from "../../../components/Seller/CreateForm/CreateIngredient";
-import { on } from "events";
 import { Ingredient } from "../../Market/store.interface";
 
 const SellerHome = () => {
-  const [food, setFood] = useState<FoodIngredient[]>([]);
+  const [food, setFood] = useState<Ingredient[]>([]);
   const [searchTitle, setSearchTitle] = useState<string>("");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedIngredientId, setIngredientId] = useState<number[]>([]);
@@ -100,7 +98,7 @@ const [editingData, setEditingData] = useState<Partial<Ingredient>>({});
     }
   ];
 
-  const handleAddIngredient = (newIngredient: FoodIngredient) => {
+  const handleAddIngredient = (newIngredient: Ingredient) => {
     setFood((prev) => [...prev, newIngredient]);
     setIsPopupOpen(false);
   };
@@ -186,7 +184,7 @@ const [editingData, setEditingData] = useState<Partial<Ingredient>>({});
             </thead>
             <tbody>
                 {paginatedFood.length > 0 ? (
-                paginatedFood.map((product: FoodIngredient) => {
+                paginatedFood.map((product: Ingredient) => {
                   const isEditing: boolean = editingId === product.food_id;
           
                   return (
@@ -247,7 +245,7 @@ const [editingData, setEditingData] = useState<Partial<Ingredient>>({});
                       <>
                       <button
                         onClick={() => {
-                        const updatedFood: FoodIngredient[] = food.map((item) =>
+                        const updatedFood: Ingredient[] = food.map((item) =>
                           item.food_id === product.food_id
                           ? {
                             ...item,
