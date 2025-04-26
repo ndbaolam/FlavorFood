@@ -40,16 +40,15 @@ const SellerHeader: React.FC = () => {
   }, [fetchUserProfile]);
 
   useEffect(() => {
-    const handleUserLoggedIn = () => {
-      fetchUserProfile();
+    const handleUserProfileUpdated = () => {
+      fetchUserProfile();                             
     };
-
-    window.addEventListener('userLoggedIn', handleUserLoggedIn);
+    window.addEventListener('userProfileUpdated', handleUserProfileUpdated); 
+                                                                         
     return () => {
-      window.removeEventListener('userLoggedIn', handleUserLoggedIn);
+      window.removeEventListener('userProfileUpdated', handleUserProfileUpdated);                                                                           
     };
-  }, [fetchUserProfile]);
-
+  }, [fetchUserProfile]); 
 
   const handleLogout = async () => {
     try {
@@ -110,8 +109,6 @@ const SellerHeader: React.FC = () => {
 
 
           {/* Desktop Menu */}
-
-
           <div className="hidden md:flex items-center space-x-4" ref={accountRef}>
             {avatarUrl ? (
               <>

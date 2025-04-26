@@ -3,11 +3,12 @@ import { User } from "../../Profile/Profile.interface";
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import imageCompression from 'browser-image-compression';
 const SellerProfile: React.FC = () => {
     const [formData, setFormData] = useState<User | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isEditing, setIsEditing] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         axiosInstance
@@ -26,36 +27,56 @@ const SellerProfile: React.FC = () => {
 
     const handleEditToggle = async () => {
         if (isEditing) {
-            try {
-                await axiosInstance.put(`/users/${formData?.user_id}`, formData, {
-                    withCredentials: true,
-                });
-                toast("Cập nhật thành công", {
-                    position: "top-right",
-                    autoClose: 2000,
-                });
-    
-            } catch (error) {
-            }
+          try {
+            await axiosInstance.put(`/users/${formData?.user_id}`, formData, {
+              withCredentials: true,
+            });
+      
+            toast.success("Cập nhật thành công!", { position: "top-right", autoClose: 2000 });
+            window.dispatchEvent(new Event('userProfileUpdated'));
+          } catch (error) {
+            console.error("Error updating user data:", error);
+            toast.error("Cập nhật thất bại!", { autoClose: 2000 });
+          }
         }
+      
         setIsEditing(!isEditing);
-    };
+      };
 
-
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                setFormData((prev) => ({
-                    ...prev!,
-                    image: reader.result as string,
-                }));
-            };
-            reader.readAsDataURL(file);
+        if (!file) return;
+      
+        try {
+          const compressedFile = await imageCompression(file, {
+            maxSizeMB: 1, 
+            maxWidthOrHeight: 800, 
+            useWebWorker: true, 
+          });
+      
+          const form = new FormData();
+          form.append('image', compressedFile);
+          const response = await axiosInstance.post('http://localhost:3000/api/upload', form, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+            timeout: 30000,
+          });
+      
+          const imageUrl = response.data.url;
+          setFormData((prev) => ({
+            ...prev!,
+            avatar: imageUrl,
+          }));
+          window.dispatchEvent(new Event('userProfileUpdated')); 
+          toast.success("Tải ảnh thành công!", { autoClose: 2000 });
+      
+        } catch (error: any) {
+          console.error('Upload error:', error.response?.data || error.message);
+          toast.error("Lỗi tải ảnh!", { autoClose: 2000 });
         }
-    };
-
+      };
+    
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData(prev => ({
             ...prev!,
@@ -68,13 +89,12 @@ const SellerProfile: React.FC = () => {
 
     return (
         <div className="mx-auto mt-12 w-full max-w-6xl border border-white rounded-xl shadow-lg bg-white" >
-            <div className=" p-4">
+            <div className="p-4">
                 <div className="relative mb-6">
-                    <h1 className="text-center  font-bold text-3xl">Thông tin tài khoản</h1>
+                    <h1 className="text-center font-bold text-3xl">Thông tin tài khoản</h1>
                     <button
                         onClick={handleEditToggle}
                         className="font-bold absolute right-0 top-1/2 -translate-y-1/2 px-4 py-2 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition"
-
                     >
                         {isEditing ? "Lưu" : "Cập nhật"}
                     </button>
@@ -84,7 +104,7 @@ const SellerProfile: React.FC = () => {
                     <div className="mt-10 w-full md:w-1/3 flex flex-col items-center gap-2 justify-center">
                         <img
                             src={formData.avatar || "../../avatar.jpg"}
-                            alt="Store"
+                            alt="Avatar"
                             className="w-[180px] h-[180px] rounded-full object-cover"
                         />
                         {isEditing && (
@@ -106,13 +126,12 @@ const SellerProfile: React.FC = () => {
                         )}
                     </div>
 
-
                     <div className="w-full md:w-2/3 flex flex-col gap-4 p-8">
-                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex flex-col md:flex-row gap-4">
                             <div className="flex-1">
                                 <label className="block text-xl mb-1">Họ</label>
                                 <input
-                                    name="first_name" 
+                                    name="first_name"
                                     className={inputStyle}
                                     type="text"
                                     value={formData.first_name}
@@ -143,12 +162,11 @@ const SellerProfile: React.FC = () => {
                                 disabled={!isEditing}
                             />
                         </div>
-
-                        
                     </div>
                 </div>
             </div>
         </div>
     );
 }
+
 export default SellerProfile;
