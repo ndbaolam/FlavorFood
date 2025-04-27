@@ -35,7 +35,7 @@ export class StoreService {
   async findOne(id: number): Promise<Store> {
     const store = await this.storeRepository.findOne({
       where: { store_id: id },
-      relations: ['user'],
+      relations: ['user', 'ingredients'],
     });
     if (!store) throw new NotFoundException('Store not found');
     return store;

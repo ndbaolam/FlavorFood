@@ -8,12 +8,12 @@ import { UpdateStoreDto } from './dto/update-store.dto';
 
 @ApiTags('Stores')
 @Controller('stores')
-@UseGuards(SellerGuard)
 @ApiBearerAuth()
 export class StoreController {
   constructor(private readonly storeService: StoreService) {}
 
   @Post()
+  @UseGuards(SellerGuard)
   @ApiOperation({ summary: 'Create a new store' })
   @ApiResponse({ status: 201, description: 'Store created', type: Store })  
   async create(@Body() createStoreDto: CreateStoreDto): Promise<Store> {
@@ -38,6 +38,7 @@ export class StoreController {
   }
 
   @Patch(':id')
+  @UseGuards(SellerGuard)
   @ApiOperation({ summary: 'Update a store' })
   @ApiParam({ name: 'id', description: 'Store ID' })
   @ApiResponse({ status: 200, description: 'Store updated successfully', type: Store })

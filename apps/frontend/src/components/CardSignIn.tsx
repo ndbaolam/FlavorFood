@@ -6,28 +6,59 @@ import {
   TokenResponse,
   useGoogleLogin,
 } from '@react-oauth/google';
-import axios from 'axios';
 import axiosInstance from '../services/axiosInstance';
+import { User } from '../pages/Profile/Profile.interface';
 
 interface CardProps {
   children?: ReactNode;
-  onSignInSuccess?: () => void;
 }
 
-const CardSignIn: React.FC<CardProps> = ({ children, onSignInSuccess }) => {
+const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [mail, setMail] = useState('');
+  const [password, setPassword] = useState('');
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Add sign-in logic here
-    navigate('/');
+  const handleMailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMail(e.target.value);
   };
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage(null);
+
+    try {
+      await axiosInstance.post(
+        '/auth/login',
+        { mail, password },
+        { withCredentials: true }
+      );
+
+      const response = await axiosInstance.get<User>('/auth/profile');
+      const loginUser = response.data;
+
+      if (loginUser.role === 'seller') {
+        navigate('/seller');
+      } else {
+        navigate('/');
+      }
+    } catch (error) {
+      console.error('Đăng nhập thất bại:', error);
+      alert('Tên đăng nhập hoặc mật khẩu không đúng');
+    }
+  };
+
+
 
 
   const googleLogin = useGoogleLogin({
@@ -70,9 +101,11 @@ const CardSignIn: React.FC<CardProps> = ({ children, onSignInSuccess }) => {
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="Tên đăng nhập"
+                placeholder="Mail đăng nhập"
                 className="border rounded-lg px-4 py-2 w-full"
                 required
+                value={mail}
+                onChange={handleMailChange}
               />
             </div>
             <div className="relative mb-6">
@@ -81,6 +114,8 @@ const CardSignIn: React.FC<CardProps> = ({ children, onSignInSuccess }) => {
                 placeholder="Mật khẩu"
                 className="border rounded-lg px-4 py-2 w-full"
                 required
+                value={password}
+                onChange={handlePasswordChange}
               />
               <button
                 type="button"

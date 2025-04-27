@@ -1,19 +1,21 @@
-import { FoodIngredient } from "apps/frontend/src/pages/Seller/Home/foodIngredientinterface";
+import { Ingredient, Store } from "../../../pages/Market/store.interface";
 import { X } from "lucide-react";
 import { useState } from "react";
 
 interface CreateIngredientProps {
-    initialData?: FoodIngredient;
-    onSubmit: (data: FoodIngredient) => void;
+    initialData?: Ingredient;
+    onSubmit: (data: Ingredient) => void;
     onClose: () => void;
+    store: Store; 
 }
 
-const CreateIngredient = ({ initialData, onSubmit, onClose }: CreateIngredientProps) => {
+const CreateIngredient = ({ store,initialData, onSubmit, onClose }: CreateIngredientProps) => {
     const [title, setTitle] = useState<string>(initialData?.title || "");
     const [price, setPrice] = useState<number>(initialData?.price || 0);
     const [quantity, setQuantity] = useState<number>(initialData?.quantity || 0);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
     const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+    const [formError, setFormError] = useState<string | null>(null);
 
     const validateForm = () => {
         const errors: { [key: string]: string } = {};
@@ -46,23 +48,34 @@ const CreateIngredient = ({ initialData, onSubmit, onClose }: CreateIngredientPr
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!store || !store.store_id) {
+          setFormError("Store không hợp lệ");
+          return;
+        }
+    
         if (!validateForm()) return;
-
+    
         setIsSubmitting(true);
-
-        const data: FoodIngredient = {
-            food_id: initialData?.food_id || Date.now(),
-            title,
-            price,
-            quantity,
-            created_at: new Date(),
-            updated_at: new Date(),
+    
+        const data: Ingredient = {
+          ingredient_id: initialData?.ingredient_id || Date.now(),
+          title,
+          price,
+          quantity,
+          created_at: new Date(),
+          updated_at: new Date(),
         };
-
-        await onSubmit(data);
-        setIsSubmitting(false);
-        onClose();
-    };
+    
+        try {
+          await onSubmit(data);
+          setIsSubmitting(false);
+          onClose();
+        } catch (error) {
+          setIsSubmitting(false);
+          setFormError("Có lỗi xảy ra, vui lòng thử lại!");
+        }
+      };
+      
 
     return (
         <form onSubmit={handleSubmit}>
@@ -85,6 +98,9 @@ const CreateIngredient = ({ initialData, onSubmit, onClose }: CreateIngredientPr
                             <X size={36} />
                         </button>
                     </div>
+
+                    {formError && <p className="text-red-500 mb-4">{formError}</p>}
+
                     <div>
                         <label className="block font-medium">
                             Tên nguyên liệu <span className="text-red-500">*</span>

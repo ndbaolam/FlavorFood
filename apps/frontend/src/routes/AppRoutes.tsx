@@ -18,6 +18,7 @@ import Tip from '../pages/Admin/Tip';
 import LogIn from '../components/Admin/LogIn';
 import SellerLayout from '../layouts/Seller/SellerLayout';
 import SellerHome from '../pages/Seller/Home';
+import SellerProfile from '../pages/Seller/Profile';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -98,8 +99,10 @@ const routes: RouteObject[] = [
   children: [
     {
       element: <SellerHome />,
-      index: true,
-    },
+      index: true,},
+    {
+      path:"profile", element:<SellerProfile />
+    }
   ]
   }
 

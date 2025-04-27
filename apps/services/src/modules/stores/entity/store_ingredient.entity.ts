@@ -3,14 +3,11 @@ import { Stores as Store } from './store.entity';
 
 @Entity('store_ingredients')
 export class StoreIngredient {
-  @PrimaryGeneratedColumn('uuid')
-  ingredient_id: string;
+  @PrimaryGeneratedColumn()
+  ingredient_id: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
-
-  @Column()
-  unit: string;
 
   @Column()
   title: string;

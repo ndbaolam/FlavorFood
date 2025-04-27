@@ -22,7 +22,7 @@ const AdminHeader = () => {
     const fetchUserProfile = async () => {
       try {
         const response = await axiosInstance.get<User>('/auth/profile');
-        setAvatarUrl(response.data.avatar || null);
+        setAvatarUrl(response.data.avatar || "../../avatar.jpg");
       } catch (error) {
         console.error("Error fetching user profile:", error);
 

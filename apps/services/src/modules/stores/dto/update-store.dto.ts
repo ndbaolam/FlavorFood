@@ -10,10 +10,20 @@ export class UpdateStoreDto extends PartialType(CreateStoreDto) {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  location?: string;
+  address?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   phone_number?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  openHours?: string;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  closeHours?: string;
 }

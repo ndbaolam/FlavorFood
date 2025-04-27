@@ -6,10 +6,6 @@ export class CreateStoreIngredientDto {
   @IsNumber()
   price: number;
 
-  @ApiProperty({ description: 'The unit of measurement for the ingredient' })
-  @IsString()
-  unit: string;
-
   @ApiProperty({ description: 'The title/name of the ingredient' })
   @IsString()
   title: string;
@@ -18,8 +14,7 @@ export class CreateStoreIngredientDto {
   @IsNumber()
   quantity: number;
 
-  @ApiProperty({ description: 'The store ID this ingredient belongs to', required: false })
-  @IsUUID()
-  @IsOptional()
-  store_id?: string;
+  @ApiProperty({ description: 'The store ID this ingredient belongs to', required: true })
+  @IsNumber()
+  store_id: number;
 }
