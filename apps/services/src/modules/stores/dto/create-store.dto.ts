@@ -12,13 +12,30 @@ export class CreateStoreDto {
   @IsString()
   image?: string;
 
-  @ApiProperty({ required: true })  
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  location: string;
+  description?: string;
 
-  @ApiProperty({ required: true })
+  @ApiProperty()
+  @IsNotEmpty()
   @IsString()
-  phone_number?: string;
+  address: string; 
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  phone_number?: string; 
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  openHours: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  closeHours: string;
 
   @ApiProperty()
   @IsNotEmpty()

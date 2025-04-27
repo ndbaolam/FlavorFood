@@ -70,11 +70,6 @@ const SellerHeader: React.FC = () => {
       icon: <Users className="w-5 h-5 mr-2" />,
     },
     {
-      href:"/seller/store",
-      label:"Thông tin cửa hàng",
-      icon: <Store className="w-5 h-5 mr-2" /> ,
-    },
-    {
       label: "Đăng xuất",
       icon: <LogOut className="w-5 h-5 mr-2 text-gray-600" />,
       onClick: handleLogout,

@@ -18,7 +18,6 @@ import Tip from '../pages/Admin/Tip';
 import LogIn from '../components/Admin/LogIn';
 import SellerLayout from '../layouts/Seller/SellerLayout';
 import SellerHome from '../pages/Seller/Home';
-import StoreInfor from '../pages/Seller/Store';
 import SellerProfile from '../pages/Seller/Profile';
 // Route definitions
 const routes: RouteObject[] = [
@@ -101,9 +100,6 @@ const routes: RouteObject[] = [
     {
       element: <SellerHome />,
       index: true,},
-    {
-      path: "store", element:<StoreInfor />
-    },
     {
       path:"profile", element:<SellerProfile />
     }

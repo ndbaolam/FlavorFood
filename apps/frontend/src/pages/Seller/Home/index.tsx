@@ -1,330 +1,150 @@
-import { PencilRuler, SquarePlus, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import SearchBox from "../../../components/Search";
+import { useState, useEffect } from "react";
+import axiosInstance from "../../../services/axiosInstance";
+import StoreInfor from "../../../components/Seller/Store/StoreInfor";
+import IngredientTable from "../../../components/Seller/Store/IngredientTable";
+import CreateStore from "../../../components/Seller/Store/CreateStore";
+import { Store } from "../../Market/store.interface";
+import { User } from "../../Profile/Profile.interface";
+import { SquarePlus } from "lucide-react"; 
 import CreateIngredient from "../../../components/Seller/CreateForm/CreateIngredient";
 import { Ingredient } from "../../Market/store.interface";
 
 const SellerHome = () => {
-  const [food, setFood] = useState<Ingredient[]>([]);
-  const [searchTitle, setSearchTitle] = useState<string>("");
-  const [isPopupOpen, setIsPopupOpen] = useState(false);
-  const [selectedIngredientId, setIngredientId] = useState<number[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [editingId, setEditingId] = useState<number | null>(null);
-const [editingData, setEditingData] = useState<Partial<Ingredient>>({});
-
-  const LIMIT = 6;
-
-  const products: Ingredient[] = [
-    {
-      food_id: 1,
-      title: "Thịt heo ba chỉ",
-      price: 120000,
-      quantity: 15,
-      created_at: new Date("2024-12-01T08:00:00"),
-      updated_at: new Date("2025-01-05T10:30:00")
-    },
-    {
-      food_id: 2,
-      title: "Trứng gà",
-      price: 4000,
-      quantity: 100,
-      created_at: new Date("2025-01-10T09:15:00"),
-      updated_at: new Date("2025-02-01T11:00:00")
-    },
-    {
-      food_id: 3,
-      title: "Gạo thơm",
-      price: 22000,
-      quantity: 50,
-      created_at: new Date("2024-11-20T07:45:00"),
-      updated_at: new Date("2025-01-15T12:00:00")
-    },
-    {
-      food_id: 4,
-      title: "Dầu ăn",
-      price: 35000,
-      quantity: 30,
-      created_at: new Date("2024-10-05T10:00:00"),
-      updated_at: new Date("2025-01-25T14:20:00")
-    },
-    {
-      food_id: 5,
-      title: "Hành lá",
-      price: 15000,
-      quantity: 25,
-      created_at: new Date("2025-01-01T08:30:00"),
-      updated_at: new Date("2025-01-03T09:45:00")
-    },
-    {
-      food_id: 6,
-      title: "Tỏi",
-      price: 30000,
-      quantity: 20,
-      created_at: new Date("2025-01-02T11:00:00"),
-      updated_at: new Date("2025-01-10T12:30:00")
-    },
-    {
-      food_id: 7,
-      title: "Nước mắm",
-      price: 28000,
-      quantity: 18,
-      created_at: new Date("2024-12-25T13:00:00"),
-      updated_at: new Date("2025-01-18T15:00:00")
-    },
-    {
-      food_id: 8,
-      title: "Đường trắng",
-      price: 18000,
-      quantity: 40,
-      created_at: new Date("2025-01-05T08:00:00"),
-      updated_at: new Date("2025-01-22T10:00:00")
-    },
-    {
-      food_id: 9,
-      title: "Muối",
-      price: 10000,
-      quantity: 35,
-      created_at: new Date("2024-12-10T07:30:00"),
-      updated_at: new Date("2025-01-08T09:00:00")
-    },
-    {
-      food_id: 10,
-      title: "Ớt tươi",
-      price: 25000,
-      quantity: 12,
-      created_at: new Date("2024-12-15T10:45:00"),
-      updated_at: new Date("2025-01-12T11:45:00")
-    }
-  ];
-
-  const handleAddIngredient = (newIngredient: Ingredient) => {
-    setFood((prev) => [...prev, newIngredient]);
-    setIsPopupOpen(false);
-  };
+  const [store, setStore] = useState<Store | null>(null);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [foodId, setFoodId] = useState<number | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false); 
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]); 
+  const [ingredientsLoading, setIngredientsLoading] = useState<boolean>(false);  
+  const [error, setError] = useState<string | null>(null); 
 
   useEffect(() => {
-    setFood(products);
+    const fetchData = async () => {
+      try {
+        const userRes = await axiosInstance.get("/auth/profile", { withCredentials: true });
+        const userData: User = userRes.data;
+        setCurrentUser(userData);
+        console.log("currentUser.user_id:", userData.user_id);
+
+        const storeRes = await axiosInstance.get("/stores", { withCredentials: true });
+        const storeList: Store[] = storeRes.data;
+
+        const userStore = storeList.find((store) => store.user.user_id === userData.user_id);
+        setStore(userStore || null); 
+      } catch (error) {
+        setError("Có lỗi xảy ra khi tải dữ liệu người dùng hoặc cửa hàng.");
+        console.error("Error fetching data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTitle]);
+    if (store) {
+      const fetchIngredients = async () => {
+        setIngredientsLoading(true);
+        setError(null); 
+        try {
+          const ingredientsRes = await axiosInstance.get(`stores/${store.store_id}`, { withCredentials: true });
+          const storeData = ingredientsRes.data; 
+          setIngredients(storeData.ingredients || []); 
+        } catch (error) {
+          setError("Có lỗi xảy ra khi tải nguyên liệu.");
+          console.error("Error fetching ingredients:", error);
+        } finally {
+          setIngredientsLoading(false);
+        }
+      };
+  
+      fetchIngredients();
+    }
+  }, [store]);
 
-  const sortedFood = [...food].sort((a, b) => {
-    const dateDiff = b.updated_at.getTime() - a.updated_at.getTime();
-    if (dateDiff !== 0) return dateDiff;
-    return a.title.localeCompare(b.title);
-  });
-  
-  const filteredFood = sortedFood.filter((item) =>
-    item.title.toLowerCase().includes(searchTitle.toLowerCase())
-  );
-  
-  const totalPages = Math.ceil(filteredFood.length / LIMIT);
-  const paginatedFood = filteredFood.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
+  const handleCreateStoreSuccess = (newStore: Store) => {
+    setStore(newStore);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-8">
+        Đang tải dữ liệu...
+      </div>
+    );
+  }
+
+  if (!currentUser) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 p-8">
+        Không thể xác định người dùng.
+      </div>
+    );
+  }
+
+  if (!store) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-8">
+        <p className="text-xl mb-4">Bạn chưa có cửa hàng, hãy tạo mới!</p>
+        <CreateStore onCreate={handleCreateStoreSuccess} currentUser={currentUser} />
+      </div>
+    );
+  }
 
   return (
-    <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
-      <div className="mb-4 p-4">
-        <h1 className="text-center font-bold text-3xl">Danh sách nguyên liệu</h1>
+    <div className="flex flex-col md:flex-row gap-10 max-w-8xl mx-auto px-4 items-stretch m-8 min-h-screen">
+      <div className="w-full md:w-[40%] h-full">
+        <StoreInfor
+          className="p-6 h-full"
+          store_id={store.store_id}
+          currentUser={currentUser}
+        />
+      </div>
 
-        <div className="flex justify-between mt-8 items-center">
-          <div className="flex space-x-3 ml-8">
-            <button 
-              onClick={() => {
-                setIsPopupOpen(true);
-              }}
-              className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2">
-
-              <SquarePlus className="text-white" size={18} />
-              <span>Tạo nguyên liệu</span>
-            </button>
+      <div className="w-full md:w-[60%] h-full">
+        <div className="border border-white rounded-xl shadow-lg bg-white p-6 h-full flex flex-col">
+          <h2 className="text-2xl font-bold text-center mt-4">Danh sách nguyên liệu</h2>
+        
+          <div className="flex justify-between items-center mb-4">
+            {ingredients.length === 0 && (
+              <button
+                onClick={() => setIsPopupOpen(true)}
+                className="ml-4 mt-8 text-white bg-blue-700 text-lg px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2"
+              >
+                <SquarePlus className="text-white" size={18} />
+                <span>Tạo nguyên liệu</span>
+              </button>
+            )}
             {isPopupOpen && (
               <CreateIngredient
                 onClose={() => setIsPopupOpen(false)}
-                onSubmit={handleAddIngredient}
+                onSubmit={(newIngredient) => {
+                  setFoodId(newIngredient.ingredient_id);
+                  setIsPopupOpen(false); 
+                  setIngredients([...ingredients, newIngredient]);  
+                }}
+                store={store}  
               />
             )}
-
-            <button
-              // onClick={handleBulkDelete}
-              className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-              // disabled={selectedIngredientId.length === 0}
-            >
-              <Trash2 className="text-red-600 hover:text-red-800" size={18} />
-              <span>Xóa</span>
-            </button>
           </div>
 
-          <div className="mr-8">
-            <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} />
+          <div className="flex-1">
+            {ingredientsLoading ? (
+              <p className="text-lg text-center text-gray-500">Đang tải nguyên liệu...</p>
+            ) : ingredients.length === 0 ? (
+              <p className="text-lg text-center text-gray-500">Chưa có nguyên liệu nào.</p>
+            ) : (
+              <IngredientTable
+                store={store} 
+                ingredients={ingredients}
+              />
+            )}
+            {error && (
+              <p className="text-lg text-center text-red-500 mt-4">{error}</p>
+            )}
           </div>
-        </div>
-
-        <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg mt-4">
-          <table className="min-w-full bg-white shadow-md rounded-lg border">
-            <thead>
-              <tr className="bg-blue-700 text-white text-left">
-                <th className="p-3">
-                  <input
-                    type="checkbox"
-                    onChange={(e) =>
-                      setIngredientId(e.target.checked ? food.map((f) => f.food_id) : [])
-                    }
-                    checked={selectedIngredientId.length === food.length && food.length > 0}
-                  />
-                </th>
-                <th className="p-3">Tên nguyên liệu</th>
-                <th className="p-3">Giá tiền</th>
-                <th className="p-3">Số lượng</th>
-                <th className="p-3">Cập nhật</th>
-                <th className="p-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-                {paginatedFood.length > 0 ? (
-                paginatedFood.map((product: Ingredient) => {
-                  const isEditing: boolean = editingId === product.food_id;
-          
-                  return (
-                  <tr key={product.food_id} className="border-b">
-                    <td className="p-3">
-                    <input
-                      type="checkbox"
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                      setIngredientId(e.target.checked ? [product.food_id] : [])
-                      }
-                    />
-                    </td>
-                    <td className="p-3">
-                    {isEditing ? (
-                      <input
-                      type="text"
-                      className="border rounded px-2 py-1 w-full"
-                      value={editingData.title || ""}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEditingData({ ...editingData, title: e.target.value })
-                      }
-                      />
-                    ) : (
-                      product.title
-                    )}
-                    </td>
-                    <td className="p-3">
-                    {isEditing ? (
-                      <input
-                      type="number"
-                      className="border rounded px-2 py-1 w-full"
-                      value={editingData.price || ""}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEditingData({ ...editingData, price: Number(e.target.value) })
-                      }
-                      />
-                    ) : (
-                      product.price
-                    )}
-                    </td>
-                    <td className="p-3">
-                    {isEditing ? (
-                      <input
-                      type="number"
-                      className="border rounded px-2 py-1 w-full"
-                      value={editingData.quantity || ""}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEditingData({ ...editingData, quantity: Number(e.target.value) })
-                      }
-                      />
-                    ) : (
-                      product.quantity
-                    )}
-                    </td>
-                    <td className="p-3">{product.updated_at.toLocaleDateString()}</td>
-                    <td className="p-3 flex justify-center space-x-3">
-                    {isEditing ? (
-                      <>
-                      <button
-                        onClick={() => {
-                        const updatedFood: Ingredient[] = food.map((item) =>
-                          item.food_id === product.food_id
-                          ? {
-                            ...item,
-                            ...editingData,
-                            updated_at: new Date(), 
-                            }
-                          : item
-                        );
-                        setFood(updatedFood);
-                        setEditingId(null);
-                        setEditingData({});
-                        }}
-                        className="bg-green-500 text-white px-3 py-1 rounded"
-                      >
-                        Lưu
-                      </button>
-                      <button
-                        onClick={() => {
-                        setEditingId(null);
-                        setEditingData({});
-                        }}
-                        className="bg-gray-400 text-white px-3 py-1 rounded"
-                      >
-                        Hủy
-                      </button>
-                      </>
-                    ) : (
-                      <>
-                      <button
-                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                        e.stopPropagation();
-                        setEditingId(product.food_id);
-                        setEditingData({
-                          title: product.title,
-                          price: product.price,
-                          quantity: product.quantity,
-                        });
-                        }}
-                        className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-                      >
-                        <PencilRuler className="text-blue-600 hover:text-blue-800" size={18} />
-                      </button>
-                      <button
-                        className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-                      >
-                        <Trash2 className="text-red-600 hover:text-red-800" size={18} />
-                      </button>
-                      </>
-                    )}
-                    </td>
-                  </tr>
-                  );
-                })
-                ) : (
-                <tr>
-                  <td colSpan={5} className="p-4 text-center text-gray-500">
-                  Không tìm thấy kết quả nào
-                  </td>
-                </tr>
-                )}
-            </tbody>
-          </table>
-          {totalPages > 1 && (
-            <div className="flex justify-center mt-4 space-x-2">
-              {Array.from({ length: totalPages }, (_, index) => (
-                <button
-                  key={index + 1}
-                  onClick={() => setCurrentPage(index + 1)}
-                  className={`px-3 py-1 rounded-md ${
-                    currentPage === index + 1
-                      ? "bg-blue-500 text-white font-bold"
-                      : "bg-gray-200 text-gray-700 hover:bg-blue-100"
-                  }`}
-                >
-                  {index + 1}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
       </div>
     </div>

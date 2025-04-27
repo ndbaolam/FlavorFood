@@ -10,7 +10,7 @@ const SellerLayout: FC = () => {
 
   return (
     <div >
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100">
 
       <div className="flex-1 flex flex-col">
         <SellerHeader />
