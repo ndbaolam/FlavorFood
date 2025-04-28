@@ -115,10 +115,10 @@ const Account: React.FC = () => {
                   }
                 />
               </th>
-              <th className="p-3">ID</th>
               <th className="p-3">Họ</th>
               <th className="p-3">Tên</th>
               <th className="p-3">Email</th>
+              <th className="p-3">Vai trò</th>
               <th className="p-3 "></th>
             </tr>
           </thead>
@@ -133,10 +133,10 @@ const Account: React.FC = () => {
                       onChange={() => toggleSelect(account.user_id)}
                     />
                   </td>
-                  <td className="p-3">{account.user_id}</td>
                   <td className="p-3">{account.first_name}</td>
                   <td className="p-3">{account.last_name}</td>
                   <td className="p-3">{account.mail}</td>
+                  <td className="p-3">{account.role.charAt(0).toUpperCase() + account.role.slice(1)}</td>
                   <td className="p-3 flex justify-center space-x-3">
                     <button
                       onClick={() => handleDelete(account.user_id)}

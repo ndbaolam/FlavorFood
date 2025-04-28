@@ -61,14 +61,14 @@ export class ReviewController {
   @ApiQuery({ name: 'reviewId', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'List of reviews', type: [Review] })
   async getReviews(
-    @Query('userId', ParseIntPipe) userId?: number,
-    @Query('recipeId', ParseIntPipe) recipeId?: number,
-    @Query('reviewId', ParseIntPipe) reviewId?: number
+    @Query('userId') userId?,
+    @Query('recipeId') recipeId?,
+    @Query('reviewId') reviewId?
   ): Promise<Review[]> {
     return this.reviewService.getReviews(
-      userId,
-      recipeId,
-      reviewId
+      +userId,
+      +recipeId,
+      +reviewId
     );
   }
 

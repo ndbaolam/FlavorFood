@@ -64,15 +64,16 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse: CodeResponse | TokenResponse) => {
       const { access_token } = codeResponse as TokenResponse;
-
+  
       try {
         const response = await axiosInstance.post(
           '/auth/google/verify',
           { access_token },
         );
-
-        console.log('Server response:', response.data);
+  
+        console.log(response.data);  
         localStorage.setItem('authToken', response.data.token);
+        console.log(localStorage.getItem('authToken'));
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
         navigate('/');
       } catch (error) {
@@ -82,8 +83,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
     },
     onError: (error) => console.log('Login Failed:', error),
   });
-
-
+  
   return (
     <div className="flex justify-center items-center h-screen relative">
       <div className="bg-gray-100 shadow-lg rounded-lg overflow-hidden w-fit max-w-2xl z-20 flex">
