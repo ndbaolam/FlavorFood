@@ -1,17 +1,16 @@
 import { BookOpen, Calculator, Check, CheckCircle, CircleGauge, Clock, Heart, Users, UtensilsCrossed, Vegan } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useLoaderData, LoaderFunctionArgs } from "react-router-dom";
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFavorite } from "../../Favourite/FavoriteContext";
 import { Recipe } from "../recipe.interface";
+import CommentForm from "../../../components/Comment";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const { slug } = params;
   const id = slug?.slice(slug?.search("_") + 1);
-  console.log("Fetching URL:", `/recipes/${id}`);
-
   try {
     const response = await axiosInstance.get<Recipe>(`/recipes/${id}`);
     return response.data;
@@ -24,7 +23,26 @@ const RecipeDetail: React.FC = () => {
   const recipe = useLoaderData() as Recipe;
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
   const [completedSteps, setCompletedSteps] = useState<{ [key: number]: boolean }>({});
+  const [comments, setComments] = useState<any[]>([]);
 
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axiosInstance.get("reviews", {
+          params: {
+            recipeId: recipe.recipe_id,
+
+          },
+        });
+        setComments(response.data);
+      } catch (error) {
+        console.error("Error fetching comments:", error);
+        toast.error("Lỗi khi tải bình luận!", { position: "top-right", autoClose: 2000 });
+      }
+    };
+
+    fetchComments();
+  }, [recipe.recipe_id]);
 
 
   const toggleStep = (stepNumber: number) => {
@@ -34,7 +52,6 @@ const RecipeDetail: React.FC = () => {
     }));
   };
 
-  // Lấy trạng thái yêu thích từ context
   const isLiked = isFavorite(recipe.recipe_id);
 
   const handleLike = async () => {
@@ -52,20 +69,13 @@ const RecipeDetail: React.FC = () => {
   return (
     <div className="min-h-screen py-12 bg-white">
       <main className="container mx-auto px-4">
-        {/* Recipe Title and Description */}
         <article>
           <div className="text-left">
             <h1 className="text-4xl font-bold mb-4">{recipe.title}</h1>
           </div>
 
-          {/* Time, Calories, and Categories Section */}
           <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
-            <img
-              src={recipe.image}
-              alt={recipe.title}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <span className="text-gray-400">|</span>
+
             <Clock className="w-6 h-6 text-black" />
             <div className="text-black">
               <strong>Thời gian nấu</strong>
@@ -85,7 +95,6 @@ const RecipeDetail: React.FC = () => {
             </div>
             <span className="text-gray-400">|</span>
 
-            {/* Categories */}
             <UtensilsCrossed className="w-6 h-6 text-black" />
             <span className="flex flex-wrap gap-2">
               {recipe.categories?.length ? (
@@ -109,7 +118,6 @@ const RecipeDetail: React.FC = () => {
             </button>
           </div>
 
-          {/* Recipe Image */}
           <div className="flex justify-between w-full gap-20">
             <img
               src={recipe.image}
@@ -117,7 +125,6 @@ const RecipeDetail: React.FC = () => {
               className="w-2/3 max-h-[500px] object-cover rounded-lg shadow-md"
             />
 
-            {/* Nutrition Section */}
             <div className="w-1/3 bg-blue-50 p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4 text-center">Thông tin dinh dưỡng</h2>
               <ul className="text-gray-700 space-y-2 mt-16">
@@ -143,32 +150,29 @@ const RecipeDetail: React.FC = () => {
             </div>
           </div>
 
-          {/* Description Section */}
           <div className="mt-8">
             <h2 className="p-4 text-gray-700 text-xl">{recipe.description}</h2>
           </div>
 
           <div className="flex gap-8 ">
-            {/* Thành phần */}
             <div className="bg-gray-50 p-4 rounded-lg shadow flex-1 min-w-[300px]">
               <h3 className="text-lg font-semibold text-green-700 flex items-center">
-                <Vegan className="mr-2" /> 
+                <Vegan className="mr-2" />
                 Thành phần
               </h3>
               <ul className="text-gray-700 space-y-1 mt-4">
                 {recipe.ingredients.map((item) => (
                   <li key={item.id} className="flex items-center gap-2">
-                    <Check size={16} className="text-green-600" /> 
+                    <Check size={16} className="text-green-600" />
                     {item.ingredient}: {item.quantity} {item.unit}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Hướng dẫn nấu ăn */}
             <div className="bg-gray-50 p-4 rounded-lg shadow flex-1 min-w-[300px]">
               <h3 className="text-lg font-semibold text-blue-700 flex items-center">
-                <BookOpen className="mr-2" /> 
+                <BookOpen className="mr-2" />
                 Hướng dẫn nấu ăn
               </h3>
               <ul className="text-gray-700 space-y-2 mt-4">
@@ -190,6 +194,46 @@ const RecipeDetail: React.FC = () => {
             </div>
           </div>
         </article>
+
+        <div className="bg-gray-50 p-6 rounded-lg shadow mt-8">
+          <CommentForm recipeId={recipe.recipe_id} />
+          
+          <div className="mt-8">
+            <h3 className="text-xl font-semibold text-gray-700 mb-4">Bình luận</h3>
+            {comments.length > 0 ? (
+              <div className="space-y-4">
+                {comments.map((comment: any) => (
+                  <div key={comment.id} className="p-4 border-2 rounded-md">
+                    <div className="flex items-center gap-2 mb-2">
+                      {comment.user.avatar && (
+                        <img
+                          src={comment.user.avatar}
+                          alt={`${comment.user.name}'s avatar`}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                      )}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-gray-800">{comment.user.first_name} {comment.user.last_name}</span>
+                          <span className="text-yellow-700"> {Array(comment.rating).fill('★').join('')}</span>
+                        </div>
+                        {comment.created_at && (
+                          <span className="text-gray-500 text-sm">
+                           {new Date(new Date(comment.created_at).getTime() + 7 * 60 * 60 * 1000).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-gray-600 mt-2">{comment.comment}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">Chưa có bình luận nào.</p>
+            )}
+          </div>
+
+        </div>
       </main>
     </div>
   );

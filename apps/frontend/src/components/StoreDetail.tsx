@@ -16,7 +16,7 @@ const StoreDetails: React.FC<{ store: any }> = ({ store }) => {
       </p>
       <p className="flex items-center gap-2 mb-1 text-gray-700">
         <Phone className="text-green-500 w-4 h-4" />
-        <span>SĐT: {store.phone}</span>
+        <span>SĐT: {store.phone_number}</span>
       </p>
       <p className="flex items-center gap-2 mb-1 text-gray-700">
         <Clock className="text-black w-4 h-4" />
@@ -28,7 +28,7 @@ const StoreDetails: React.FC<{ store: any }> = ({ store }) => {
       <ul className="text-sm space-y-1">
         {store.ingredients.map((item: any, index: number) => (
           <li key={index} className="flex justify-between">
-            <span>{item.name} x{item.quantity}</span>
+            <span>{item.title}  x{item.quantity}</span>
             <span>{item.price} đ</span>
           </li>
         ))}
