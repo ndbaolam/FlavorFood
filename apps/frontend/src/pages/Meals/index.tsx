@@ -5,6 +5,7 @@ import axiosInstance from '../../services/axiosInstance';
 import { Recipe } from './recipe.interface';
 import { useFavorite } from '../Favourite/FavoriteContext';
 import SearchBox from '../../components/Search';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const LIMIT = 12;
 
@@ -16,8 +17,11 @@ const Meals: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [hasNextPage, setHasNextPage] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
+
   const fetchRecipes = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -54,27 +58,39 @@ const Meals: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeFilter, searchTitle]);
-
+  }, [activeFilter]);
+  
   useEffect(() => {
     fetchRecipes();
-  }, [fetchRecipes]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeFilter, currentPage, searchTitle]);
+  
+
+  useEffect(() => {
+    const params: any = {};
+    if (searchTitle) params.title = searchTitle;
+    if (activeFilter !== null) params.category = activeFilter;
+    setSearchParams(params); 
+  }, [activeFilter, searchTitle, setSearchParams]);
+  
+
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setActiveFilter(Number(categoryParam));
+    }
+  }, [searchParams]);
 
   const goToNextPage = () => {
-    setCurrentPage(prev => {
-      const newPage = prev + 1;
-      window.scrollTo({ top: 80, behavior: 'smooth' });
-      return newPage;
-    });
+    setCurrentPage((prev) => prev + 1);
+    window.scrollTo({ top: 80, behavior: 'smooth' });
   };
-
+  
   const goToPreviousPage = () => {
-    setCurrentPage(prev => {
-      const newPage = Math.max(1, prev - 1);
-      window.scrollTo({ top: 80, behavior: 'smooth' });
-      return newPage;
-    });
+    setCurrentPage((prev) => Math.max(1, prev - 1));
+    window.scrollTo({ top: 80, behavior: 'smooth' });
   };
+  
   return (
     <div className="min-h-screen">
       <main className="container mx-auto">
@@ -86,7 +102,10 @@ const Meals: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
           <FilterMenu
             activeFilter={activeFilter}
-            setActiveFilter={setActiveFilter}
+            setActiveFilter={(filterId) => {
+              setActiveFilter(filterId);
+              setCurrentPage(1);
+            }}
             setCurrentPage={setCurrentPage}
           />
           <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
@@ -99,10 +118,10 @@ const Meals: React.FC = () => {
                 key={recipe.recipe_id}
                 recipe={recipe}
                 isLiked={isFavorite(recipe.recipe_id)}
-                onToggleFavorite={async () => {
-                  await toggleFavorite(recipe.recipe_id);
-                  refreshFavorites();
+                onToggleFavorite={() => {
+                  toggleFavorite(recipe.recipe_id).then(refreshFavorites);
                 }}
+
               />
             ))
           ) : (
@@ -127,8 +146,8 @@ const Meals: React.FC = () => {
                 window.scrollTo({ top: 80, behavior: 'smooth' });
               }}
               className={`px-3 py-1 rounded font-medium transition ${currentPage === index + 1
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
             >
               {index + 1}
@@ -143,8 +162,6 @@ const Meals: React.FC = () => {
             ›
           </button>
         </div>
-
-
       </main>
     </div>
   );

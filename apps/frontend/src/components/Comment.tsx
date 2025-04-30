@@ -24,7 +24,6 @@ const CommentForm: React.FC<CommentFormProps> = ({ recipeId }) => {
       })
       .catch((error) => {
         console.error("Error fetching user profile:", error);
-        toast.error("Lỗi khi tải thông tin người dùng!", { position: "top-right", autoClose: 2000 });
       });
   }, []); 
 

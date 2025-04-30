@@ -1,59 +1,73 @@
-/* eslint-disable react/jsx-no-undef */
-import React from 'react';
-import { Salad, GlassWater, CakeSlice, Clock, Calculator, Beef, Soup } from 'lucide-react';
-import Slider from 'react-slick';
+import React, { useEffect, useState } from 'react';
+import { Salad, CakeSlice, Beef, Popcorn } from 'lucide-react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './Home.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Banner from '../../components/banner';
-import RecipeCard from '../../components/RecipeCard';
-import { Recipe } from '../Meals/recipe.interface';
-
+import axiosInstance from '../../services/axiosInstance';
 
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [categoryId, setCategoryId] = useState<string | null>(null);
+  const [categoryData, setCategoryData] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
   const menuItems = [
     {
       icon: Salad,
       title: 'Khai vị',
-      description:
-        'Các món khai vị thanh đạm và bổ dưỡng, mang đến hương vị nhẹ nhàng và chuẩn bị cho bữa tiệc thú vị phía trước!',
-      link: '/dish/appetizer',
+      description: 'Các món khai vị nhẹ nhàng, hấp dẫn để bắt đầu bữa ăn của bạn, từ salad tươi mát đến những món ăn nhẹ đầy hương vị.',
+      category_id: 48
     },
     {
       icon: Beef,
       title: 'Món chính',
-      description:
-        'Trải nghiệm các món chính đa dạng với hương vị đậm đà, giúp cung cấp năng lượng cho cả ngày dài!',
-      link: '/dish/main-course',
-    },
-    {
-      icon: Soup,
-      title: 'Canh & Lẩu',
-      description:
-        'Hãy thử các món canh và lẩu thơm ngon, mang đến sự ấm áp và gắn kết trong mỗi bữa ăn gia đình!',
-      link: '/dish/soup-hotpot',
-    },
-    {
-      icon: GlassWater,
-      title: 'Đồ uống',
-      description:
-        'Đồ uống tươi mát giúp giải khát và bổ sung sức sống – hoàn hảo để cân bằng vị giác!',
-      link: '/dish/drinks',
+      description: 'Món chính phong phú với các lựa chọn thịt, cá và món chay, phù hợp cho những ai yêu thích các món ăn đậm đà hương vị.',
+      category_id: 51
     },
     {
       icon: CakeSlice,
       title: 'Tráng miệng',
-      description:
-        'Những món tráng miệng ngọt ngào là sự kết thúc hoàn hảo cho bữa ăn, mang lại sự hài lòng tuyệt đối!',
-      link: '/dish/desserts',
+      description: 'Món tráng miệng thơm ngon, từ bánh ngọt đến các món kem mát lạnh, hoàn hảo để kết thúc bữa ăn.',
+      category_id: 49
+    },
+    {
+      icon: Popcorn,
+      title: 'Ăn vặt',
+      description: 'Những món ăn nhẹ như bắp rang bơ, khoai tây chiên, và các món snack thú vị cho những lúc đói bụng bất ngờ.',
+      category_id: 50
     },
   ];
+  // Lấy categoryId từ URL khi trang load
+  useEffect(() => {
+    const categoryParam = searchParams.get('category');
+    if (categoryParam) {
+      setCategoryId(categoryParam);
+    }
+  }, [searchParams]);
 
+  // Tải dữ liệu khi categoryId thay đổi
+  useEffect(() => {
+    if (categoryId) {
+      setLoading(true);
+      setError(null);
+      axiosInstance
+        .get(`/categories/${categoryId}`)
+        .then((response) => {
+          setCategoryData(response.data);
+        })
+        .catch((err) => {
+          setError('Có lỗi xảy ra khi tải dữ liệu.');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
+  }, [categoryId]);
 
 
   return (
@@ -62,30 +76,38 @@ const Home: React.FC = () => {
       <Banner></Banner>
       <main className="container mx-auto py-8 ">
 
-        {/* Rest of your components... */}
         <div className="py-16">
           <div className="text-center mb-12">
-            <h2 className="font-lobster text-4xl font-semibold">
-              Hôm nay ăn gì
-            </h2>
+            <h2 className="font-lobster text-4xl font-semibold">Hôm nay ăn gì</h2>
           </div>
-          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 px-4 md:px-8">
-            {menuItems.map(({ icon: Icon, title, description, link }) => (
+
+          {loading && <p>Đang tải dữ liệu...</p>}
+          {error && <p className="text-red-600">{error}</p>}
+          {categoryData && !loading && (
+            <div className="mb-8">
+              <h3 className="text-2xl font-bold">{categoryData.name}</h3>
+              <p>{categoryData.description}</p>
+            </div>
+          )}
+
+          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4 md:px-8">
+            {menuItems.map(({ icon: Icon, title, description, category_id }) => (
               <div
                 key={title}
-                className="bg-gradient-to-b from-blue-100 to-white rounded-3xl shadow-lg p-8 text-center hover:scale-105 transition-transform duration-300 ease-in-out"
+                className="flex flex-col items-center bg-gradient-to-b from-blue-100 to-white rounded-3xl shadow-lg p-8 text-center hover:scale-105 transition-transform duration-300 ease-in-out"
               >
-                <div className="flex justify-center mb-6 ">
-                  <Icon className="w-14 h-14 text-cyan-600" />
-                </div>
+                <Icon className="w-14 h-14 text-cyan-600 mb-6" />
                 <h3 className="text-xl font-semibold mb-3">{title}</h3>
                 <p className="text-gray-600 mb-6">{description}</p>
-                <a
-                  href={link}
-                  className="text-red-600 font-semibold hover:underline"
+                <button
+                  onClick={() => {
+                    navigate(`/dish?category=${category_id}`);
+                    setCategoryId(category_id.toString());
+                  }}
+                  className="text-red-600 font-semibold hover:underline mt-auto"
                 >
                   Khám phá
-                </a>
+                </button>
               </div>
             ))}
           </div>
@@ -98,7 +120,7 @@ const Home: React.FC = () => {
             Món ăn thịnh hành
           </h2>
           {/* Recipes Grid */}
-{/* 
+          {/* 
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
             {recipes.length > 0 ? (
               recipes.map((recipe) => (
