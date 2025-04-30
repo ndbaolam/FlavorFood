@@ -22,23 +22,28 @@ export class CreateStoreDto {
   @IsString()
   address: string; 
 
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  longitude: number;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsNumber()
+  latitude: number;
+
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   phone_number?: string; 
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  openHours: string;
+  openHours?: Date;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ required: false })
+  @IsOptional()
   @IsString()
-  closeHours: string;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  user_id: number;
+  closeHours?: Date;
 }

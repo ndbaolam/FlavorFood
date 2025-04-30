@@ -1,29 +1,29 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateStoreDto } from './create-store.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateStoreDto extends PartialType(CreateStoreDto) {
   @ApiProperty({ required: false })
   @IsOptional()
-  name?: string
+  name?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   address?: string;
 
+  @ApiProperty({ required: false })  
+  @IsOptional()
+  @IsNumber()
+  longitude?: number;
+
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsNumber()
+  latitude?: number;
+
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
   phone_number?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  openHours?: string;
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsString()
-  closeHours?: string;
 }

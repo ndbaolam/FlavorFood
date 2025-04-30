@@ -16,8 +16,8 @@ export class StoreService {
     private userRepository: Repository<User>,
   ) {}
 
-  async create(createStoreDto: CreateStoreDto): Promise<Store> {
-    const user = await this.userRepository.findOneBy({ user_id: createStoreDto.user_id });
+  async create(createStoreDto: CreateStoreDto, user_id: number): Promise<Store> {
+    const user = await this.userRepository.findOneBy({ user_id });
     if (!user) throw new NotFoundException('User not found');
 
     const store = this.storeRepository.create({

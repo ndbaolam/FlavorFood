@@ -1,10 +1,11 @@
-import { Controller, Post, Body, Get, Param, ParseIntPipe, UseGuards, Patch } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, ParseIntPipe, UseGuards, Patch, Req } from '@nestjs/common';
 import { StoreService } from './stores.service';
 import { CreateStoreDto } from './dto/create-store.dto';
 import { Stores as Store } from './entity/store.entity';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { SellerGuard } from '../auth/guards/seller.guard';
 import { UpdateStoreDto } from './dto/update-store.dto';
+import { Request } from 'express';
 
 @ApiTags('Stores')
 @Controller('stores')
@@ -16,8 +17,11 @@ export class StoreController {
   @UseGuards(SellerGuard)
   @ApiOperation({ summary: 'Create a new store' })
   @ApiResponse({ status: 201, description: 'Store created', type: Store })  
-  async create(@Body() createStoreDto: CreateStoreDto): Promise<Store> {
-    return this.storeService.create(createStoreDto);
+  async create(@Req() req: Request, @Body() createStoreDto: CreateStoreDto): Promise<Store> {
+    const user = req['user'];    
+    const user_id = user['sub'];
+            
+    return this.storeService.create(createStoreDto, +user_id);
   }
 
   @Get()

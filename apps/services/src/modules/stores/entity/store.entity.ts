@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  OneToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+} from 'typeorm';
 import { Users as User } from '../../users/entity/users.entity';
 import { StoreIngredient } from './store_ingredient.entity';
 
@@ -20,13 +29,19 @@ export class Stores {
   description: string;
 
   @Column({ nullable: true })
-  address: string; 
+  address: string;
+
+  @Column({ nullable: true})
+  longtitude: number;
+
+  @Column({ nullable: true})
+  latitude: number;
 
   @Column({ nullable: true })
   phone_number: string;
 
   @Column({ nullable: true, type: 'timestamptz' })
-  openHours: Date; 
+  openHours: Date;
 
   @Column({ nullable: true, type: 'timestamptz' })
   closeHours: Date;
