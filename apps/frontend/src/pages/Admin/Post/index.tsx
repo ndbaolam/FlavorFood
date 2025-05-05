@@ -18,6 +18,7 @@ const Posts: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
   const LIMIT = 6;
 
   useEffect(() => {
@@ -131,12 +132,20 @@ const Posts: React.FC = () => {
     }
   };
 
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
-    post.categories.some((category) =>
-      category.title.toLowerCase().includes(searchTitle.toLowerCase())
-    )
-  );
+
+  const filteredPosts = posts.filter((post) => {
+    const matchesTitle = post.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
+      post.categories.some((category) =>
+        category.title.toLowerCase().includes(searchTitle.toLowerCase())
+      );
+
+    const matchesCategory = selectedCategory === 'all' ||
+      post.categories.some((category) => category.category_id === selectedCategory);
+
+    return matchesTitle && matchesCategory;
+  });
+
+
   const totalPages = Math.ceil(filteredPosts.length / LIMIT);
   const paginatedPosts = filteredPosts.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
   useEffect(() => {
@@ -180,9 +189,23 @@ const Posts: React.FC = () => {
             <Trash2 className="text-red-600 hover:text-red-800" size={18} />
             <span>Xóa</span>
           </button>
+
+        </div>
+        <div className="flex space-x-3">
+          <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} />
+          <select
+            value={selectedCategory}
+            onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
+            className="border border-gray-300 rounded-lg px-3 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">Tất cả danh mục</option>
+            <option value="48">Khai vị</option>
+            <option value="51">Món chính</option>
+            <option value="49">Tráng miệng</option>
+            <option value="50">Ăn vặt</option>
+          </select>
         </div>
 
-        <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} />
       </div>
 
       <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">
@@ -263,8 +286,8 @@ const Posts: React.FC = () => {
                 key={index + 1}
                 onClick={() => setCurrentPage(index + 1)}
                 className={`px-3 py-1 rounded-md ${currentPage === index + 1
-                    ? 'bg-blue-500 text-white font-bold'
-                    : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
+                  ? 'bg-blue-500 text-white font-bold'
+                  : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
                   }`}
               >
                 {index + 1}
