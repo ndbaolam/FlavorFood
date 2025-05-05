@@ -50,7 +50,6 @@ const Home: React.FC = () => {
     }
   }, [searchParams]);
 
-  // Tải dữ liệu khi categoryId thay đổi
   useEffect(() => {
     if (categoryId) {
       setLoading(true);

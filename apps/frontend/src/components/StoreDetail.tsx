@@ -1,10 +1,14 @@
 import { Clock, MapPin, Phone } from "lucide-react";
 import React from "react";
-const StoreDetails: React.FC<{ store: any }> = ({ store }) => {
-  const totalPrice = store.ingredients.reduce(
-    (sum: number, item: any) => sum + item.quantity * item.price,
-    0
-  );
+import { formatTime } from "../pages/Market/store.interface";
+
+const highlightSearchTerm = (text: string, searchTerm: string) => {
+  if (!searchTerm) return text;
+  const regex = new RegExp(`(${searchTerm})`, 'gi'); 
+  return text.replace(regex, (match) => `<span style="color: red; font-weight: bold;">${match}</span>`);  
+};
+
+const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, searchTerm }) => {
 
   return (
     <div className="p-4 bg-white h-full shadow-inner border-l border-gray-200">
@@ -21,19 +25,36 @@ const StoreDetails: React.FC<{ store: any }> = ({ store }) => {
       <p className="flex items-center gap-2 mb-1 text-gray-700">
         <Clock className="text-black w-4 h-4" />
         <span>
-          Giờ mở cửa: {store.openHours} - {store.closeHours}
+          Giờ mở cửa: {formatTime(store.openHours)} - {formatTime(store.closeHours)}
         </span>
       </p>
+      
       <h3 className="font-semibold mt-4 mb-2">Nguyên liệu:</h3>
-      <ul className="text-sm space-y-1">
-        {store.ingredients.map((item: any, index: number) => (
-          <li key={index} className="flex justify-between">
-            <span>{item.title}  x{item.quantity}</span>
-            <span>{item.price} đ</span>
-          </li>
-        ))}
-      </ul>
-
+      
+      <table className="w-full table-auto text-sm">
+        <thead>
+          <tr>
+            <th className="py-2 px-4 border-b text-left">Tên</th>
+            <th className="py-2 px-4 border-b text-left">Số lượng</th>
+            <th className="py-2 px-4 border-b text-left">Giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          {store.ingredients.map((item: any, index: number) => (
+            <tr key={index} className="border-b">
+              <td className="py-2 px-4">
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightSearchTerm(item.title, searchTerm),
+                  }}
+                />
+              </td>
+              <td className="py-2 px-4">{item.quantity}</td>
+              <td className="py-2 px-4">{item.price} đ</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
     </div>
   );
