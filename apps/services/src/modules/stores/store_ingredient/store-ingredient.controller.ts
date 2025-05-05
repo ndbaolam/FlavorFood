@@ -8,7 +8,7 @@ import { SellerGuard } from '../../auth/guards/seller.guard';
 
 @ApiTags('Store Ingredients')
 @ApiBearerAuth('access-token')
-@UseGuards(SellerGuard)
+// @UseGuards(SellerGuard)
 @Controller('store-ingredients')
 export class StoreIngredientController {
   constructor(private readonly storeIngredientService: StoreIngredientService) {}
