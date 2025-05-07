@@ -128,7 +128,7 @@ const LogIn: React.FC<CardProps> = ({ children }) => {
       </div>
       <div className="absolute inset-0 w-screen h-screen overflow-hidden">
         <img
-          src="./bg.jpg"
+          src="../../../public/bg.jpg"
           className="object-cover w-full h-full blur-sm"
           alt="Background"
         />

@@ -1,23 +1,20 @@
 import { toast } from "react-toastify";
 import { Recipe, Ingredient, Category, Step, Nutrition } from "../../../pages/Meals/recipe.interface";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import imageCompression from "browser-image-compression";
+import axiosInstance from "../../../services/axiosInstance";
 
 interface CreatePostProps {
   initialData?: Recipe;
   onClose: () => void;
-  onSubmit: (data: Recipe) => void;
+  onSubmit: (data: any) => void;
   isEditing?: boolean;
 }
 
+
 const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData, isEditing }) => {
-  const defaultCategories: Category[] = [
-    { category_id: 51, title: "Món chính" },
-    { category_id: 49, title: "Tráng miệng" },
-    { category_id: 50, title: "Ăn vặt" },
-    { category_id: 48, title: "Khai vị" },
-  ];
-  const [title, setTitle] = useState<string>(initialData?.title || "");
+const [title, setTitle] = useState<string>(initialData?.title || "");
   const [description, setDescription] = useState<string>(initialData?.description || "");
   const [time, setTime] = useState<number>(initialData?.time || 0);
   const [serving, setServing] = useState<number>(initialData?.serving || 0);
@@ -25,15 +22,28 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
   const [difficulty, setDifficulty] = useState<Recipe["difficulty_level"]>(initialData?.difficulty_level || "Dễ");
   const [ingredients, setIngredients] = useState<Ingredient[]>(initialData?.ingredients || []);
   const [steps, setSteps] = useState<Step[]>(initialData?.steps || []);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number>(
-    initialData?.categories?.[0]?.category_id || defaultCategories[0].category_id
-  );
   const [nutrition, setNutrition] = useState<Nutrition[]>(initialData?.nutrition || []);
   const [timeError, setTimeError] = useState('');
   const [servingError, setServingError] = useState('');
   const [newStep, setNewStep] = useState<string>("");
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [imageInputType, setImageInputType] = useState<"url" | "file">("url");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState<number>();
+  
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get("/categories");
+        setCategories(response.data);  
+      } catch (error) {
+        console.error("Lỗi khi tải danh mục:", error);
+        toast.error("Không thể tải danh mục");
+      }
+    };
+  
+    fetchCategories();
+  }, []);
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const value = e.target.value;
@@ -87,29 +97,65 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
     if (steps.length === 0) {
       errors.steps = "Các bước thực hiện là bắt buộc.";
     }
-    // if (categories.length === 0) {
-    //     errors.categories = "Danh mục là bắt buộc.";
-    // }
+    if (selectedCategoryId === undefined) {
+      toast.error("Vui lòng chọn danh mục.");
+      errors.category = "Danh mục là bắt buộc.";
+    }
 
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+  
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      });
+  
+      const form = new FormData();
+      form.append("image", compressedFile);
+  
+      const response = await axiosInstance.post("/upload", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+        timeout: 30000,
+      });
+  
+      const imageUrl = response.data.url;
+      setImage(imageUrl);
+  
+      toast.success("Tải ảnh thành công!", { autoClose: 2000 });
+    } catch (error: any) {
+      console.error("Upload error:", error.response?.data || error.message);
+      toast.error("Lỗi tải ảnh!", { autoClose: 2000 });
     }
   };
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setDescription(initialData.description);
+      setTime(initialData.time);
+      setServing(initialData.serving);
+      setImage(initialData.image);
+      setDifficulty(initialData.difficulty_level);
+      setIngredients(initialData.ingredients);
+      setSteps(initialData.steps);
+      setNutrition(initialData.nutrition);
+      if (initialData.categories && initialData.categories.length > 0) {
+        setSelectedCategoryId(initialData.categories[0].category_id);
+      }
+    }
+  }, [initialData]);
+  
 
   const handleSubmit = () => {
     if (validateForm()) {
-      const selectedCategory = defaultCategories.find(cat => cat.category_id === selectedCategoryId);
-      const newRecipe: Recipe = {
+      const categoryIds = categories.map(c => c.category_id);
+      const newRecipe = {
         recipe_id: initialData?.recipe_id || Date.now(),
         title,
         description,
@@ -119,23 +165,18 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
         difficulty_level: difficulty,
         ingredients,
         steps,
-        categories: selectedCategory ? [selectedCategory] : [],
+        categories: [selectedCategoryId],
         nutrition,
         rating: initialData?.rating ? initialData.rating : 0,
         isFavorite: initialData?.isFavorite || false,
-        created_at: initialData?.created_at ? new Date(initialData.created_at).toISOString() : new Date().toISOString(),
-        updated_at: new Date().toISOString(),
       };
+  
       console.log("Dữ liệu newRecipe trước khi gửi:", newRecipe);
       onSubmit(newRecipe);
-      if (isEditing) {
-        toast.success("Đã sửa công thức thành công!");
-      } else {
-        toast.success("Đã tạo công thức thành công!");
-      }
       onClose();
     }
   };
+  
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50  ">
@@ -190,7 +231,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleImageUpload}
+                onChange={handleImageChange}
                 className="border rounded-lg p-2 w-full min-h-[40px] mt-2"
               />
             )}
@@ -244,21 +285,24 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
               </select>
             </div>
             <div>
-              <label className="block font-medium">Danh mục  <span className="text-red-500">* </span></label>
-              <select
-  value={selectedCategoryId}
-  onChange={(e) => setSelectedCategoryId(Number(e.target.value))}
-  className="border rounded-lg p-2 w-full min-h-[40px]"
->
-  {defaultCategories.map((category) => (
-    <option key={category.category_id} value={category.category_id}>
-      {category.title}
-    </option>
-  ))}
-</select>
+            <label className="block font-medium">Danh mục  <span className="text-red-500">* </span></label>
+            <select
+              className="border rounded-lg p-2 w-full"
+              value={selectedCategoryId}
+              onChange={(e) => {setSelectedCategoryId(Number(e.target.value))} }
+            >
+              <option value="">Chọn danh mục</option>
+              {categories.map((category) => (
+                <option key={category.category_id} value={category.category_id}>
+                  {category.title}
+                </option>
+              ))}
+            </select>
+            {formErrors.category && <p className="text-red-500">{formErrors.category}</p>}
+          </div>
 
-              {formErrors.categories && <p className="text-red-500">{formErrors.categories}</p>}
-            </div>
+
+
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div> 

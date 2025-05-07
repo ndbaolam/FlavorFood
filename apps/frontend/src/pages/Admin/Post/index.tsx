@@ -42,31 +42,34 @@ const Posts: React.FC = () => {
   const handleAddPost = async (newPost: Recipe) => {
     setError(null);
     try {
-      const method = editingPost ? 'PATCH' : 'POST';
-      const url = editingPost ? `/recipes/${editingPost.recipe_id}` : '/recipes';
-
-      await axiosInstance({
-        method,
-        url,
-        data: newPost,
+      await axiosInstance.post('/recipes', newPost, {
         withCredentials: true,
       });
-
-      if (editingPost) {
-        setPosts((prevPosts) =>
-          prevPosts.map((post) =>
-            post.recipe_id === editingPost.recipe_id ? { ...post, ...newPost } : post
-          )
-        );
-      } else {
-        const response = await axiosInstance.get<Recipe[]>('/recipes', {
-          withCredentials: true,
-        });
-        setPosts(response.data);
-      }
-
+  
+      const response = await axiosInstance.get<Recipe[]>('/recipes');
+      setPosts(response.data);
+      setIsPopupOpen(false);
+      toast.success("Tạo bài viết thành công");
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+  
+  const handleUpdatePost = async (updatedPost: Recipe) => {
+    setError(null);
+    try {
+      await axiosInstance.patch(`/recipes/${updatedPost.recipe_id}`, updatedPost, {
+        withCredentials: true,
+      });
+  
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.recipe_id === updatedPost.recipe_id ? { ...post, ...updatedPost } : post
+        )
+      );
       setIsPopupOpen(false);
       setEditingPost(null);
+      toast.success("Cập nhật bài viết thành công");
     } catch (err: any) {
       setError(err.message);
     }
@@ -133,19 +136,22 @@ const Posts: React.FC = () => {
   };
 
 
-  const filteredPosts = posts.filter((post) => {
+  const sortedPosts = [...posts].sort((a, b) => {
+    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+  });
+  
+  const filteredPosts = sortedPosts.filter((post) => {
     const matchesTitle = post.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
       post.categories.some((category) =>
         category.title.toLowerCase().includes(searchTitle.toLowerCase())
       );
-
+  
     const matchesCategory = selectedCategory === 'all' ||
       post.categories.some((category) => category.category_id === selectedCategory);
-
+  
     return matchesTitle && matchesCategory;
   });
-
-
+  
   const totalPages = Math.ceil(filteredPosts.length / LIMIT);
   const paginatedPosts = filteredPosts.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
   useEffect(() => {
@@ -170,14 +176,15 @@ const Posts: React.FC = () => {
 
             {isPopupOpen && (
               <CreatePost
-                onClose={() => {
-                  setIsPopupOpen(false);
-                  setEditingPost(null);
-                }}
-                onSubmit={handleAddPost}
-                initialData={editingPost || undefined}
-                isEditing={!!editingPost}
-              />
+              onClose={() => {
+                setIsPopupOpen(false);
+                setEditingPost(null);
+              }}
+              onSubmit={editingPost ? handleUpdatePost : handleAddPost}
+              initialData={editingPost || undefined}
+              isEditing={!!editingPost}
+            />
+            
             )}
           </div>
 
