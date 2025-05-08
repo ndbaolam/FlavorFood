@@ -194,7 +194,7 @@ export class RecipesService {
     try {
       const existingRecipe = await this.recipesRepository.findOne({
         where: { recipe_id: recipeId },
-        relations: ['ingredients'],
+        relations: ['ingredients', 'categories', 'nutrition', 'steps'],
       });
   
       if (!existingRecipe) {
@@ -216,39 +216,40 @@ export class RecipesService {
       }
   
       if (updateRecipeDto.categories) {
-        await this.recipesRepository
-          .createQueryBuilder()
-          .relation(Recipes, 'categories')
-          .of(recipeId)
-          .remove(existingRecipe.categories.map((c) => c.category_id));
-  
+        if (existingRecipe.categories && existingRecipe.categories.length > 0) {
+          await this.recipesRepository
+            .createQueryBuilder()
+            .relation(Recipes, 'categories')
+            .of(recipeId)
+            .remove(existingRecipe.categories.map((c) => c.category_id));
+        }
+      
         await this.recipesRepository
           .createQueryBuilder()
           .relation(Recipes, 'categories')
           .of(recipeId)
           .add(updateRecipeDto.categories);
-      }
+      }      
   
       if (updateRecipeDto.ingredients) {
         await this.ingredientsRepository
           .createQueryBuilder()
           .delete()
           .from(Ingredient)
-          .where('recipe_id = :recipeId', { recipeId })
+          .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
   
         if (updateRecipeDto.ingredients.length > 0) {
           const newIngredients = updateRecipeDto.ingredients.map((ingredient) => ({
-            ...ingredient,
+            ingredient: ingredient.ingredient,
+            quantity: ingredient.quantity,
+            unit: ingredient.unit,
             recipe: { recipe_id: recipeId } as Recipes,
           }));
+
+          console.log(newIngredients);
   
-          await this.ingredientsRepository
-            .createQueryBuilder()
-            .insert()
-            .into(Ingredient)
-            .values(newIngredients)
-            .execute();
+          await this.ingredientsRepository.save(newIngredients);
         }
       }
 
@@ -257,7 +258,7 @@ export class RecipesService {
           .createQueryBuilder()
           .delete()
           .from(Nutritrion)
-          .where('recipe_id = :recipeId', { recipeId })
+          .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
   
         if (updateRecipeDto.nutrition.length > 0) {
@@ -280,7 +281,7 @@ export class RecipesService {
           .createQueryBuilder()
           .delete()
           .from(Steps)
-          .where('recipe_id = :recipeId', { recipeId })
+          .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
   
         if (updateRecipeDto.steps.length > 0) {

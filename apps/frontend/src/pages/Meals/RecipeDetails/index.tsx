@@ -1,6 +1,6 @@
 import { BookOpen, Calculator, Check, CheckCircle, CircleGauge, Clock, Heart, Users, UtensilsCrossed, Vegan } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useLoaderData, LoaderFunctionArgs } from "react-router-dom";
+import { useLoaderData, LoaderFunctionArgs, useNavigate } from "react-router-dom";
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,6 +24,7 @@ const RecipeDetail: React.FC = () => {
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
   const [completedSteps, setCompletedSteps] = useState<{ [key: number]: boolean }>({});
   const [comments, setComments] = useState<any[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -54,16 +55,44 @@ const RecipeDetail: React.FC = () => {
 
   const isLiked = isFavorite(recipe.recipe_id);
 
+  const checkAuth = async () => {
+    try {
+      await axiosInstance.get('/auth/profile');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   const handleLike = async () => {
-    const wasLiked = isFavorite(recipe.recipe_id);
-    await toggleFavorite(recipe.recipe_id);
+    try {
+      const isAuthenticated = await checkAuth();
+      
+      if (!isAuthenticated) {
+        toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
+          position: "top-right",
+          autoClose: 2000
+        });
+        navigate('/sign-in', { state: { returnTo: `/dish/${recipe.title}_${recipe.recipe_id}.html` } });
+        return;
+      }
 
-    setTimeout(refreshFavorites, 300);
+      const wasLiked = isFavorite(recipe.recipe_id);
+      await toggleFavorite(recipe.recipe_id);
 
-    toast[wasLiked ? "info" : "success"](
-      wasLiked ? "Đã xóa khỏi danh sách yêu thích!" : "Đã thêm vào danh sách yêu thích!",
-      { position: "top-right", autoClose: 2000 }
-    );
+      setTimeout(refreshFavorites, 300);
+
+      toast[wasLiked ? "info" : "success"](
+        wasLiked ? "Đã xóa khỏi danh sách yêu thích!" : "Đã thêm vào danh sách yêu thích!",
+        { position: "top-right", autoClose: 2000 }
+      );
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Có lỗi xảy ra khi thao tác với yêu thích!", {
+        position: "top-right",
+        autoClose: 2000
+      });
+    }
   };
 
   return (

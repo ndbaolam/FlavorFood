@@ -7,15 +7,35 @@ import StoreDetails from "../../components/StoreDetail";
 import { MapPin } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance";
 import { Store, Ingredient, formatTime } from "./store.interface";
+import { useNavigate } from "react-router-dom";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
 
 const Market: React.FC = () => {
+  const navigate = useNavigate();
   const [stores, setStores] = useState<Store[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const checkAuth = async () => {
+    try {
+      await axiosInstance.get('/auth/profile');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const handleStoreRegistration = async () => {
+    const isAuthenticated = await checkAuth();
+    if (isAuthenticated) {
+      navigate('/store-registration');
+    } else {
+      navigate('/sign-in', { state: { returnTo: '/market' } });
+    }
+  };
 
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
     try {
@@ -114,9 +134,17 @@ const Market: React.FC = () => {
 
   return (
     <div className="min-h-screen p-8 rounded-xl shadow-lg">
+        <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold">Tìm kiếm cửa hàng</h2>
+            <button
+              onClick={handleStoreRegistration}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Đăng ký cửa hàng
+            </button>
+          </div>
       <div className="flex flex-col md:flex-row h-screen">
         <div className="md:w-1/4 w-full h-1/2 md:h-full p-4 overflow-y-auto rounded-lg shadow-lg">
-          <h2 className="text-xl font-bold mb-4">Tìm kiếm cửa hàng</h2>
           <input
             type="text"
             placeholder="Nhập tên nguyên liệu..."

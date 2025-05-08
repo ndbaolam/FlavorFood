@@ -3,6 +3,9 @@ import { Clock, Heart } from "lucide-react";
 import formatString from "../services/formatString";
 import { Recipe } from "../pages/Meals/recipe.interface";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import "react-toastify/dist/ReactToastify.css";
+import axiosInstance from "../services/axiosInstance";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -16,21 +19,46 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   onToggleFavorite,
 }) => {
   const [localLiked, setLocalLiked] = useState<boolean>(isLiked);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setLocalLiked(isLiked);
   }, [isLiked]);
 
-  const handleLike = (event: React.MouseEvent) => {
+  const checkAuth = async () => {
+    try {
+      await axiosInstance.get('/auth/profile');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const handleLike = async (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    setLocalLiked((prevLiked) => !prevLiked);
-    onToggleFavorite(recipe.recipe_id);
     
-    if (!localLiked) {
-      toast.success("Đã thêm vào danh sách yêu thích!");
-    } else {
-      toast.info("Đã xóa khỏi danh sách yêu thích!");
+    try {
+      const isAuthenticated = await checkAuth();
+      
+      if (!isAuthenticated) {
+        toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
+          position: "top-right",
+          autoClose: 2000
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        navigate('/sign-in', { state: { returnTo: `/dish/${formattedTitle}_${recipe.recipe_id}.html` } });
+        return;
+      }
+
+      setLocalLiked((prevLiked) => !prevLiked);
+      onToggleFavorite(recipe.recipe_id);
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Có lỗi xảy ra khi thao tác với yêu thích!", {
+        position: "top-right",
+        autoClose: 2000
+      });
     }
   };
 

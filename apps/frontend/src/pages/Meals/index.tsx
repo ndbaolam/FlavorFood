@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import FilterMenu from '../../components/FilterMenu';
 import RecipeCard from '../../components/RecipeCard';
@@ -25,6 +27,46 @@ const Meals: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
+
+  const checkAuth = async () => {
+    try {
+      await axiosInstance.get('/auth/profile');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const handleToggleFavorite = async (recipeId: number) => {
+    try {
+      const isAuthenticated = await checkAuth();
+      
+      if (!isAuthenticated) {
+        toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
+          position: "top-right",
+          autoClose: 2000
+        });
+        navigate('/sign-in', { state: { returnTo: '/dish' } });
+        return;
+      }
+
+      const wasLiked = isFavorite(recipeId);
+      await toggleFavorite(recipeId);
+      
+      toast[wasLiked ? "info" : "success"](
+        wasLiked ? "Đã xóa khỏi danh sách yêu thích!" : "Đã thêm vào danh sách yêu thích!",
+        { position: "top-right", autoClose: 2000 }
+      );
+      
+      setTimeout(refreshFavorites, 300);
+    } catch (error) {
+      console.error("Error toggling favorite:", error);
+      toast.error("Có lỗi xảy ra khi thao tác với yêu thích!", {
+        position: "top-right",
+        autoClose: 2000
+      });
+    }
+  };
 
   const fetchRecipes = useCallback(async () => {
     setLoading(true);
@@ -126,9 +168,7 @@ const Meals: React.FC = () => {
                 key={recipe.recipe_id}
                 recipe={recipe}
                 isLiked={isFavorite(recipe.recipe_id)}
-                onToggleFavorite={() => {
-                  toggleFavorite(recipe.recipe_id).then(refreshFavorites);
-                }}
+                onToggleFavorite={() => handleToggleFavorite(recipe.recipe_id)}
               />
             ))
           ) : (

@@ -19,6 +19,7 @@ import LogIn from '../components/Admin/LogIn';
 import SellerLayout from '../layouts/Seller/SellerLayout';
 import SellerHome from '../pages/Seller/Home';
 import SellerProfile from '../pages/Seller/Profile';
+import StoreRegistration from '../pages/Market/StoreRegistration';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -74,6 +75,10 @@ const routes: RouteObject[] = [
         path:'market',
         element:<Market />
       },
+      {
+        path:'store-registration',
+        element:<StoreRegistration />
+      }
     ],
   },
   {
