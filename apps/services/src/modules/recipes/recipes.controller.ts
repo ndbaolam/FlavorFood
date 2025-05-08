@@ -23,6 +23,7 @@ import {
   ApiParam,
   ApiBody,
 } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
 
 @ApiTags('Recipes')
 @Controller('recipes')
@@ -38,6 +39,7 @@ export class RecipesController {
     try {
       return this.recipesService.findOne(Number(id));
     } catch (error) {
+      Logger.error(error)
       throw new BadRequestException('Recipe ID must be a number');
     }
   }
@@ -49,7 +51,11 @@ export class RecipesController {
   async searchRecipeByTitle(
     @Query() searchDto: SearchRecipeDto
   ): Promise<Recipes[]> {
-    return await this.recipesService.searchRecipes(searchDto);
+    try {
+      return await this.recipesService.searchRecipes(searchDto);
+    } catch (error) {
+      Logger.error(error)
+    }
   }
 
   @Post()
@@ -59,7 +65,12 @@ export class RecipesController {
   async create(
     @Body() createRecipeDto: CreateRecipeDto
   ): Promise<Recipes> {
-    return this.recipesService.create(createRecipeDto);
+    try {
+      return this.recipesService.create(createRecipeDto);
+    } catch (error) {
+      Logger.error(error.message)
+      throw new BadRequestException('Error creating recipe');
+    }    
   }
 
   @Patch(':id')
@@ -71,7 +82,12 @@ export class RecipesController {
     @Param('id', ParseIntPipe) id: number,
     @Body() updateRecipeDto: UpdateRecipeDto
   ): Promise<Recipes> {
-    return this.recipesService.update(Number(id), updateRecipeDto);
+    try {
+      return this.recipesService.update(Number(id), updateRecipeDto);
+    } catch (error) {
+      Logger.error(error)
+      throw new BadRequestException('Error updating recipe');
+    }    
   }
 
   @Delete(':id')
@@ -79,6 +95,11 @@ export class RecipesController {
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: 200, description: 'Recipe deleted successfully' })
   remove(@Param('id', ParseIntPipe) id: number) {
-    return this.recipesService.remove(Number(id));
+    try {
+      return this.recipesService.remove(Number(id));
+    } catch (error) {
+      Logger.error(error)
+      throw new BadRequestException('Error deleting recipe');
+    }
   }
 }

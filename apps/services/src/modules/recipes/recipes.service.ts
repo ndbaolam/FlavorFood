@@ -205,6 +205,10 @@ export class RecipesService {
       if (updateRecipeDto.title) updateObj.title = updateRecipeDto.title;
       if (updateRecipeDto.description) updateObj.description = updateRecipeDto.description;      
       if (updateRecipeDto.difficulty_level) updateObj.difficulty_level = updateRecipeDto.difficulty_level;
+      if (updateRecipeDto.lang) updateObj.lang = updateRecipeDto.lang;
+      if (updateRecipeDto.image) updateObj.image = updateRecipeDto.image;
+      if (updateRecipeDto.serving) updateObj.serving = updateRecipeDto.serving;
+      if (updateRecipeDto.time) updateObj.time = updateRecipeDto.time;
   
       if (Object.keys(updateObj).length > 0) {
         await this.recipesRepository
@@ -240,16 +244,26 @@ export class RecipesService {
           .execute();
   
         if (updateRecipeDto.ingredients.length > 0) {
-          const newIngredients = updateRecipeDto.ingredients.map((ingredient) => ({
+          const newIngredients = updateRecipeDto.ingredients
+          .filter((ingredient) => ingredient.ingredient)
+          .map((ingredient) => ({
             ingredient: ingredient.ingredient,
             quantity: ingredient.quantity,
             unit: ingredient.unit,
             recipe: { recipe_id: recipeId } as Recipes,
           }));
 
-          console.log(newIngredients);
-  
-          await this.ingredientsRepository.save(newIngredients);
+          
+          await Promise.all(
+            newIngredients.map(i =>
+              this.ingredientsRepository.save({
+                ingredient: i.ingredient,
+                quantity: i.quantity,
+                unit: i.unit,
+                recipe: { recipe_id: recipeId } as Recipes,
+              })
+            )
+          );
         }
       }
 
@@ -260,21 +274,30 @@ export class RecipesService {
           .from(Nutritrion)
           .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
-  
+      
         if (updateRecipeDto.nutrition.length > 0) {
-          const newNutrition = updateRecipeDto.nutrition.map((item) => ({
-            ...item,
-            recipe: { recipe_id: recipeId } as Recipes,
-          }));
-  
-          await this.nutritionRepository
-            .createQueryBuilder()
-            .insert()
-            .into(Ingredient)
-            .values(newNutrition)
-            .execute();
+          const newNutrition = updateRecipeDto.nutrition
+            .filter((item) => item.name)
+            .map((item) => ({
+              name: item.name,
+              amount: item.amount,
+              unit: item.unit,
+              recipe: { recipe_id: recipeId } as Recipes,
+            }));
+      
+          await Promise.all(
+            newNutrition.map((n) =>
+              this.nutritionRepository.save({
+                name: n.name,
+                amount: n.amount,
+                unit: n.unit,
+                recipe: { recipe_id: recipeId } as Recipes,
+              })
+            )
+          );
         }
       }
+      
 
       if (updateRecipeDto.steps) {
         await this.stepRepository
@@ -283,22 +306,28 @@ export class RecipesService {
           .from(Steps)
           .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
-  
+      
         if (updateRecipeDto.steps.length > 0) {
-          const newSteps = updateRecipeDto.steps.map((item) => ({
-            ...item,
-            recipe: { recipe_id: recipeId } as Recipes,
-          }));
-  
-          await this.stepRepository
-            .createQueryBuilder()
-            .insert()
-            .into(Ingredient)
-            .values(newSteps)
-            .execute();
+          const newSteps = updateRecipeDto.steps
+            .filter((item) => item.step)
+            .map((item) => ({
+              number: item.number,
+              step: item.step,
+              recipe: { recipe_id: recipeId } as Recipes,
+            }));
+      
+          await Promise.all(
+            newSteps.map((s) =>
+              this.stepRepository.save({
+                number: s.number,
+                step: s.step,
+                recipe: { recipe_id: recipeId } as Recipes,
+              })
+            )
+          );
         }
       }
-  
+      
       const updatedRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
         .leftJoin('recipes.categories', 'categories')

@@ -105,6 +105,17 @@ export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {
   step?: string;
 
   @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty({ example: 2, description: 'Number of servings' })
+  serving?: number;
+
+  @IsOptional()
+  @Type(() => Number)
+  @ApiPropertyOptional({ example: 30, description: 'Time in minutes' })
+  time?: number;
+
+  @IsOptional()
   @IsEnum(DifficultyLevel)
   @ApiPropertyOptional({ enum: DifficultyLevel, example: DifficultyLevel.MEDIUM })
   difficulty_level?: DifficultyLevel;

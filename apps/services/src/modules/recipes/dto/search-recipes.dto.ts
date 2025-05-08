@@ -12,12 +12,12 @@ export class SearchRecipeDto {
   @IsOptional()
   @IsEnum(DifficultyLevel)
   @ApiPropertyOptional({ enum: DifficultyLevel, example: DifficultyLevel.EASY, description: 'Filter by difficulty' })
-  description?: DifficultyLevel;
+  difficulty_level?: DifficultyLevel;
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'medium', description: 'Search by difficulty as a string (alternative)' })
-  difficulty_level?: string;
+  @ApiPropertyOptional({ example: 'pizza', description: 'Search by description' })
+  description?: string;
 
   @IsOptional()
   @IsEnum(Lang)
