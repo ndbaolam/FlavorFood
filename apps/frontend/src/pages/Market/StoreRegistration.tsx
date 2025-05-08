@@ -30,7 +30,6 @@ const StoreRegistration = () => {
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 items-stretch">
-          {/* Package Column */}
           <div className="bg-gradient-to-br from-blue-300 to-indigo-500 rounded-2xl shadow-xl overflow-hidden transform hover:scale-[1.02] transition-transform duration-300 h-full">
             <div className="p-8 h-full flex flex-col">
               <div className="text-center mb-8">
@@ -51,7 +50,6 @@ const StoreRegistration = () => {
             </div>
           </div>
 
-          {/* Terms Column */}
           <div className="bg-white rounded-2xl shadow-xl p-8 h-full flex flex-col">
             <h2 className="text-3xl font-bold text-gray-900 mb-6 text-center">Điều khoản và điều kiện</h2>
             <ul className="space-y-4 mb-8 flex-grow">
@@ -77,7 +75,6 @@ const StoreRegistration = () => {
           </div>
         </div>
 
-        {/* Submit Button */}
         <div className="text-center mt-8">
           <button
             disabled={!acceptedTerms}

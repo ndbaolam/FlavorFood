@@ -19,6 +19,24 @@ const Market: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const checkAuth = async () => {
+    try {
+      await axiosInstance.get('/auth/profile');
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
+  const handleStoreRegistration = async () => {
+    const isAuthenticated = await checkAuth();
+    if (isAuthenticated) {
+      navigate('/store-registration');
+    } else {
+      navigate('/sign-in', { state: { returnTo: '/market' } });
+    }
+  };
+
   const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
     try {
       const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&limit=1`;
@@ -119,7 +137,7 @@ const Market: React.FC = () => {
         <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold">Tìm kiếm cửa hàng</h2>
             <button
-              onClick={() => navigate('/store-registration')}
+              onClick={handleStoreRegistration}
               className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
             >
               Đăng ký cửa hàng

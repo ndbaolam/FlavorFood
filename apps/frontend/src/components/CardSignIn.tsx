@@ -1,6 +1,6 @@
 import { ReactNode, useEffect, useState } from 'react';
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   CodeResponse,
   TokenResponse,
@@ -17,6 +17,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
   const [mail, setMail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -31,7 +32,6 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
-
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,16 +50,14 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
       if (loginUser.role === 'seller') {
         navigate('/seller');
       } else {
-        navigate('/');
+        const returnTo = (location.state as any)?.returnTo;
+        navigate(returnTo || '/');
       }
     } catch (error) {
       console.error('Đăng nhập thất bại:', error);
       alert('Tên đăng nhập hoặc mật khẩu không đúng');
     }
   };
-
-
-
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse: CodeResponse | TokenResponse) => {
@@ -75,7 +73,10 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
         localStorage.setItem('authToken', response.data.token);
         console.log(localStorage.getItem('authToken'));
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
-        navigate('/');
+        
+        // Check if there's a return URL in the location state
+        const returnTo = (location.state as any)?.returnTo;
+        navigate(returnTo || '/');
       } catch (error) {
         console.error('Login Failed:', error);
         alert('Login Failed');
