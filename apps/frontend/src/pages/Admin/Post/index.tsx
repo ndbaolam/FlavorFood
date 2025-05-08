@@ -8,8 +8,14 @@ import RecipeDetailPopup from "../../../components/Admin/Post/RecipeDetailPopup"
 import axiosInstance from '../../../services/axiosInstance';
 import { toast } from 'react-toastify';
 
+interface Category {
+  category_id: number;
+  title: string;
+}
+
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Recipe[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState<number[]>([]);
@@ -18,8 +24,30 @@ const Posts: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<number | 'all'>(() => {
+    const savedCategory = localStorage.getItem('selectedCategory');
+    return savedCategory ? (savedCategory === 'all' ? 'all' : parseInt(savedCategory)) : 'all';
+  });
   const LIMIT = 6;
+
+  useEffect(() => {
+    localStorage.setItem('selectedCategory', selectedCategory.toString());
+  }, [selectedCategory]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axiosInstance.get<Category[]>('/categories', {
+          withCredentials: true,
+        });
+        setCategories(response.data);
+      } catch (err: any) {
+        setError(err.message || 'Failed to fetch categories.');
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -46,12 +74,17 @@ const Posts: React.FC = () => {
         withCredentials: true,
       });
   
-      const response = await axiosInstance.get<Recipe[]>('/recipes');
-      setPosts(response.data);
       setIsPopupOpen(false);
+      const response = await axiosInstance.get<Recipe[]>('/recipes', {
+        withCredentials: true,
+      });
+      setPosts(response.data);
+      setCurrentPage(1);
+      
       toast.success("Tạo bài viết thành công");
     } catch (err: any) {
       setError(err.message);
+      toast.error("Tạo bài viết thất bại");
     }
   };
   
@@ -62,16 +95,19 @@ const Posts: React.FC = () => {
         withCredentials: true,
       });
   
-      setPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.recipe_id === updatedPost.recipe_id ? { ...post, ...updatedPost } : post
-        )
-      );
-      setIsPopupOpen(false);
       setEditingPost(null);
+      setIsPopupOpen(false);
+      
+      const response = await axiosInstance.get<Recipe[]>('/recipes', {
+        withCredentials: true,
+      });
+      
+      setPosts(response.data);
+      setCurrentPage(1); 
       toast.success("Cập nhật bài viết thành công");
     } catch (err: any) {
       setError(err.message);
+      toast.error("Cập nhật bài viết thất bại");
     }
   };
 
@@ -99,12 +135,15 @@ const Posts: React.FC = () => {
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
+  
       setPosts(response.data);
+      setCurrentPage(1);
+      
       toast.success("Xóa bài viết thành công");
       setSelectedPosts(selectedPosts.filter(id => id !== recipeId));
-
     } catch (err: any) {
       setError(err.message);
+      toast.error("Xóa bài viết thất bại");
     }
   };
 
@@ -118,12 +157,15 @@ const Posts: React.FC = () => {
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
-      toast.success("Xóa bài viết thành công");
+    
       setPosts(response.data);
-
+      setCurrentPage(1);
+      
+      toast.success("Xóa bài viết thành công");
       setSelectedPosts([]);
     } catch (err: any) {
       setError(err.message);
+      toast.error("Xóa bài viết thất bại");
     }
   };
 
@@ -206,10 +248,11 @@ const Posts: React.FC = () => {
             className="border border-gray-300 rounded-lg px-3 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">Tất cả danh mục</option>
-            <option value="48">Khai vị</option>
-            <option value="51">Món chính</option>
-            <option value="49">Tráng miệng</option>
-            <option value="50">Ăn vặt</option>
+            {categories.map((category) => (
+              <option key={category.category_id} value={category.category_id}>
+                {category.title}
+              </option>
+            ))}
           </select>
         </div>
 

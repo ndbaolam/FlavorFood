@@ -125,7 +125,13 @@ const Tip: React.FC = () => {
     }
   };
 
-  const filteredTips = tip.filter((t) =>
+  const sortedTips = [...tip].sort((a, b) => {
+    const dateA = new Date(a.updatedAt || 0).getTime();
+    const dateB = new Date(b.updatedAt || 0).getTime();
+    return dateB - dateA;
+  });
+
+  const filteredTips = sortedTips.filter((t) =>
     t.title.toLowerCase().includes(searchTitle.toLowerCase())
   );
   const totalPages = Math.ceil(filteredTips.length / LIMIT);
