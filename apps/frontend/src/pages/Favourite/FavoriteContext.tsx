@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axiosInstance from "../../services/axiosInstance";
-import Cookies from "js-cookie";
 
 interface FavoriteItem {
   favorite_id: number;
@@ -18,9 +17,9 @@ const FavoriteContext = createContext<FavoriteContextType | undefined>(undefined
 
 export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
-  const accessToken = Cookies.get("access_token");
+  const authToken = localStorage.getItem('authToken');
 
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`/favorite`, {
         withCredentials: true,
@@ -30,25 +29,20 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         recipe_id: item.recipe.recipe_id,
       }));
       setFavorites(formattedData);
-
-      // Lưu danh sách yêu thích vào localStorage để giữ trạng thái khi tải lại trang
       localStorage.setItem("favorites", JSON.stringify(formattedData));
     } catch (error) {
       console.error("Lỗi khi lấy danh sách yêu thích:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    if (accessToken) {
+    if (authToken) {
       fetchFavorites();
     } else {
-      //Lấy danh sách yêu thích từ localStorage nếu không có accessToken
-      const savedFavorites = localStorage.getItem("favorites");
-      if (savedFavorites) {
-        setFavorites(JSON.parse(savedFavorites));
-      }
+      setFavorites([]);
+      localStorage.removeItem("favorites");
     }
-  }, [accessToken]);
+  }, [authToken, fetchFavorites]);
 
   const toggleFavorite = async (recipeId: number) => {
     const isCurrentlyFavorite = favorites.some((item) => item.recipe_id === recipeId);
@@ -80,10 +74,7 @@ export const FavoriteProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       }
 
       setFavorites(updatedFavorites);
-
-      //Lưu vào localStorage để đảm bảo trạng thái yêu thích được giữ khi tải lại trang
       localStorage.setItem("favorites", JSON.stringify(updatedFavorites));
-
       setTimeout(refreshFavorites, 300);
     } catch (error) {
       console.error("Error toggling favorite:", error);

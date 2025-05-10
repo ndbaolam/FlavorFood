@@ -47,9 +47,91 @@ const Tips: React.FC = () => {
   const totalPages = Math.ceil(filteredTips.length / LIMIT);
   const paginatedTips = filteredTips.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
 
-  const goToPage = (page: number) => {
+  const handlePageChange = (page: number) => {
     setCurrentPage(page);
     window.scrollTo({ top: 80, behavior: 'smooth' });
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const renderPageButton = (pageNum: number, label?: string) => (
+      <button
+        key={label || pageNum}
+        onClick={() => handlePageChange(pageNum)}
+        className={`px-3 py-1 rounded ${
+          currentPage === pageNum
+            ? "bg-blue-500 text-white font-medium"
+            : "bg-white text-gray-600 hover:bg-blue-100"
+        }`}
+      >
+        {label || pageNum}
+      </button>
+    );
+
+    const paginationItems = [];
+    
+    paginationItems.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded mr-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+        aria-label="Trang trước"
+      >
+        &lt;
+      </button>
+    );
+
+    if (totalPages <= 3) {
+      for (let i = 1; i <= totalPages; i++) {
+        paginationItems.push(renderPageButton(i));
+      }
+    } else {
+      paginationItems.push(renderPageButton(1));
+
+      if (currentPage > 2) {
+        paginationItems.push(<span key="ellipsis1" className="px-2">...</span>);
+      } else if (currentPage === 2) {
+        paginationItems.push(renderPageButton(2));
+      }
+
+      if (currentPage > 2) {
+        paginationItems.push(renderPageButton(currentPage));
+      }
+      
+      if (currentPage < totalPages - 1) {
+        paginationItems.push(renderPageButton(currentPage + 1));
+      }
+      
+      if (currentPage < totalPages - 2) {
+        paginationItems.push(<span key="ellipsis2" className="px-2">...</span>);
+      } else if (currentPage === totalPages - 2) {
+        paginationItems.push(renderPageButton(totalPages - 1));
+      }
+
+      if (currentPage < totalPages) {
+        paginationItems.push(renderPageButton(totalPages));
+      }
+    }
+
+    paginationItems.push(
+      <button
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 rounded ml-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+        aria-label="Trang sau"
+      >
+        &gt;
+      </button>
+    );
+
+    return (
+      <div className="flex justify-end items-center space-x-1 mt-6">
+        {paginationItems}
+      </div>
+    );
   };
 
   return (
@@ -77,22 +159,7 @@ const Tips: React.FC = () => {
           )}
         </section>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-8 space-x-2">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => goToPage(index + 1)}
-                className={`px-3 py-1 rounded-md ${currentPage === index + 1
-                  ? 'bg-blue-500 text-white font-bold'
-                  : 'bg-gray-200 text-gray-700 hover:bg-blue-100'}`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        )}
+        {renderPagination()}
       </main>
     </div>
   );
