@@ -5,13 +5,36 @@ import SearchBox from "../../../components/Search";
 import axiosInstance from '../../../services/axiosInstance';
 import { toast } from "react-toastify";
 
+interface Role {
+  role_id: number;
+  name: string;
+}
+
 const Account: React.FC = () => {
   const [accounts, setAccounts] = useState<User[]>([]);
   const [filteredAccounts, setFilteredAccounts] = useState<User[]>([]);
   const [searchTitle, setSearchTitle] = useState("");
+  const [selectedRole, setSelectedRole] = useState<string>("all");
+  const [roles, setRoles] = useState<Role[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const LIMIT = 6;
+
+  useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const response = await axiosInstance.get<Role[]>("/roles", {
+          withCredentials: true,
+        });
+        console.log("Fetched roles:", response.data);
+        setRoles(response.data);
+      } catch (error) {
+        console.error("Error fetching roles:", error);
+      }
+    };
+
+    fetchRoles();
+  }, []);
 
   useEffect(() => {
     const fetchAccounts = async () => {
@@ -35,11 +58,13 @@ const Account: React.FC = () => {
       (account.first_name?.toLowerCase().includes(searchTitle.toLowerCase()) ||
         account.last_name?.toLowerCase().includes(searchTitle.toLowerCase()) ||
         account.mail?.toLowerCase().includes(searchTitle.toLowerCase())) &&
-      account.role !== 'admin'
+      account.role !== 'admin' &&
+      (selectedRole === 'all' || 
+        (selectedRole === 'user' && account.role === 'norm') ||
+        (selectedRole === 'moderator' && account.role === 'seller'))
     );
     setFilteredAccounts(searchedAccounts);
-  }, [searchTitle, accounts]);
-
+  }, [searchTitle, accounts, selectedRole]);
 
   const handleDelete = async (id: number) => {
     try {
@@ -84,17 +109,28 @@ const Account: React.FC = () => {
 
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg  bg-white">
-      <div className="mb-4 flex items-center justify-between p-4">
-        <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
+      <div className="mb-4 flex items-center justify-between p-4 mt-2">
+        <button
+          onClick={handleBulkDelete}
+          className="text-black px-3 py-1 rounded-lg border-2 flex items-center justify-center gap-x-2 h-[45px]"
+          disabled={selectedAccounts.length === 0}
+        >
+          <Trash2 className="text-red-600 hover:text-red-800" size={18} />
+          <span>Xóa</span>
+        </button>
         <div className="flex space-x-3">
-          <button
-            onClick={handleBulkDelete}
-            className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-            disabled={selectedAccounts.length === 0}
+          <div className="h-[38px]">
+            <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
+          </div>
+          <select
+            value={selectedRole}
+            onChange={(e) => setSelectedRole(e.target.value)}
+            className="border border-gray-300 rounded-lg px-3 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 h-[45px]"
           >
-            <Trash2 className="text-red-600 hover:text-red-800" size={18} />
-            <span>Xóa</span>
-          </button>
+            <option value="all">Tất cả vai trò</option>
+            <option value="user">Normal</option>
+            <option value="moderator">Seller</option>
+          </select>
         </div>
       </div>
       <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">

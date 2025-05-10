@@ -8,6 +8,7 @@ import {
   ChefHat,
   Lightbulb,
   ShoppingBasket,
+  Heart,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../services/axiosInstance";
@@ -88,11 +89,16 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
     {
       href: "/profile",
       label: "Thông tin tài khoản",
-      icon: <Users className="w-5 h-5 mr-2" />,
+      icon: <Users className="w-5 h-5 mr-2 text-blue-500" />,
+    },
+    {
+      href: "/favorite",
+      label: "Yêu thích",
+      icon: <Heart className="w-5 h-5 mr-2 text-red-500" />,
     },
     {
       label: "Đăng xuất",
-      icon: <LogOut className="w-5 h-5 mr-2 text-gray-600" />,
+      icon: <LogOut className="w-5 h-5 mr-2 text-gray-500" />,
       onClick: handleLogout,
     },
   ];

@@ -22,6 +22,8 @@ const Meals: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [searchTitle, setSearchTitle] = useState<string>('');
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [totalRecipes, setTotalRecipes] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -94,6 +96,15 @@ const Meals: React.FC = () => {
         );
       }
 
+      setTotalRecipes(filteredRecipes.length);
+      const calculatedTotalPages = Math.ceil(filteredRecipes.length / LIMIT);
+      setTotalPages(calculatedTotalPages);
+    
+      if (currentPage > calculatedTotalPages && calculatedTotalPages > 0) {
+        setCurrentPage(calculatedTotalPages);
+        return;
+      }
+      
       const paginatedRecipes = filteredRecipes.slice(offset, offset + LIMIT);
       setRecipes(paginatedRecipes);
       setHasNextPage(offset + LIMIT < filteredRecipes.length);
@@ -108,7 +119,7 @@ const Meals: React.FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeFilter]);
+  }, [activeFilter, searchTitle]);
 
   useEffect(() => {
     fetchRecipes();
@@ -119,24 +130,106 @@ const Meals: React.FC = () => {
     const params: any = {};
     if (searchTitle) params.title = searchTitle;
     if (activeFilter !== null) params.category = activeFilter;
+    if (currentPage > 1) params.page = currentPage;
     setSearchParams(params);
-  }, [activeFilter, searchTitle, setSearchParams]);
+  }, [activeFilter, searchTitle, currentPage, setSearchParams]);
 
   useEffect(() => {
     const categoryParam = searchParams.get('category');
     if (categoryParam) {
       setActiveFilter(Number(categoryParam));
     }
+    
+    const pageParam = searchParams.get('page');
+    if (pageParam) {
+      setCurrentPage(Number(pageParam));
+    }
   }, [searchParams]);
 
-  const goToNextPage = () => {
-    setCurrentPage((prev) => prev + 1);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
     window.scrollTo({ top: 80, behavior: 'smooth' });
   };
 
-  const goToPreviousPage = () => {
-    setCurrentPage((prev) => Math.max(1, prev - 1));
-    window.scrollTo({ top: 80, behavior: 'smooth' });
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const renderPageButton = (pageNum: number, label?: string) => (
+      <button
+        key={label || pageNum}
+        onClick={() => handlePageChange(pageNum)}
+        className={`px-3 py-1 rounded ${
+          currentPage === pageNum
+            ? "bg-blue-500 text-white font-medium"
+            : "bg-white text-gray-600 hover:bg-blue-100"
+        }`}
+      >
+        {label || pageNum}
+      </button>
+    );
+    const paginationItems = [];
+    
+    paginationItems.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded mr-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+        aria-label="Trang trước"
+      >
+        &lt;
+      </button>
+    );
+    if (totalPages <= 3) {
+      for (let i = 1; i <= totalPages; i++) {
+        paginationItems.push(renderPageButton(i));
+      }
+    } else {
+      paginationItems.push(renderPageButton(1));
+      
+
+      if (currentPage > 2) {
+        paginationItems.push(<span key="ellipsis1" className="px-2">...</span>);
+      } else if (currentPage === 2) {
+        paginationItems.push(renderPageButton(2));
+      }
+
+      if (currentPage > 2) {
+        paginationItems.push(renderPageButton(currentPage));
+      }
+      
+      if (currentPage < totalPages - 1) {
+        paginationItems.push(renderPageButton(currentPage + 1));
+      }
+      
+      if (currentPage < totalPages - 2) {
+        paginationItems.push(<span key="ellipsis2" className="px-2">...</span>);
+      } else if (currentPage === totalPages - 2) {
+
+      }
+      
+      if (currentPage < totalPages) {
+        paginationItems.push(renderPageButton(totalPages));
+      }
+    }
+
+    paginationItems.push(
+      <button
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 rounded ml-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+        aria-label="Trang sau"
+      >
+        &gt;
+      </button>
+    );
+
+    return (
+      <div className="flex justify-end items-center space-x-1 mt-6">
+        {paginationItems}
+      </div>
+    );
   };
 
   return (
@@ -161,58 +254,36 @@ const Meals: React.FC = () => {
           <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
         </div>
 
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
-          {recipes.length > 0 ? (
-            recipes.map((recipe) => (
-              <RecipeCard
-                key={recipe.recipe_id}
-                recipe={recipe}
-                isLiked={isFavorite(recipe.recipe_id)}
-                onToggleFavorite={() => handleToggleFavorite(recipe.recipe_id)}
-              />
-            ))
-          ) : (
-            <p className="text-center text-gray-500">Không có công thức nào.</p>
-          )}
-        </section>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-gray-500">Đang tải dữ liệu...</p>
+          </div>
+        ) : error ? (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-red-500">{error}</p>
+          </div>
+        ) : (
+          <>
+            <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+              {recipes.length > 0 ? (
+                recipes.map((recipe) => (
+                  <RecipeCard
+                    key={recipe.recipe_id}
+                    recipe={recipe}
+                    isLiked={isFavorite(recipe.recipe_id)}
+                    onToggleFavorite={() => handleToggleFavorite(recipe.recipe_id)}
+                  />
+                ))
+              ) : (
+                <div className="col-span-full text-center py-16">
+                  <p className="text-gray-500 text-lg">Không tìm thấy công thức nào phù hợp.</p>
+                </div>
+              )}
+            </section>
 
-        <div className="flex justify-center mt-8 items-center space-x-2">
-          <button
-            onClick={goToPreviousPage}
-            disabled={currentPage === 1}
-            className="p-2 rounded hover:bg-gray-200 disabled:opacity-50"
-          >
-            ‹
-          </button>
-
-          {Array.from(
-            { length: hasNextPage ? currentPage + 1 : currentPage },
-            (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => {
-                  setCurrentPage(index + 1);
-                  window.scrollTo({ top: 80, behavior: 'smooth' });
-                }}
-                className={`px-3 py-1 rounded font-medium transition ${
-                  currentPage === index + 1
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {index + 1}
-              </button>
-            )
-          )}
-
-          <button
-            onClick={goToNextPage}
-            disabled={!hasNextPage}
-            className="p-2 rounded hover:bg-gray-200 disabled:opacity-50"
-          >
-            ›
-          </button>
-        </div>
+            {renderPagination()}
+          </>
+        )}
       </main>
     </div>
   );

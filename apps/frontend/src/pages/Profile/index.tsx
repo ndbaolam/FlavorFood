@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../services/axiosInstance";
-import UserSidebar from "../../components/UserSidebar";
 
 interface User {
   user_id: number;
@@ -31,7 +30,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className="min-h-screen flex justify-center bg-gray-100">
-      <UserSidebar />
       <main className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-center items-start gap-6 p-6">
           <div className="text-center w-full md:w-[300px] flex flex-col items-center">
