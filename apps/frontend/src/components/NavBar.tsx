@@ -14,12 +14,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../services/axiosInstance";
 import { User } from "../pages/Profile/Profile.interface";
 
-const fontStyle = document.createElement('style');
-fontStyle.textContent = `
-  @import url('https://fonts.googleapis.com/css2?family=Niconne&display=swap');
-`;
-document.head.appendChild(fontStyle);
-
 interface NavbarProps {
   setActivePage: (page: string) => void;
   onUserLoggedIn?: () => void;
@@ -130,13 +124,8 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
         <div className="flex justify-between items-center h-20 ">
           <div className="flex items-center space-x-4">
             <Link to="/" className="flex items-center" onClick={() => handlePageChange("Trang chủ")}>
-              <img src="./logo1.png" alt="Logo" className="h-20" />
-              <span
-                style={{ fontFamily: "'Niconne', cursive" }}
-                className="text-6xl font-extrabold text-blue-400 ml-4"
-              >
-                Flavor Food
-              </span>
+              <img src="./logo.png" alt="Logo" className="h-14" />
+             
             </Link>
           </div>
           {/* Desktop Menu */}
