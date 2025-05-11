@@ -7,12 +7,16 @@ const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ set
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-
+  const fontStyle = document.createElement('style');
+  fontStyle.textContent = `
+  @import url('https://fonts.googleapis.com/css2?family=Niconne&display=swap');
+`;
+  document.head.appendChild(fontStyle);
   const handleLogout = async () => {
     try {
-      await axiosInstance.post("/auth/logout", {}, {  });
-    
-      navigate("/admin/login"); 
+      await axiosInstance.post("/auth/logout", {}, {});
+
+      navigate("/admin/login");
     } catch (error) {
       console.error("Đăng xuất thất bại:", error);
     }
@@ -41,12 +45,16 @@ const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ set
       </button>
 
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-blue-100 p-6 flex flex-col transition-transform duration-300 ease-in-out transform ${
-          isOpen ? "translate-x-0" : "-translate-x-64"
-        } md:relative md:translate-x-0`}
+        className={`fixed inset-y-0 left-0 w-64 bg-blue-100 p-6 flex flex-col transition-transform duration-300 ease-in-out transform ${isOpen ? "translate-x-0" : "-translate-x-64"
+          } md:relative md:translate-x-0`}
       >
         <div className="flex items-center space-x-4">
-          <h1 className="text-xl text-blue-600 font-bold">Flavor Food</h1>
+          <span
+            style={{ fontFamily: "'Niconne', cursive" }}
+            className="text-4xl font-bold text-blue-700 "
+          >
+            Flavor Food
+          </span>
         </div>
 
         <nav className="space-y-4 mt-6">
@@ -57,9 +65,8 @@ const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ set
                 key={item.to}
                 to={item.to}
                 onClick={() => handlePageChange(item.label)}
-                className={`flex items-center space-x-2 py-2 px-4 rounded-lg w-full text-left transition ${
-                  isActive ? "bg-blue-700 font-bold text-white" : "hover:bg-blue-500"
-                }`}
+                className={`flex items-center space-x-2 py-2 px-4 rounded-lg w-full text-left transition ${isActive ? "bg-blue-700 font-bold text-white" : "hover:bg-blue-500"
+                  }`}
               >
                 {item.icon}
                 <span>{item.label}</span>
@@ -70,9 +77,9 @@ const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ set
 
         <div className="mt-auto">
           <button
-           className="flex items-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-           onClick={handleLogout}
-           >
+            className="flex items-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            onClick={handleLogout}
+          >
             <LogOut className="w-5 h-5 mr-2" /> Đăng xuất
           </button>
         </div>

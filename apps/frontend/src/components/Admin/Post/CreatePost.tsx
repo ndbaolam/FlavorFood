@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { Recipe, Ingredient, Category, Step, Nutrition } from "../../../pages/Meals/recipe.interface";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 import imageCompression from "browser-image-compression";
 import axiosInstance from "../../../services/axiosInstance";
@@ -12,9 +12,109 @@ interface CreatePostProps {
   isEditing?: boolean;
 }
 
+// Di chuyển CategoryDropdown ra ngoài để tránh định nghĩa lồng nhau
+const CategoryDropdown: React.FC<{
+  categories: Category[];
+  selectedCategoryIds: number[];
+  setSelectedCategoryIds: React.Dispatch<React.SetStateAction<number[]>>;
+  formErrors: { [key: string]: string };
+}> = ({ 
+  categories, 
+  selectedCategoryIds, 
+  setSelectedCategoryIds, 
+  formErrors 
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Get labels of selected categories for display
+  const selectedCategoryLabels = categories
+    .filter(cat => selectedCategoryIds.includes(cat.category_id))
+    .map(cat => cat.title);
+
+  return (
+    <div className="mb-4" ref={dropdownRef}>
+      <label className="block font-medium mb-1">
+        Danh mục <span className="text-red-500">*</span>
+      </label>
+      
+      <div className="relative">
+        {/* Dropdown button */}
+        <button
+          type="button"
+          className="flex justify-between items-center w-full p-2 border rounded-lg bg-white"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <span className="truncate">
+            {selectedCategoryLabels.length > 0 
+              ? selectedCategoryLabels.join(', ') 
+              : 'Chọn danh mục'}
+          </span>
+          <svg 
+            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        
+        {/* Dropdown options */}
+        {isOpen && (
+          <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            {categories.map((category) => (
+              <div key={category.category_id} className="flex items-center p-2 hover:bg-gray-100">
+                <input
+                  type="checkbox"
+                  id={`category-${category.category_id}`}
+                  value={category.category_id}
+                  checked={selectedCategoryIds.includes(category.category_id)}
+                  onChange={(e) => {
+                    const categoryId = Number(e.target.value);
+                    setSelectedCategoryIds((prev) =>
+                      e.target.checked
+                        ? [...prev, categoryId]
+                        : prev.filter((id) => id !== categoryId)
+                    );
+                  }}
+                  className="mr-2"
+                />
+                <label 
+                  htmlFor={`category-${category.category_id}`}
+                  className="w-full cursor-pointer"
+                >
+                  {category.title}
+                </label>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      {formErrors?.category && (
+        <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
+      )}
+    </div>
+  );
+};
 
 const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData, isEditing }) => {
-const [title, setTitle] = useState<string>(initialData?.title || "");
+  const [title, setTitle] = useState<string>(initialData?.title || "");
   const [description, setDescription] = useState<string>(initialData?.description || "");
   const [time, setTime] = useState<number>(initialData?.time || 0);
   const [serving, setServing] = useState<number>(initialData?.serving || 0);
@@ -29,19 +129,19 @@ const [title, setTitle] = useState<string>(initialData?.title || "");
   const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
   const [imageInputType, setImageInputType] = useState<"url" | "file">("url");
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategoryId, setSelectedCategoryId] = useState<number>();
-  
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
+
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axiosInstance.get("/categories");
-        setCategories(response.data);  
+        setCategories(response.data);
       } catch (error) {
         console.error("Lỗi khi tải danh mục:", error);
         toast.error("Không thể tải danh mục");
       }
     };
-  
+
     fetchCategories();
   }, []);
 
@@ -71,8 +171,6 @@ const [title, setTitle] = useState<string>(initialData?.title || "");
     }
   };
 
-
-
   const validateForm = (): boolean => {
     let errors: { [key: string]: string } = {};
 
@@ -97,8 +195,8 @@ const [title, setTitle] = useState<string>(initialData?.title || "");
     if (steps.length === 0) {
       errors.steps = "Các bước thực hiện là bắt buộc.";
     }
-    if (selectedCategoryId === undefined) {
-      toast.error("Vui lòng chọn danh mục.");
+    if (selectedCategoryIds.length === 0) {
+      toast.error("Vui lòng chọn ít nhất một danh mục.");
       errors.category = "Danh mục là bắt buộc.";
     }
 
@@ -109,31 +207,32 @@ const [title, setTitle] = useState<string>(initialData?.title || "");
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  
+
     try {
       const compressedFile = await imageCompression(file, {
         maxSizeMB: 1,
         maxWidthOrHeight: 800,
         useWebWorker: true,
       });
-  
+
       const form = new FormData();
       form.append("image", compressedFile);
-  
+
       const response = await axiosInstance.post("/upload", form, {
         headers: { "Content-Type": "multipart/form-data" },
         timeout: 30000,
       });
-  
+
       const imageUrl = response.data.url;
       setImage(imageUrl);
-  
+
       toast.success("Tải ảnh thành công!", { autoClose: 2000 });
     } catch (error: any) {
       console.error("Upload error:", error.response?.data || error.message);
       toast.error("Lỗi tải ảnh!", { autoClose: 2000 });
     }
   };
+  
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
@@ -146,15 +245,13 @@ const [title, setTitle] = useState<string>(initialData?.title || "");
       setSteps(initialData.steps);
       setNutrition(initialData.nutrition);
       if (initialData.categories && initialData.categories.length > 0) {
-        setSelectedCategoryId(initialData.categories[0].category_id);
+        setSelectedCategoryIds(initialData.categories.map(category => category.category_id));
       }
     }
   }, [initialData]);
-  
 
   const handleSubmit = () => {
     if (validateForm()) {
-      const categoryIds = categories.map(c => c.category_id);
       const newRecipe = {
         recipe_id: initialData?.recipe_id || Date.now(),
         title,
@@ -165,21 +262,20 @@ const [title, setTitle] = useState<string>(initialData?.title || "");
         difficulty_level: difficulty,
         ingredients,
         steps,
-        categories: [selectedCategoryId],
+        categories: selectedCategoryIds,
         nutrition,
         rating: initialData?.rating ? initialData.rating : 0,
         isFavorite: initialData?.isFavorite || false,
       };
-  
+
       console.log("Dữ liệu newRecipe trước khi gửi:", newRecipe);
       onSubmit(newRecipe);
       onClose();
     }
   };
-  
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50  ">
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 p-4 z-50">
       <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-5xl overflow-y-auto max-h-[90vh] ml-32">
         <div className="flex justify-between items-center mb-4">
           <div className="flex-grow text-center">
@@ -284,28 +380,17 @@ const [title, setTitle] = useState<string>(initialData?.title || "");
                 <option value="Khó">Khó</option>
               </select>
             </div>
-            <div>
-            <label className="block font-medium">Danh mục  <span className="text-red-500">* </span></label>
-            <select
-              className="border rounded-lg p-2 w-full"
-              value={selectedCategoryId}
-              onChange={(e) => {setSelectedCategoryId(Number(e.target.value))} }
-            >
-              <option value="">Chọn danh mục</option>
-              {categories.map((category) => (
-                <option key={category.category_id} value={category.category_id}>
-                  {category.title}
-                </option>
-              ))}
-            </select>
-            {formErrors.category && <p className="text-red-500">{formErrors.category}</p>}
-          </div>
-
-
-
+            
+            {/* Sử dụng component CategoryDropdown thay vì viết lại code */}
+            <CategoryDropdown
+              categories={categories}
+              selectedCategoryIds={selectedCategoryIds}
+              setSelectedCategoryIds={setSelectedCategoryIds}
+              formErrors={formErrors}
+            />
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <div> 
+            <div>
               <label className="block font-medium">Nguyên liệu  <span className="text-red-500">* </span></label>
               <ul>
                 {ingredients.map((item, index) => (

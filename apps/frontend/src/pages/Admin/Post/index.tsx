@@ -177,6 +177,10 @@ const Posts: React.FC = () => {
     }
   };
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   const sortedPosts = [...posts].sort((a, b) => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
@@ -196,9 +200,92 @@ const Posts: React.FC = () => {
   
   const totalPages = Math.ceil(filteredPosts.length / LIMIT);
   const paginatedPosts = filteredPosts.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
+  
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTitle]);
+  }, [searchTitle, selectedCategory]);
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const renderPageButton = (pageNum: number, label?: string) => (
+      <button
+        key={label || pageNum}
+        onClick={() => handlePageChange(pageNum)}
+        className={`px-3 py-1 rounded ${
+          currentPage === pageNum
+            ? "bg-blue-500 text-white font-medium"
+            : "bg-white text-gray-700 hover:bg-blue-100"
+        }`}
+      >
+        {label || pageNum}
+      </button>
+    );
+
+    const paginationItems = [];
+    
+    paginationItems.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded mr-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+        aria-label="Trang trước"
+      >
+        &lt;
+      </button>
+    );
+
+    if (totalPages <= 3) {
+      for (let i = 1; i <= totalPages; i++) {
+        paginationItems.push(renderPageButton(i));
+      }
+    } else {
+      paginationItems.push(renderPageButton(1));
+
+      if (currentPage > 2) {
+        paginationItems.push(<span key="ellipsis1" className="px-2">...</span>);
+      } else if (currentPage === 2) {
+        paginationItems.push(renderPageButton(2));
+      }
+
+      if (currentPage > 2) {
+        paginationItems.push(renderPageButton(currentPage));
+      }
+      
+      if (currentPage < totalPages - 1) {
+        paginationItems.push(renderPageButton(currentPage + 1));
+      }
+      
+      if (currentPage < totalPages - 2) {
+        paginationItems.push(<span key="ellipsis2" className="px-2">...</span>);
+      } else if (currentPage === totalPages - 2) {
+        paginationItems.push(renderPageButton(totalPages - 1));
+      }
+
+      if (currentPage < totalPages) {
+        paginationItems.push(renderPageButton(totalPages));
+      }
+    }
+
+    paginationItems.push(
+      <button
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 rounded ml-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+        aria-label="Trang sau"
+      >
+        &gt;
+      </button>
+    );
+
+    return (
+      <div className="flex justify-end items-center space-x-1 mt-6">
+        {paginationItems}
+      </div>
+    );
+  };
 
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
@@ -329,22 +416,7 @@ const Posts: React.FC = () => {
             )}
           </tbody>
         </table>
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-4  space-x-2">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 rounded-md ${currentPage === index + 1
-                  ? 'bg-blue-500 text-white font-bold'
-                  : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
-                  }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        )}
+        {renderPagination()}
       </div>
       {selectedRecipe && (
         <RecipeDetailPopup recipe={selectedRecipe} onClose={closeRecipePopup} />
