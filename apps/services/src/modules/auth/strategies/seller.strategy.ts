@@ -27,20 +27,27 @@ export class SellerStrategy extends PassportStrategy(Strategy, 'seller') {
     });
   }
 
-  async validate(payload: JwtPayload) {    
+  async validate(payload: JwtPayload) {
     const user = await this.usersServices.findUserByEmail(payload.mail);
-
+  
     if (!user) {
       throw new UnauthorizedException('Please log in to continue');
     }
-
-    if(user['role'] in ['admin', 'seller']) {
+  
+    if (!['admin', 'seller'].includes(user['role'])) {
       throw new UnauthorizedException('You are not authorized to access this resource');
     }
-
+  
+    if (
+      user['role'] === 'seller' &&
+      new Date(user['exp_date']) < new Date()
+    ) {
+      throw new UnauthorizedException('Your account has expired');
+    }
+  
     return {
       sub: payload.user_id,
-      mail: payload.mail,      
+      mail: payload.mail,
     };
-  }
+  }  
 }

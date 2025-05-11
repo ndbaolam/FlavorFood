@@ -58,6 +58,12 @@ export class Users {
 
   @CreateDateColumn({
     type: 'timestamp',
+    nullable: true
+  })
+  exp_date: Date;
+
+  @CreateDateColumn({
+    type: 'timestamp',
   })
   created_at: Date;
 

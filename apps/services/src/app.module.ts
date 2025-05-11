@@ -11,13 +11,17 @@ import { HealthcheckModule } from './modules/healthcheck/healthcheck.module';
 import { TipsModule } from './modules/tips/tips.module';
 import { ReviewModule } from './modules/review/review.module';
 import { StoresModule } from './modules/stores/stores.module';
+import { PaymentModule } from './modules/payment/payment.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import momoConfig from './config/momo.config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({      
-      isGlobal: true
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [momoConfig],
     }),
-    DataSourceModule,    
+    DataSourceModule,
 
     //FeatureModule
     UsersModule,
@@ -29,7 +33,9 @@ import { StoresModule } from './modules/stores/stores.module';
     HealthcheckModule,
     TipsModule,
     ReviewModule,
-    StoresModule,    
-  ],  
+    StoresModule,
+    PaymentModule,
+    NotificationsModule,
+  ],
 })
 export class AppModule {}

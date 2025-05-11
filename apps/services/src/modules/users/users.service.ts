@@ -16,7 +16,7 @@ export class UsersService {
   ) {}
 
   async getAllUsers(): Promise<Users[]> {
-    return this.usersRepository.find({
+    return await this.usersRepository.find({
       select: [
         'user_id',
         'mail',
@@ -40,6 +40,7 @@ export class UsersService {
         'last_name',
         'avatar',
         'role',
+        'exp_date',
         'created_at',
         'updated_at',
       ],
@@ -58,7 +59,7 @@ export class UsersService {
       throw new BadRequestException('Email is already in use');
     }
     const newUser = this.usersRepository.create(createUserDto);
-    return this.usersRepository.save(newUser);
+    return await this.usersRepository.save(newUser);
   }
 
   async updateUser(
@@ -67,7 +68,7 @@ export class UsersService {
   ): Promise<Users> {
     const user = await this.getUserById(userId);
     const updatedUser = this.usersRepository.merge(user, updateUserDto);
-    return this.usersRepository.save(updatedUser);
+    return await this.usersRepository.save(updatedUser);
   }
 
   async deleteUser(userId: number): Promise<void> {
@@ -76,7 +77,7 @@ export class UsersService {
   }
 
   async findUserByEmail(email: string): Promise<Users | null> {
-    return this.usersRepository.findOne({
+    return await this.usersRepository.findOne({
       where: { mail: email },
       select: [
         'user_id',        
@@ -85,6 +86,7 @@ export class UsersService {
         'last_name',
         'avatar',
         'role',
+        'exp_date',
         'created_at',
         'updated_at',
       ],
