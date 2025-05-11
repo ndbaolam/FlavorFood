@@ -156,6 +156,7 @@ const RecipeDetail: React.FC = () => {
 
             <div className="w-1/3 bg-blue-50 p-6 rounded-lg shadow">
               <h2 className="text-xl font-semibold mb-4 text-center">Thông tin dinh dưỡng</h2>
+              <p className="text-gray-700 text-sm text-center">(Dành cho 1 khẩu phần ăn)</p>
               <ul className="text-gray-700 space-y-2 mt-16">
                 {recipe.nutrition?.length ? (
                   recipe.nutrition.map((nutrient) => (

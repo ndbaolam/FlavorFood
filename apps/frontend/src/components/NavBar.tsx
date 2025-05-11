@@ -43,7 +43,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
   const fetchUserProfile = useCallback(async () => {
     try {
       const response = await axiosInstance.get<User>('/auth/profile');
-      setAvatarUrl(response.data.avatar ||  "../../avatar.jpg");
+      setAvatarUrl(response.data.avatar || "../../avatar.jpg");
     } catch (error) {
       console.error("Error fetching user profile:", error);
       setAvatarUrl(null);
@@ -67,13 +67,13 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
 
   const handleLogout = async () => {
     try {
-      const response =  axiosInstance
-      .post("/auth/logout", { withCredentials: true })
-      .then((response) => {
-        setAvatarUrl(null);
-        navigate("/sign-in");
-      })
- 
+      const response = axiosInstance
+        .post("/auth/logout", { withCredentials: true })
+        .then((response) => {
+          setAvatarUrl(null);
+          navigate("/sign-in");
+        })
+
     } catch (error) {
       console.error("Đăng xuất thất bại:", error);
     }
@@ -108,10 +108,10 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
         accountRef.current &&
         !accountRef.current.contains(event.target as Node)
       ) {
-        setIsAccountOpen(false); 
+        setIsAccountOpen(false);
       }
     };
-  
+
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
@@ -121,14 +121,15 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
   return (
     <nav className="relative bg-white border-b border-gray-200 shadow-sm" role="navigation" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-20">
-
-          <Link to="/" className="flex items-center space-x-2" onClick={() => handlePageChange("Trang chủ")}>
-            <img src="./logo1.png" alt="Logo" className="h-16" />
-          </Link>
-
+        <div className="flex justify-between items-center h-20 ">
+          <div className="flex items-center space-x-4">
+            <Link to="/" className="flex items-center" onClick={() => handlePageChange("Trang chủ")}>
+              <img src="./logo.png" alt="Logo" className="h-14" />
+             
+            </Link>
+          </div>
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4 ml-auto mr-4">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.to;
               return (
@@ -168,8 +169,8 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                         href={href || "#"}
                         onClick={(e) => {
                           if (onClick) {
-                            e.preventDefault(); 
-                            closeMenus();      
+                            e.preventDefault();
+                            closeMenus();
                             onClick();
                           }
                         }}
@@ -229,14 +230,14 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
           <div className="mt-4 border-t border-gray-200 pt-2">
             <p className="text-gray-500 mb-2 font-medium">Tài khoản</p>
             {avatarUrl ? (
-              accountItems.map(({ href, label, icon ,onClick}) => (
+              accountItems.map(({ href, label, icon, onClick }) => (
                 <a
                   key={href}
                   href={href}
                   onClick={(e) => {
                     if (onClick) {
-                      e.preventDefault(); 
-                      closeMenus();     
+                      e.preventDefault();
+                      closeMenus();
                       onClick();
                     }
                   }}

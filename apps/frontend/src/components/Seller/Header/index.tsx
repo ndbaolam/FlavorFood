@@ -23,6 +23,11 @@ const SellerHeader: React.FC = () => {
   const navigate = useNavigate();
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAccountMenu = () => setIsAccountOpen(!isAccountOpen);
+  const fontStyle = document.createElement('style');
+  fontStyle.textContent = `
+    @import url('https://fonts.googleapis.com/css2?family=Niconne&display=swap');
+  `;
+  document.head.appendChild(fontStyle);
 
 
   const fetchUserProfile = useCallback(async () => {
@@ -41,14 +46,14 @@ const SellerHeader: React.FC = () => {
 
   useEffect(() => {
     const handleUserProfileUpdated = () => {
-      fetchUserProfile();                             
+      fetchUserProfile();
     };
-    window.addEventListener('userProfileUpdated', handleUserProfileUpdated); 
-                                                                         
+    window.addEventListener('userProfileUpdated', handleUserProfileUpdated);
+
     return () => {
-      window.removeEventListener('userProfileUpdated', handleUserProfileUpdated);                                                                           
+      window.removeEventListener('userProfileUpdated', handleUserProfileUpdated);
     };
-  }, [fetchUserProfile]); 
+  }, [fetchUserProfile]);
 
   const handleLogout = async () => {
     try {
@@ -96,12 +101,15 @@ const SellerHeader: React.FC = () => {
     <nav className="relative bg-white border-b border-gray-200 shadow-sm" role="navigation" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex justify-between items-center h-20">
-
           <Link to="/seller" className="flex items-center space-x-2">
-            <img src="./logo1.png" alt="Logo" className="h-16" />
-            <span className="text-3xl font-bold text-blue-800">Flavor Food</span>
+            <img src="./logo1.png" alt="Logo" className="h-20" />
+            <span
+              style={{ fontFamily: "'Niconne', cursive" }}
+              className="text-6xl font-extrabold text-blue-400 ml-4"
+            >
+              Flavor Food
+            </span>
           </Link>
-
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-4" ref={accountRef}>

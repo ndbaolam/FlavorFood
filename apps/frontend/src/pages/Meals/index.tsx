@@ -95,6 +95,8 @@ const Meals: React.FC = () => {
           recipe.title.toLowerCase().includes(keyword)
         );
       }
+      filteredRecipes.sort((a, b) => a.title.localeCompare(b.title));
+      
 
       setTotalRecipes(filteredRecipes.length);
       const calculatedTotalPages = Math.ceil(filteredRecipes.length / LIMIT);
