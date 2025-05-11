@@ -14,6 +14,8 @@ import { StoresModule } from './modules/stores/stores.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import momoConfig from './config/momo.config';
+import { InvoiceModule } from './modules/invoice/invoice.module';
+import { SubscriptionModule } from './modules/subscription/subscription.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import momoConfig from './config/momo.config';
     StoresModule,
     PaymentModule,
     NotificationsModule,
+    InvoiceModule,
+    SubscriptionModule
   ],
 })
 export class AppModule {}

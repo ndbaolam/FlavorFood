@@ -11,6 +11,7 @@ import { IsEmail, IsStrongPassword } from 'class-validator';
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Review } from '../../review/entity/review.entity';
 import { Stores } from 'apps/services/src/modules/stores/entity/store.entity';
+import { Invoice } from '../../invoice/entity/invoice.entity';
 
 export enum UserRole {
   ADMIN = 'admin',
@@ -50,17 +51,14 @@ export class Users {
   @OneToMany(() => Favorite, favorite => favorite.user)
   favorites: Favorite[];
 
+  @OneToMany(() => Invoice, Invoice => Invoice.user)
+  invoices: Invoice[];
+
   @OneToMany(() => Review, review => review.user)
   reviews: Review[];
 
   @OneToOne(() => Stores, (store) => store.user)
-  store: Stores;
-
-  @CreateDateColumn({
-    type: 'timestamp',
-    nullable: true
-  })
-  exp_date: Date;
+  store: Stores;  
 
   @CreateDateColumn({
     type: 'timestamp',

@@ -100,12 +100,11 @@ export class PaymentService {
   }
 
   async handleMomoReturn(req: Request, query: any) {    
-    const userId = req['sub'];
+    const userId = req['user']['sub'];
     const newExpDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days 
     
-    await this.userService.updateUser(userId, {
-      role: UserRole.SELLER,
-      exp_date: newExpDate
+    await this.userService.updateUser(Number(userId), {
+      role: UserRole.SELLER,      
     })
   }
 }

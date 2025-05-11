@@ -30,11 +30,6 @@ export class CreateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
-
-  @IsOptional()
-  @IsDate()
-  @ApiProperty({ example: '2023-10-01T00:00:00Z' })
-  exp_date?: Date;
 }
 
 export class UpdateUserDto {
@@ -49,9 +44,4 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
-
-  @IsOptional()
-  @IsDate()
-  @ApiProperty({ example: '2023-10-01T00:00:00Z' })
-  exp_date?: Date;
 }
