@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DataSourceModule } from './config/datasource.module';
 import { UsersModule } from './modules/users/users.module';
@@ -16,6 +16,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import momoConfig from './config/momo.config';
 import { InvoiceModule } from './modules/invoice/invoice.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
+import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 
 @Module({
   imports: [
@@ -42,4 +43,10 @@ import { SubscriptionModule } from './modules/subscription/subscription.module';
     SubscriptionModule
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*');
+  }
+}
