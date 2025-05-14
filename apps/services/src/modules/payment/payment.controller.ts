@@ -46,22 +46,8 @@ export class PaymentController {
   @Get('momo-return')
   @ApiOperation({ summary: 'Xử lý redirect từ MoMo (returnUrl)' })
   momoReturn(@Query() query: any, @Req() req: Request) {
-    try {
-      const success = query.resultCode === '0';
-
-      if(success) {
-        this.paymentService.handleMomoReturn(req, query);
-
-        return {
-          message: 'Thanh toán thành công',
-          data: query,
-        };
-      } else {
-        return {
-          message: 'Thanh toán thất bại',
-          data: query,
-        };
-      }      
+    try {      
+      return this.paymentService.handleMomoReturn(req, query);
     } catch (error) {
       Logger.error('Error creating MoMo payment', error);
       throw new Error('Failed to return MoMo payment');

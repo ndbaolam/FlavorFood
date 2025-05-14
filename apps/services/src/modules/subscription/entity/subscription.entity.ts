@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,11 +21,11 @@ export class Subscription {
   @Column()
   description: string;
 
-  @Column('decimal', { precision: 10, scale: 2 })
+  @Column('decimal')
   price: number;
 
-  @OneToMany(() => Invoice, Invoice => Invoice.subscription, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  invoices: Invoice[];
+  @OneToOne(() => Invoice, Invoice => Invoice.subscription, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  invoice: Invoice;
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

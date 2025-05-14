@@ -5,7 +5,12 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { MomoConfig } from './momo.interface';
-import { UserRole } from '../users/entity/users.entity';
+import { UserRole, Users } from '../users/entity/users.entity';
+import { Invoice, InvoiceStatus } from '../invoice/entity/invoice.entity';
+import { Subscription } from '../subscription/entity/subscription.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class PaymentService {
@@ -14,6 +19,13 @@ export class PaymentService {
   constructor(
     private readonly userService: UsersService,
     private readonly configService: ConfigService,
+    private readonly dataSource: DataSource,
+
+    @InjectRepository(Invoice)
+    private invoiceRepo: Repository<Invoice>,    
+
+    @InjectRepository(Subscription)
+    private subscriptionRepo: Repository<Subscription>,
   ) {
     this.momoConfig = this.configService.get<MomoConfig>('momo');
   }
@@ -95,16 +107,65 @@ export class PaymentService {
     return response.data;
   }  
   
-  async handleMomoNotification(payload: any) {
-    console.log(payload)
+  async handleMomoNotification(payload: any) {    
+    return payload
   }
 
   async handleMomoReturn(req: Request, query: any) {    
-    const userId = req['user']['sub'];
-    const newExpDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days 
-    
-    await this.userService.updateUser(Number(userId), {
-      role: UserRole.SELLER,      
-    })
+    try {
+      const userId = req['user']['sub'];
+      //orderId: order_id_timestamp
+      const subscriptionId = query.orderId.split("_")[1]; 
+
+      const user = await this.userService.getUserById(userId);
+
+      const subscription = await this.subscriptionRepo.findOne({
+        where: { subscription_id: subscriptionId },
+      });
+
+      if (!user || !subscription) {
+        throw new Error('User or Subscription not found');
+      }
+
+      const momoStatus = query.resultCode;
+
+      if (momoStatus !== '0') {
+        await this.invoiceRepo.save({
+          title: `Invoice for ${subscription.title}`,
+          description: subscription.description,
+          status: InvoiceStatus.FAILED,
+          user,
+          subscription,
+        });
+
+        throw new Error('Payment failed or cancelled');
+      }
+
+      //Begin transaction
+      try {
+        return await this.dataSource.transaction(async (manager) => {        
+          const invoice = manager.create(Invoice, {
+            title: `Invoice for ${subscription.title}`,
+            description: subscription.description,
+            status: InvoiceStatus.COMPLETED,
+            user,
+            subscription,
+          });
+
+          await manager.save(invoice);
+          
+          await manager.update('users', { user_id: userId }, { role: UserRole.SELLER });
+
+          return {
+            message: 'Payment successful and invoice created',
+            invoice,
+          };
+        });
+      } catch (error) {
+        throw new Error('Payment failed. If you have paid, please contact Admin to get a refund!');
+      }   
+    } catch (error) {
+      throw new Error('Payment failed. If you have paid, please contact Admin to get a refund!');
+    }       
   }
 }
