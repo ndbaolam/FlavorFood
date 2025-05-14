@@ -28,3 +28,14 @@ export const formatTime = (isoTime: string) => {
   const date = new Date(isoTime);
   return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
 };
+
+export interface Subscription {
+  subscription_id: number;
+  title: string;
+  price: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  invoices: any[];
+  isHighlight?: boolean;
+}

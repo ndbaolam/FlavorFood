@@ -1,23 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Check, ChevronRight, Store, Package, ShieldCheck } from 'lucide-react';
+import { Check, ChevronRight, Store, Package, ShieldCheck, Star } from 'lucide-react';
 import axiosInstance from '../../services/axiosInstance';
+import { Subscription } from './store.interface';
 
 const StoreRegistration = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState('1 tháng');
-
-  interface Subscription {
-    subscription_id: number;
-    title: string;
-    price: string;
-    description: string;
-    created_at: string;
-    updated_at: string;
-    invoices: any[];
-    isHighlight?: boolean;
-  }
-
+  const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [showQrPopup, setShowQrPopup] = useState(false);
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -30,32 +21,32 @@ const StoreRegistration = () => {
             isHighlight: isYearlyPlan
           };
         });
-        
-        // Sort by price to display cheaper plans first
+
         const sortedSubscriptions = processedSubscriptions.sort(
-          (a: Subscription, b: Subscription) => 
+          (a: Subscription, b: Subscription) =>
             parseFloat(a.price) - parseFloat(b.price)
         );
-        
+
         setSubscriptions(sortedSubscriptions);
         if (sortedSubscriptions.length > 0) {
-          setSelectedPlan(sortedSubscriptions[0].title);
+          setSelectedPlanId(sortedSubscriptions[0]?.subscription_id);
+
         }
       } catch (error) {
         console.error('Lỗi khi tải danh sách gói:', error);
       }
     };
-  
+
     fetchSubscriptions();
   }, []);
 
   const parseFeatures = (descriptionStr: string) => {
     try {
-      
+
       const cleanedStr = descriptionStr
-        .replace(/^\{/, '[')      
-        .replace(/\}$/, ']');     
-      
+        .replace(/^\{/, '[')
+        .replace(/\}$/, ']');
+
       return JSON.parse(cleanedStr);
     } catch (error) {
       console.error("Invalid JSON format:", error);
@@ -101,6 +92,37 @@ const StoreRegistration = () => {
     return Number(price).toLocaleString('vi-VN');
   };
 
+  const timestamp = Date.now();
+  const orderId = `order_${selectedPlanId}_${timestamp}`;
+
+  const handleSubmit = async () => {
+    if (!acceptedTerms || !selectedPlanId) return;
+
+    const selectedPlan = subscriptions.find(sub => sub.subscription_id === selectedPlanId);
+    if (!selectedPlan) return;
+    const price = selectedPlan.price;
+    try {
+      const response = await axiosInstance.get('/payment/momo', {
+        withCredentials: true,
+        params: {
+          orderId,
+          amount: price
+        }
+      });
+      console.log('Response from payment API:', response.data);
+      if (response.data?.payUrl) {
+        setQrCodeUrl(response.data.payUrl);
+        window.open(response.data.payUrl);
+      } else {
+        console.error('Không nhận được mã QR từ server');
+      }
+    } catch (error) {
+      console.error('Lỗi khi gọi API thanh toán:', error);
+    }
+  };
+
+
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
       <div className="max-w-7xl mx-auto pt-16 pb-20 px-4 sm:px-6 lg:px-8">
@@ -134,15 +156,18 @@ const StoreRegistration = () => {
           {subscriptions.map((subscription) => (
             <div
               key={subscription.subscription_id}
-              className={`relative rounded-2xl transition-all duration-300 border-2 flex flex-col ${
-                selectedPlan === subscription.title
-                  ? 'border-indigo-500 transform scale-105 shadow-xl'
-                  : 'bg-white border-gray-200 transform scale-100 shadow-md'
-              } overflow-hidden`}
+              className={`relative rounded-2xl transition-all duration-300 border-2 flex flex-col ${selectedPlanId === subscription.subscription_id
+                ? 'border-indigo-500 transform scale-105 shadow-xl'
+                : 'bg-white border-gray-200 transform scale-100 shadow-md'
+                } overflow-hidden`}
             >
               {subscription.isHighlight && (
                 <div className="absolute top-0 inset-x-0 py-2 bg-indigo-600 text-white text-center text-sm font-semibold">
-                  <span className="inline-flex items-center">★ Được lựa chọn nhiều nhất ★</span>
+                  <span className="inline-flex items-center justify-center space-x-2 text-sm font-semibold text-white">
+                    <Star className="w-4 h-4 text-yellow-400" />
+                    <span>Được lựa chọn nhiều nhất</span>
+                    <Star className="w-4 h-4 text-yellow-400" />
+                  </span>
                 </div>
               )}
 
@@ -151,7 +176,7 @@ const StoreRegistration = () => {
                   <h3 className="text-2xl font-bold text-gray-900 mb-3">{subscription.title}</h3>
                   <div className="flex flex-col items-center justify-center mb-3">
                     <span className="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                      {formatPrice(subscription.price)}đ
+                      {formatPrice(subscription.price)} đ
                     </span>
                   </div>
                   <div className="mt-3 inline-block rounded-full px-4 py-1 text-sm font-medium bg-green-100 text-green-800">
@@ -183,15 +208,15 @@ const StoreRegistration = () => {
 
               <div className="mt-auto p-6 pt-0">
                 <button
-                  onClick={() => setSelectedPlan(subscription.title)}
-                  className={`w-full py-3 px-4 rounded-lg font-medium transition ${
-                    selectedPlan === subscription.title
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-700'
-                      : 'bg-blue-500 text-white hover:bg-blue-600'
-                  }`}
+                  onClick={() => setSelectedPlanId(subscription.subscription_id)}
+                  className={`w-full py-3 px-4 rounded-lg font-medium transition ${selectedPlanId === subscription.subscription_id
+                    ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                    }`}
                 >
-                  {selectedPlan === subscription.title ? 'Đã chọn' : 'Chọn gói này'}
+                  {selectedPlanId === subscription.subscription_id ? 'Đã chọn' : 'Chọn gói này'}
                 </button>
+
               </div>
             </div>
           ))}
@@ -223,16 +248,17 @@ const StoreRegistration = () => {
 
         <div className="text-center">
           <button
+            onClick={handleSubmit}
             disabled={!acceptedTerms}
-            className={`px-10 py-4 rounded-xl font-medium text-lg transition flex items-center mx-auto ${
-              !acceptedTerms
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl'
-            }`}
+            className={`px-10 py-4 rounded-xl font-medium text-lg transition flex items-center mx-auto ${!acceptedTerms
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl'
+              }`}
           >
-            Tiếp tục đăng ký ({selectedPlan})
+            Tiếp tục đăng ký ({selectedPlanId})
             {acceptedTerms && <ChevronRight className="ml-2 h-5 w-5" />}
           </button>
+
           <p className="mt-4 text-gray-500 text-sm">
             Bạn sẽ được hướng dẫn các bước tiếp theo sau khi đăng ký thành công
           </p>

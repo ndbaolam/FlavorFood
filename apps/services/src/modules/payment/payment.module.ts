@@ -4,8 +4,8 @@ import { PaymentService } from './payment.service';
 import { UsersModule } from '../users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Invoice } from '../invoice/entity/invoice.entity';
-import { Subscription } from 'rxjs';
 import { Users } from '../users/entity/users.entity';
+import { Subscription } from '../subscription/entity/subscription.entity';
 
 @Module({
   imports: [UsersModule, 
