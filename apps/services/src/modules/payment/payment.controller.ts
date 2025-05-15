@@ -58,15 +58,13 @@ export class PaymentController {
       await this.paymentService.handleMomoReturn(Number(userId), query);
       return res.redirect(
         this.configService.get('VITE_CLIENT_URL') 
-        + '/store-registration'
-        // + '/payment/success'
+        + `/store-registration?status=success&orderId=${query.orderId}&requestId=${query.requestId}&amount=${query.amount}`
       );
     } catch (error) {
       Logger.error('Error creating MoMo payment', error);
       return res.redirect(
         this.configService.get('VITE_CLIENT_URL') 
-        + '/store-registration'
-        // + '/payment/fail'
+        + `/store-registration?status=fail&orderId=${query.orderId}&requestId=${query.requestId}&amount=${query.amount}`
       );
     }    
   }
