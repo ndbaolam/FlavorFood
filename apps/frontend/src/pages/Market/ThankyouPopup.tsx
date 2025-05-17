@@ -19,7 +19,7 @@ const ThankYou: React.FC<ThankYouProps> = ({ onClose }) => {
           Chúng tôi đã nâng cấp tài khoản của bạn thành <strong>Quản lý cửa hàng</strong>. Hãy bắt đầu hành trình kinh doanh tuyệt vời ngay bây giờ!
         </p>
         <a
-          href="/"
+          href="/my-store"
           className="inline-block mt-4 px-6 py-3 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition"
         >
           Tạo cửa hàng ngay

@@ -3,7 +3,8 @@ import axiosInstance from "../../../services/axiosInstance";
 import { Store } from "../../../pages/Market/store.interface";
 import { toast } from "react-toastify";
 import { User } from "../../../pages/Profile/Profile.interface";
-
+import mapboxgl from "mapbox-gl";
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
 interface CreateStoreProps {
   onCreate: (newStore: Store) => void;
   currentUser: User;
@@ -19,12 +20,25 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
     closeHours: "21:00",
     image: "", 
   });
+  
 
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
+    try {
+      const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&limit=1`;
+      const response = await fetch(url);
+      const data = await response.json();
+      return data.features?.[0]?.geometry?.coordinates ?? null;
+    } catch (error) {
+      console.error("Geocode error:", error);
+      return null;
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -37,17 +51,26 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
   
     try {
       setLoading(true);
-      
-      // Chuyển đổi thời gian thành định dạng timestamp
-      const currentDate = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại theo định dạng yyyy-mm-dd
-      const openTime = `${currentDate} ${formData.openHours}:00+00`;  // Thêm thời gian vào ngày hiện tại và múi giờ
-      const closeTime = `${currentDate} ${formData.closeHours}:00+00`;  // Thêm thời gian vào ngày hiện tại và múi giờ
+  
+      const location = await geocodeAddress(formData.address);
+      if (!location) {
+        toast.error("Không thể lấy tọa độ từ địa chỉ.");
+        return;
+      }
+      const [longitude, latitude] = location;
+    
+  
+      const currentDate = new Date().toISOString().split("T")[0];
+      const openTime = `${currentDate} ${formData.openHours}:00+00`;
+      const closeTime = `${currentDate} ${formData.closeHours}:00+00`;
   
       const payload = {
         ...formData,
-        openHours: openTime,  // Cập nhật openHours thành định dạng timestamp
-        closeHours: closeTime,  // Cập nhật closeHours thành định dạng timestamp
+        openHours: openTime,
+        closeHours: closeTime,
         user_id: currentUser.user_id,
+        latitude,
+        longitude,
       };
   
       const response = await axiosInstance.post("/stores", payload, {
@@ -65,12 +88,10 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
     }
   };
   
-  
-
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-6 rounded-lg shadow-md w-full max-w-xl"
+      className="bg-white p-6 rounded-lg shadow-md w-full max-w-xl border border-gray-300 mx-auto"
     >
       <h2 className="text-2xl font-bold mb-6 text-center">Tạo Cửa Hàng Mới</h2>
 

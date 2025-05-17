@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import imageCompression from "browser-image-compression";
 import { User } from "../../../pages/Profile/Profile.interface";
 
-const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: User }> = ({ className, store_id,currentUser }) => {
+const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: User }> = ({ className, store_id, currentUser }) => {
     const [isEditing, setIsEditing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [storeData, setStoreData] = useState<Store | null>(null);
@@ -20,17 +20,18 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
             try {
                 const res = await axiosInstance.get<Store>(`/stores/${store_id}`);
                 setStoreData(res.data);
+                setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
+                setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
             } catch (error) {
                 console.error("Error fetching store:", error);
             }
         };
         fetchStore();
     }, [store_id]);
-    
+
 
     if (!storeData) return null;
 
-    // Kiểm tra nếu cửa hàng thuộc về người dùng hiện tại
     if (storeData.user.user_id !== currentUser.user_id) {
         return <p>Cửa hàng này không thuộc về bạn.</p>;
     }
@@ -59,11 +60,20 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
     const handleEditToggle = async () => {
         if (isEditing && storeData) {
             try {
-                const res = await axiosInstance.patch(`stores/${store_id}`, storeData);
+                const open = new Date(`2025-01-01T${openHourInput}:00Z`);
+                const close = new Date(`2025-01-01T${closeHourInput}:00Z`);
+
+                const payload = {
+                    ...storeData,
+                    openHours: open.toISOString(),
+                    closeHours: close.toISOString(),
+                };
+
+                const res = await axiosInstance.patch(`stores/${store_id}`, payload);
                 if (res.data) {
                     setStoreData(res.data);
-                    setOpenHourInput(res.data.openHours);
-                    setCloseHourInput(res.data.closeHours);
+                    setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
+                    setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
                     toast.success("Cập nhật thành công!", { position: "top-right", autoClose: 2000 });
                 }
             } catch (error) {
@@ -73,6 +83,7 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
         }
         setIsEditing(!isEditing);
     };
+
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -103,57 +114,58 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
 
     const inputStyle = `w-full p-3 text-lg border ${isEditing ? "border-black" : "border-gray-300"} rounded-lg bg-gray-100`;
 
-    if (!storeData) return null; 
+    if (!storeData) return null;
     return (
-        <div className={`border border-white rounded-xl shadow-lg bg-white ${className}`}>
-            <div className="p-4">
-                <div className="relative mb-8">
-                    <img
-                        src={storeData?.image || ""}
-                        alt="Store Banner"
-                        className="w-full h-[200px] object-cover rounded-lg"
-                    />
-                    {isEditing && (
-                        <div className="absolute top-4 right-4">
+            <div className={`m-8 ${className}`}>
+                <div className="p-4 space-y-6">
+                    <div className="flex flex-col md:flex-row gap-6 items-start">
+                        <div className="md:w-1/2 relative">
+                            <div className="aspect-square w-full max-w-[300px] mx-auto overflow-hidden ">
+                                <img
+                                    src={storeData?.image || ""}
+                                    alt="Store Banner"
+                                    className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+                                />
+                            </div>
+                            {isEditing && (
+                                <div className="absolute top-4 right-4">
+                                    <button
+                                        className="p-2 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition bg-white bg-opacity-80"
+                                        onClick={() => fileInputRef.current?.click()}
+                                    >
+                                        Cập nhật
+                                    </button>
+                                    <input
+                                        ref={fileInputRef}
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                        className="hidden"
+                                    />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="md:w-1/2 w-full relative">
+                            <h1 className="text-left font-bold text-2xl mb-4">Thông tin cửa hàng</h1>
                             <button
-                                className="p-2 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition bg-white bg-opacity-80"
-                                onClick={() => fileInputRef.current?.click()}
+                                onClick={handleEditToggle}
+                                className="absolute top-0 right-0 flex items-center gap-2 px-4 py-2 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition"
                             >
-                                Cập nhật
+                                {isEditing ? "Lưu" : <PencilRuler size={20} />}
                             </button>
+                            <label className="block text-lg mb-1 font-bold">Tên cửa hàng</label>
                             <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleImageChange}
-                                className="hidden"
+                                name="name"
+                                className={inputStyle}
+                                type="text"
+                                value={storeData?.name || ""}
+                                onChange={handleInputChange}
+                                disabled={!isEditing}
                             />
                         </div>
-                    )}
-                </div>
-
-                <div className="relative mb-6">
-                    <h1 className="text-center font-bold text-2xl">Thông tin cửa hàng</h1>
-                    <button
-                        onClick={handleEditToggle}
-                        className="flex items-center justify-center gap-2 font-bold absolute right-0 top-1/2 -translate-y-1/2 px-4 py-2 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition"
-                    >
-                        {isEditing ? "Lưu" : <PencilRuler size={20} />}
-                    </button>
-                </div>
-
-                <div className="flex flex-col gap-4 px-6 pb-6">
-                    <div>
-                        <label className="block text-lg mb-1 font-bold">Tên cửa hàng</label>
-                        <input
-                            name="name"
-                            className={inputStyle}
-                            type="text"
-                            value={storeData?.name || ""}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                        />
                     </div>
+
 
                     <div>
                         <label className="block text-lg mb-1 font-bold">Mô tả</label>
@@ -166,41 +178,16 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-lg mb-1 font-bold">Địa chỉ</label>
-                        <input
-                            name="address"
-                            className={inputStyle}
-                            type="text"
-                            value={storeData?.address || ""}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-lg mb-1 font-bold">Số điện thoại</label>
-                        <input
-                            name="phone_number"
-                            className={inputStyle}
-                            type="text"
-                            value={storeData?.phone_number || ""}
-                            onChange={handleInputChange}
-                            disabled={!isEditing}
-                        />
-                    </div>
-
-                    <div className="flex gap-4">
+                    <div className="flex flex-col md:flex-row gap-4">
                         <div className="flex-1">
                             <label className="block text-lg mb-1 font-bold">Giờ mở cửa</label>
                             <input
                                 name="openHours"
                                 className={`${inputStyle} ${error ? "border-red-500" : ""}`}
-                                type="text"
-                                value={storeData?.openHours || ""}
+                                type="time"
+                                value={openHourInput}
                                 onChange={handleOpenHourChange}
                                 disabled={!isEditing}
-                                placeholder="Ví dụ: 08:00"
                             />
                         </div>
 
@@ -209,17 +196,41 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
                             <input
                                 name="closeHours"
                                 className={`${inputStyle} ${error ? "border-red-500" : ""}`}
-                                type="text"
-                                value={storeData?.closeHours || ""}
+                                type="time"
+                                value={closeHourInput}
                                 onChange={handleCloseHourChange}
                                 disabled={!isEditing}
-                                placeholder="Ví dụ: 22:00"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col md:flex-row gap-4">
+                        <div className="flex-1">
+                            <label className="block text-lg mb-1 font-bold">Địa chỉ</label>
+                            <input
+                                name="address"
+                                className={inputStyle}
+                                type="text"
+                                value={storeData?.address || ""}
+                                onChange={handleInputChange}
+                                disabled={!isEditing}
+                            />
+                        </div>
+
+                        <div className="flex-1">
+                            <label className="block text-lg mb-1 font-bold">Số điện thoại</label>
+                            <input
+                                name="phone_number"
+                                className={inputStyle}
+                                type="text"
+                                value={storeData?.phone_number || ""}
+                                onChange={handleInputChange}
+                                disabled={!isEditing}
                             />
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     );
 };
 

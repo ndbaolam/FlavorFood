@@ -87,11 +87,8 @@ const CreateIngredient = ({ store,initialData, onSubmit, onClose }: CreateIngred
                         </div>
                         <button
                             type="button"
-                            onClick={() => {
-                                const confirmClose = window.confirm("Bạn có chắc chắn muốn tắt không?");
-                                if (confirmClose) {
+                            onClick={() => {                        
                                     onClose();
-                                }
                             }}
                             className="text-red-300 font-bold text-2xl hover:text-red-500"
                         >

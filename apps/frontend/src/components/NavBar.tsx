@@ -9,6 +9,7 @@ import {
   Lightbulb,
   ShoppingBasket,
   Heart,
+  Store,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../services/axiosInstance";
@@ -40,13 +41,17 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
     setIsMenuOpen(false);
   };
 
+  const [userRole, setUserRole] = useState<string | null>(null);
+
   const fetchUserProfile = useCallback(async () => {
     try {
       const response = await axiosInstance.get<User>('/auth/profile');
       setAvatarUrl(response.data.avatar || "../../avatar.jpg");
+      setUserRole(response.data.role || null);
     } catch (error) {
       console.error("Error fetching user profile:", error);
       setAvatarUrl(null);
+      setUserRole(null);
     }
   }, []);
 
@@ -83,7 +88,17 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
     { to: "/dish", label: "Món ăn", icon: <ChefHat className="w-5 h-5 mr-2" /> },
     { to: "/tips", label: "Mẹo vào bếp", icon: <Lightbulb className="w-5 h-5 mr-2" /> },
     { to: "/market", label: "Cửa hàng", icon: <ShoppingBasket className="w-5 h-5 mr-2" /> },
+    
   ];
+  if (userRole === "seller") {
+    menuItems.push({
+      to: "/my-store",
+      label: "Cửa hàng của tôi",
+      icon: <Store className="w-5 h-5 mr-2 " />,
+    });
+  }
+  
+  
 
   const accountItems = [
     {
