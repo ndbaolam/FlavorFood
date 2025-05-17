@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
-import { MomoConfig } from './momo.interface';
+import { MomoConfig, MomoPaymentQuery } from './momo.interface';
 import { UserRole, Users } from '../users/entity/users.entity';
 import { Invoice, InvoiceStatus } from '../invoice/entity/invoice.entity';
 import { Subscription } from '../subscription/entity/subscription.entity';
@@ -31,7 +31,7 @@ export class PaymentService {
   }
 
   async createMomoPayment(orderId: string, amount: number, req?: Request) {
-    const requestId = `${orderId}-${Date.now()}`;
+    const requestId = `req${Date.now()}`;
     const orderInfo = 'Thanh toán gói đăng ký dịch vụ';
     const config = this.momoConfig;
 
@@ -111,23 +111,26 @@ export class PaymentService {
     return payload
   }
 
-  async handleMomoReturn(req: Request, query: any) {    
+  async handleMomoReturn(userId: number, query: MomoPaymentQuery) {    
     try {
-      const userId = req['user']['sub'];
       //orderId: order_id_timestamp
       const subscriptionId = query.orderId.split("_")[1]; 
-
       const user = await this.userService.getUserById(userId);
 
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
       const subscription = await this.subscriptionRepo.findOne({
-        where: { subscription_id: subscriptionId },
+        where: { subscription_id: Number(subscriptionId) },
       });
 
-      if (!user || !subscription) {
-        throw new Error('User or Subscription not found');
+      if (!subscription) {
+        throw new NotFoundException('Subscription not found');
       }
 
       const momoStatus = query.resultCode;
+      console.log('momoStatus', momoStatus);
 
       if (momoStatus !== '0') {
         await this.invoiceRepo.save({
@@ -138,12 +141,14 @@ export class PaymentService {
           subscription,
         });
 
-        throw new Error('Payment failed or cancelled');
+        throw new BadRequestException('Payment failed or cancelled');
       }
 
       //Begin transaction
       try {
-        return await this.dataSource.transaction(async (manager) => {        
+        let savedInvoice;
+      
+        await this.dataSource.transaction(async (manager) => {
           const invoice = manager.create(Invoice, {
             title: `Invoice for ${subscription.title}`,
             description: subscription.description,
@@ -151,21 +156,27 @@ export class PaymentService {
             user,
             subscription,
           });
-
-          await manager.save(invoice);
-          
+      
+          savedInvoice = await manager.save(invoice);
+      
           await manager.update('users', { user_id: userId }, { role: UserRole.SELLER });
-
-          return {
-            message: 'Payment successful and invoice created',
-            invoice,
-          };
         });
+      
+        return {
+          message: 'Payment successful and invoice created',
+          invoice: {
+            id: savedInvoice.invoice_id,
+            title: savedInvoice.title,
+            status: savedInvoice.status,
+          },
+        };
       } catch (error) {
-        throw new Error('Payment failed. If you have paid, please contact Admin to get a refund!');
-      }   
+        console.error('Momo payment error:', error);
+        throw new InternalServerErrorException('Payment failed. If you have paid, please contact Admin to get a refund!');
+      }  
     } catch (error) {
-      throw new Error('Payment failed. If you have paid, please contact Admin to get a refund!');
+      console.error('Momo payment error:', error);
+      throw new Error('Something went wrong. Please try again later!');
     }       
   }
 }

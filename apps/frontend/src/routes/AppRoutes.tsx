@@ -78,6 +78,10 @@ const routes: RouteObject[] = [
       {
         path:'store-registration',
         element:<StoreRegistration />
+      },
+      {
+        path: 'my-store',
+        element:<SellerHome />
       }
     ],
   },

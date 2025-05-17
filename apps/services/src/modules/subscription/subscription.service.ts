@@ -17,13 +17,13 @@ export class SubscriptionService {
   }
 
   async findAll(): Promise<Subscription[]> {
-    return this.subscriptionRepo.find({ relations: ['invoices'] });
+    return this.subscriptionRepo.find({ relations: ['invoice'] });
   }
 
   async findOne(id: number): Promise<Subscription> {
     const sub = await this.subscriptionRepo.findOne({
       where: { subscription_id: id },
-      relations: ['invoices'],
+      relations: ['invoice'],
     });
     if (!sub) throw new NotFoundException(`Subscription #${id} not found`);
     return sub;

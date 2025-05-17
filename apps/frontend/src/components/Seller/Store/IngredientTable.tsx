@@ -135,8 +135,8 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
 
   return (
     <div className="bg-white">
-      <div className="mb-4 p-4">
-        <div className="flex justify-between mt-8 items-center">
+      <div className="mb-4 ml-4 mr-4">
+        <div className="flex justify-between items-center">
           <div className="flex space-x-3">
             <button
               onClick={() => setIsPopupOpen(true)}

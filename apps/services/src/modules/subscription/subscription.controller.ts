@@ -17,11 +17,11 @@ import { AdminGuard } from '../auth/guards/admin.guard';
 
 @ApiTags('Subscription')
 @Controller('subscriptions')
-@UseGuards(AdminGuard)
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Post()
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Create a subscription' })
   @ApiResponse({ status: 201, type: Subscription })
   create(@Body() dto: CreateSubscriptionDto) {
@@ -41,6 +41,7 @@ export class SubscriptionController {
   }
 
   @Patch(':id')
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Update a subscription' })
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -50,6 +51,7 @@ export class SubscriptionController {
   }
 
   @Delete(':id')
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Delete a subscription' })
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.subscriptionService.remove(id);

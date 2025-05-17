@@ -31,11 +31,12 @@ export class Stores {
   @Column({ nullable: true })
   address: string;
 
-  @Column({ nullable: true})
-  longtitude: number;
-
-  @Column({ nullable: true})
+  @Column({ nullable: true, type: 'double precision' })
+  longitude: number;
+  
+  @Column({ nullable: true, type: 'double precision' })
   latitude: number;
+  
 
   @Column({ nullable: true })
   phone_number: string;

@@ -84,7 +84,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             />
           ) : (
             <img
-              src="logo.png"
+              src="../../logo.png"
               alt={recipe.title}
               className="w-full h-full object-cover transform origin-center"
             />

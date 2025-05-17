@@ -18,16 +18,22 @@ const Market: React.FC = () => {
   const [selectedStore, setSelectedStore] = useState<Store | null>(null);
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isSeller, setIsSeller] = useState(false);
+
 
   const checkAuth = async () => {
     try {
-      await axiosInstance.get('/auth/profile');
+      const response = await axiosInstance.get('/auth/profile');
+      const user = response.data;
+      setIsSeller(user.role === 'seller' || user.is_seller === true);
       return true;
     } catch (error) {
       return false;
     }
   };
-
+  useEffect(() => {
+    checkAuth();
+  }, []);
   const handleStoreRegistration = async () => {
     const isAuthenticated = await checkAuth();
     if (isAuthenticated) {
@@ -68,7 +74,7 @@ const Market: React.FC = () => {
               price: ingredient.price,
               quantity: ingredient.quantity,
             }));
-        
+
             return {
               ...store,
               location,
@@ -105,16 +111,16 @@ const Market: React.FC = () => {
     .filter((store) =>
       searchTerm.trim()
         ? store.ingredients?.some((ingredient) =>
-            ingredient.title.toLowerCase().includes(searchTerm.toLowerCase())
-          )
+          ingredient.title.toLowerCase().includes(searchTerm.toLowerCase())
+        )
         : true
     )
     .map((store) => {
       const distance = userLocation && store.location
         ? getDistance(
-            { latitude: userLocation.latitude, longitude: userLocation.longitude },
-            { latitude: store.location[1], longitude: store.location[0] }
-          )
+          { latitude: userLocation.latitude, longitude: userLocation.longitude },
+          { latitude: store.location[1], longitude: store.location[0] }
+        )
         : null;
       return { ...store, distance, id: store.store_id };
     })
@@ -134,15 +140,17 @@ const Market: React.FC = () => {
 
   return (
     <div className="min-h-screen p-8 rounded-xl shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Tìm kiếm cửa hàng</h2>
-            <button
-              onClick={handleStoreRegistration}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              Đăng ký cửa hàng
-            </button>
-          </div>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-bold">Tìm kiếm cửa hàng</h2>
+        {!isSeller && (
+          <button
+            onClick={handleStoreRegistration}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Đăng ký cửa hàng
+          </button>
+        )}
+      </div>
       <div className="flex flex-col md:flex-row h-screen">
         <div className="md:w-1/4 w-full h-1/2 md:h-full p-4 overflow-y-auto rounded-lg shadow-lg">
           <input
@@ -186,9 +194,8 @@ const Market: React.FC = () => {
         </div>
 
         <div
-          className={`h-1/2 md:h-full relative transition-all duration-300 ${
-            selectedStore ? "md:w-2/4" : "md:w-3/4"
-          } w-full`}
+          className={`h-1/2 md:h-full relative transition-all duration-300 ${selectedStore ? "md:w-2/4" : "md:w-3/4"
+            } w-full`}
         >
           <Map
             stores={stores}
@@ -197,7 +204,7 @@ const Market: React.FC = () => {
             onMapClick={(store) => {
               setSelectedStore(store);
               setSearchTerm("");
-              handleMapClick(store); 
+              handleMapClick(store);
             }}
           />
         </div>

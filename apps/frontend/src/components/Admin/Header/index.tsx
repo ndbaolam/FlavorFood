@@ -47,7 +47,7 @@ const AdminHeader = () => {
             />
           ) : (
             <img
-              src="../../logo1.png"
+              src="../../logo.png"
               alt="Default Logo"
               className="w-full h-full object-cover"
             />
