@@ -8,6 +8,7 @@ import { MapPin } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance";
 import { Store, Ingredient, formatTime } from "./store.interface";
 import { useNavigate } from "react-router-dom";
+import { checkAuth } from "../../utils/auth";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
 
@@ -19,18 +20,7 @@ const Market: React.FC = () => {
   const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSeller, setIsSeller] = useState(false);
-
-
-  const checkAuth = async () => {
-    try {
-      const response = await axiosInstance.get('/auth/profile');
-      const user = response.data;
-      setIsSeller(user.role === 'seller' || user.is_seller === true);
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
+  
   useEffect(() => {
     checkAuth();
   }, []);

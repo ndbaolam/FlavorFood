@@ -3,9 +3,9 @@ import { Clock, Heart } from "lucide-react";
 import formatString from "../services/formatString";
 import { Recipe } from "../pages/Meals/recipe.interface";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-import axiosInstance from "../services/axiosInstance";
+import { checkAuth } from "../utils/auth";
 
 interface RecipeCardProps {
   recipe: Recipe;
@@ -24,23 +24,13 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   useEffect(() => {
     setLocalLiked(isLiked);
   }, [isLiked]);
-
-  const checkAuth = async () => {
-    try {
-      await axiosInstance.get('/auth/profile');
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
-
   const handleLike = async (event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    
+
     try {
       const isAuthenticated = await checkAuth();
-      
+
       if (!isAuthenticated) {
         toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
           position: "top-right",
@@ -61,15 +51,18 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       });
     }
   };
-
-  const formattedTitle: string = recipe.title
+  const location = useLocation()
+  const formattedTitle = recipe.title
     ? formatString(recipe.title)
     : "no-title";
-  const linkTo = `/dish/${formattedTitle}_${recipe.recipe_id}.html`;
+
+  const params = new URLSearchParams(location.search);
+  params.set("fromList", "1");
+  const linkTo = `/dish/${formattedTitle}_${recipe.recipe_id}.html?${params.toString()}`;
 
   return (
-    <a
-      href={linkTo}
+    <Link
+      to={linkTo}
       className="block relative pt-20 cursor-pointer"
       aria-label={`Xem chi tiết cho ${recipe.title}`}
     >
@@ -126,7 +119,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
           </div>
         </div>
       </div>
-    </a>
+    </Link>
   );
 };
 

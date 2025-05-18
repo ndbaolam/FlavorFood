@@ -1,12 +1,13 @@
-import { BookOpen, Calculator, Check, CheckCircle, CircleGauge, Clock, Heart, Users, UtensilsCrossed, Vegan } from "lucide-react";
+import { BookOpen, Check, CircleGauge, Clock, Heart, Star, Users, UtensilsCrossed, Vegan, CircleArrowLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useLoaderData, LoaderFunctionArgs, useNavigate } from "react-router-dom";
+import { useLoaderData, LoaderFunctionArgs, useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFavorite } from "../../Favourite/FavoriteContext";
 import { Recipe } from "../recipe.interface";
 import CommentForm from "../../../components/Comment";
+import { checkAuth } from "../../../utils/auth";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const { slug } = params;
@@ -24,7 +25,7 @@ const RecipeDetail: React.FC = () => {
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
   const [completedSteps, setCompletedSteps] = useState<{ [key: number]: boolean }>({});
   const [comments, setComments] = useState<any[]>([]);
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -55,19 +56,11 @@ const RecipeDetail: React.FC = () => {
 
   const isLiked = isFavorite(recipe.recipe_id);
 
-  const checkAuth = async () => {
-    try {
-      await axiosInstance.get('/auth/profile');
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
 
   const handleLike = async () => {
     try {
       const isAuthenticated = await checkAuth();
-      
+
       if (!isAuthenticated) {
         toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
           position: "top-right",
@@ -94,17 +87,27 @@ const RecipeDetail: React.FC = () => {
       });
     }
   };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleBack = () => {
+    navigate(-1);
+  };
 
   return (
     <div className="min-h-screen py-12 bg-white">
       <main className="container mx-auto px-4">
         <article>
-          <div className="text-left">
-            <h1 className="text-4xl font-bold mb-4">{recipe.title}</h1>
+          <div className="flex items-center gap-4 mb-4">
+            <button
+              onClick={handleBack}
+              className="text-black hover:text-blue-500 transition duration-300"
+            >
+              <CircleArrowLeft className="w-7 h-7" />
+            </button>
+            <h1 className="ml-4 text-4xl font-bold">{recipe.title}</h1>
           </div>
 
-          <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
-
+          <div className="mt-10 flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
             <Clock className="w-6 h-6 text-black" />
             <div className="text-black">
               <strong>Thời gian nấu</strong>
@@ -227,7 +230,7 @@ const RecipeDetail: React.FC = () => {
 
         <div className="bg-gray-50 p-6 rounded-lg shadow mt-8">
           <CommentForm recipeId={recipe.recipe_id} />
-          
+
           <div className="mt-8">
             <h3 className="text-xl font-semibold text-gray-700 mb-4">Bình luận</h3>
             {comments.length > 0 ? (
@@ -245,11 +248,13 @@ const RecipeDetail: React.FC = () => {
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="font-semibold text-gray-800">{comment.user.first_name} {comment.user.last_name}</span>
-                          <span className="text-yellow-700"> {Array(comment.rating).fill('★').join('')}</span>
+                          {Array.from({ length: comment.rating }).map((_, idx) => (
+                            <Star key={idx} className="text-yellow-500 w-4 h-4 fill-yellow-500" />
+                          ))}
                         </div>
                         {comment.created_at && (
                           <span className="text-gray-500 text-sm">
-                           {new Date(new Date(comment.created_at).getTime() + 7 * 60 * 60 * 1000).toLocaleString()}
+                            {new Date(new Date(comment.created_at).getTime() + 7 * 60 * 60 * 1000).toLocaleString()}
                           </span>
                         )}
                       </div>
