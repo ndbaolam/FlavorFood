@@ -24,13 +24,12 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const accountRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleAccountMenu = () => setIsAccountOpen(!isAccountOpen);
-
   const closeMenus = () => {
     setIsMenuOpen(false);
     setIsAccountOpen(false);
@@ -41,11 +40,9 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
     setIsMenuOpen(false);
   };
 
-  const [userRole, setUserRole] = useState<string | null>(null);
-
   const fetchUserProfile = useCallback(async () => {
     try {
-      const response = await axiosInstance.get<User>('/auth/profile');
+      const response = await axiosInstance.get<User>("/auth/profile");
       setAvatarUrl(response.data.avatar || "../../avatar.jpg");
       setUserRole(response.data.role || null);
     } catch (error) {
@@ -54,7 +51,6 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
       setUserRole(null);
     }
   }, []);
-
   useEffect(() => {
     fetchUserProfile();
   }, [fetchUserProfile]);
@@ -64,41 +60,52 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
       fetchUserProfile();
     };
 
-    window.addEventListener('userLoggedIn', handleUserLoggedIn);
+    window.addEventListener("userLoggedIn", handleUserLoggedIn);
     return () => {
-      window.removeEventListener('userLoggedIn', handleUserLoggedIn);
+      window.removeEventListener("userLoggedIn", handleUserLoggedIn);
     };
   }, [fetchUserProfile]);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        accountRef.current &&
+        !accountRef.current.contains(event.target as Node)
+      ) {
+        setIsAccountOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const handleLogout = async () => {
     try {
-      const response = axiosInstance
-        .post("/auth/logout", { withCredentials: true })
-        .then((response) => {
-          setAvatarUrl(null);
-          navigate("/sign-in");
-        })
-
+      await axiosInstance.post("/auth/logout", { withCredentials: true });
+      setAvatarUrl(null);
+      navigate("/sign-in");
     } catch (error) {
       console.error("Đăng xuất thất bại:", error);
     }
   };
+
   const menuItems = [
     { to: "/", label: "Trang chủ", icon: <Home className="w-5 h-5 mr-2" /> },
     { to: "/dish", label: "Món ăn", icon: <ChefHat className="w-5 h-5 mr-2" /> },
     { to: "/tips", label: "Mẹo vào bếp", icon: <Lightbulb className="w-5 h-5 mr-2" /> },
     { to: "/market", label: "Cửa hàng", icon: <ShoppingBasket className="w-5 h-5 mr-2" /> },
-    
   ];
+
   if (userRole === "seller") {
     menuItems.push({
       to: "/my-store",
       label: "Cửa hàng của tôi",
-      icon: <Store className="w-5 h-5 mr-2 " />,
+      icon: <Store className="w-5 h-5 mr-2" />,
     });
   }
-  
-  
 
   const accountItems = [
     {
@@ -117,52 +124,59 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
       onClick: handleLogout,
     },
   ];
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        accountRef.current &&
-        !accountRef.current.contains(event.target as Node)
-      ) {
-        setIsAccountOpen(false);
-      }
-    };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const isActiveMenu = (to: string): boolean => {
+    if (to === "/") return location.pathname === "/";
+    if (to === "/dish") return location.pathname.startsWith("/dish");
+    if (to === "/tips") return location.pathname.startsWith("/tips");
+    if (to === "/market") return location.pathname.startsWith("/market");
+    if (to === "/my-store") return location.pathname.startsWith("/my-store");
+    return false;
+  };
+
 
   return (
-    <nav className="relative bg-white border-b border-gray-200 shadow-sm" role="navigation" aria-label="Main navigation">
+    <nav
+      className="relative bg-white border-b border-gray-200 shadow-sm"
+      role="navigation"
+      aria-label="Main navigation"
+    >
       <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center h-20 ">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo */}
           <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center" onClick={() => handlePageChange("Trang chủ")}>
-              <img src="./logo.png" alt="Logo" className="h-14" />
-             
+            <Link
+              to="/"
+              className="flex items-center"
+              onClick={() => handlePageChange("Trang chủ")}
+            >
+              <img src="../logo.png" alt="Logo" className="h-14" />
             </Link>
           </div>
-          {/* Desktop Menu */}
+
+          {/* Desktop menu */}
           <div className="hidden md:flex items-center space-x-4 ml-auto mr-4">
-            {menuItems.map((item) => {
-              const isActive = location.pathname === item.to;
-              return (
-                <Link
-                  key={item.to}
-                  to={item.to}
-                  onClick={() => handlePageChange(item.label)}
-                  className={`flex items-center px-3 py-2 duration-200 rounded-lg text-left transition ${isActive ? "bg-blue-500 text-white" : "hover:bg-blue-300"
-                    }`}
-                >
-                  {item.icon}
-                  <span>{item.label}</span>
-                </Link>
-              );
-            })}
+          {menuItems.map(({ to, label, icon }) => (
+              <Link
+                key={to}
+                to={to}
+                className={`flex items-center px-3 py-2 rounded-md font-medium transition-colors ${
+                  isActiveMenu(to)
+                    ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
+                    : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
+                }`}        
+              >
+                {icon}
+                {label}
+              </Link>
+            ))}
           </div>
 
-          <div className="hidden md:flex items-center space-x-4" ref={accountRef}>
+          {/* Desktop account */}
+          <div
+            className="hidden md:flex items-center space-x-4"
+            ref={accountRef}
+          >
             {avatarUrl ? (
               <>
                 <button
@@ -195,7 +209,6 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                         {label}
                       </a>
                     ))}
-
                   </div>
                 )}
               </>
@@ -209,7 +222,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
@@ -217,30 +230,33 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {isMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile menu */}
       {isMenuOpen && (
         <div className="md:hidden px-4 pt-4 pb-6 space-y-2 bg-white border-t border-gray-200">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.to;
-            return (
+         {menuItems.map(({ to, label, icon }) => (
               <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => handlePageChange(item.label)}
-                className={`flex items-center px-3 py-2 duration-200 rounded-lg text-left transition ${isActive ? "bg-blue-500 text-white" : "hover:bg-blue-300"
-                  }`}
+                key={to}
+                to={to}
+                className={`flex items-center px-3 py-2 rounded-md font-medium transition-colors ${
+                  isActiveMenu(to)
+                    ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
+                    : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
+                }`}        
               >
-                {item.icon}
-                <span>{item.label}</span>
+                {icon}
+                {label}
               </Link>
-            );
-          })}
+            ))}
 
           <div className="mt-4 border-t border-gray-200 pt-2">
             <p className="text-gray-500 mb-2 font-medium">Tài khoản</p>
