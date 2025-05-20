@@ -4,15 +4,27 @@ import TipsCard from '../../components/TipsCard';
 import { TipsItem } from './tip.interface';
 import axiosInstance from '../../services/axiosInstance';
 import SearchBox from '../../components/Search';
+import { useSearchParams } from 'react-router-dom';
 
 const LIMIT = 12;
 
 const Tips: React.FC = () => {
-  const [activeGenre, setActiveGenre] = useState<number | null>(null);
-  const [allTips, setAllTips] = useState<TipsItem[]>([]);
-  const [searchTitle, setSearchTitle] = useState<string>('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
 
+  // Khởi tạo state từ URL query params 1 lần khi mount
+  const [searchTitle, setSearchTitle] = useState(() => searchParams.get('search') || '');
+  const [activeGenre, setActiveGenre] = useState<number | null>(() => {
+    const genreParam = searchParams.get('genre');
+    return genreParam ? parseInt(genreParam) : null;
+  });
+  const [currentPage, setCurrentPage] = useState(() => {
+    const pageParam = searchParams.get('page');
+    return pageParam ? parseInt(pageParam) : 1;
+  });
+
+  const [allTips, setAllTips] = useState<TipsItem[]>([]);
+
+  // Fetch tips data khi mount
   useEffect(() => {
     const fetchTips = async () => {
       try {
@@ -28,10 +40,22 @@ const Tips: React.FC = () => {
     fetchTips();
   }, []);
 
+  // Khi searchTitle hoặc activeGenre thay đổi, reset currentPage về 1
   useEffect(() => {
     setCurrentPage(1);
   }, [activeGenre, searchTitle]);
 
+  // Cập nhật URL query params khi state thay đổi
+  useEffect(() => {
+    const params: Record<string, string> = {};
+    if (searchTitle) params.search = searchTitle;
+    if (activeGenre) params.genre = activeGenre.toString();
+    if (currentPage && currentPage > 1) params.page = currentPage.toString();
+
+    setSearchParams(params, { replace: true });
+  }, [searchTitle, activeGenre, currentPage, setSearchParams]);
+
+  // Lọc tips theo searchTitle và activeGenre
   const filteredTips = useMemo(() => {
     return allTips.filter(tip => {
       const matchGenre = activeGenre
@@ -51,6 +75,8 @@ const Tips: React.FC = () => {
     setCurrentPage(page);
     window.scrollTo({ top: 80, behavior: 'smooth' });
   };
+
+  // ... (phần renderPagination và return giữ nguyên)
 
   const renderPagination = () => {
     if (totalPages <= 1) return null;
@@ -145,7 +171,11 @@ const Tips: React.FC = () => {
         </section>
 
         <div className="justify-center items-center flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
+          <SearchBox
+            onSearch={setSearchTitle}
+            isPopupOpen={false}
+            value={searchTitle}
+          />
         </div>
 
         {/* Tips Grid */}

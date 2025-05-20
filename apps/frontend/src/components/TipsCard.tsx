@@ -19,7 +19,6 @@ const TipsCard: React.FC<TipsCardProps> = ({ tips, currentCategoryPath, onToggle
       className="bg-gradient-to-b from-blue-50 to-white shadow-lg hover:scale-105 transition-all ease-in-out flex flex-col h-full rounded-xl overflow-hidden cursor-pointer"
       onClick={() => navigate(linkto)}
     >
-      {/* Image Container */}
       <div className="relative w-full aspect-w-4 aspect-h-3 overflow-hidden">
         <img
           src={tips.thumbnail}
@@ -28,15 +27,12 @@ const TipsCard: React.FC<TipsCardProps> = ({ tips, currentCategoryPath, onToggle
         />
       </div>
 
-      {/* Title and Description Container */}
       <div className="flex flex-col items-center p-2">
-        {/* Title */}
         <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-blue-500 transition-colors duration-300">
           {tips.title}
         </h2>
 
-        {/* Description */}
-        <p className="text-gray-600 text-center mb-4 text-sm line-clamp-3 overflow-hidden text-ellipsis" dangerouslySetInnerHTML={{ __html: tips.content.replace(/(\d+\.\s[^<]+)/g, '<strong>$1</strong>') }} />
+        <p className="text-gray-600 text-center mb-4 text-sm line-clamp-5 overflow-hidden text-ellipsis" dangerouslySetInnerHTML={{ __html: tips.content.replace(/(\d+\.\s[^<]+)/g, '<strong>$1</strong>') }} />
       </div>
     </div>
   );

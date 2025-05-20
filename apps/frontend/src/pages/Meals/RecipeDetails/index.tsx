@@ -1,12 +1,14 @@
-import { BookOpen, Calculator, Check, CheckCircle, CircleGauge, Clock, Heart, Users, UtensilsCrossed, Vegan } from "lucide-react";
+import { BookOpen, Check, CircleGauge, Clock, Heart, Star, Users, UtensilsCrossed, Vegan, CircleArrowLeft } from "lucide-react";
 import React, { useEffect, useState } from "react";
-import { useLoaderData, LoaderFunctionArgs, useNavigate } from "react-router-dom";
+import { useLoaderData, LoaderFunctionArgs, useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useFavorite } from "../../Favourite/FavoriteContext";
 import { Recipe } from "../recipe.interface";
 import CommentForm from "../../../components/Comment";
+import { checkAuth } from "../../../utils/auth";
+import "../../../index.css";
 
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   const { slug } = params;
@@ -24,7 +26,7 @@ const RecipeDetail: React.FC = () => {
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
   const [completedSteps, setCompletedSteps] = useState<{ [key: number]: boolean }>({});
   const [comments, setComments] = useState<any[]>([]);
-  const navigate = useNavigate();
+
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -55,25 +57,17 @@ const RecipeDetail: React.FC = () => {
 
   const isLiked = isFavorite(recipe.recipe_id);
 
-  const checkAuth = async () => {
-    try {
-      await axiosInstance.get('/auth/profile');
-      return true;
-    } catch (error) {
-      return false;
-    }
-  };
 
   const handleLike = async () => {
     try {
       const isAuthenticated = await checkAuth();
-      
+
       if (!isAuthenticated) {
         toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
           position: "top-right",
           autoClose: 2000
         });
-        navigate('/sign-in', { state: { returnTo: `/dish/${recipe.title}_${recipe.recipe_id}.html` } });
+        navigate('/sign-in', { state: { returnTo: location.pathname } });
         return;
       }
 
@@ -94,17 +88,50 @@ const RecipeDetail: React.FC = () => {
       });
     }
   };
+  const navigate = useNavigate();
+  const location = useLocation();
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handlePrint = async () => {
+    const isAuthenticated = await checkAuth();
+
+    if (!isAuthenticated) {
+      toast.info("Vui lòng đăng nhập để in công thức!", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+      navigate('/sign-in', { state: { returnTo: location.pathname } });
+      return;
+    }
+
+    window.print();
+  };
+
 
   return (
     <div className="min-h-screen py-12 bg-white">
       <main className="container mx-auto px-4">
-        <article>
-          <div className="text-left">
-            <h1 className="text-4xl font-bold mb-4">{recipe.title}</h1>
+        <article id="recipe-detail-content">
+          <div className="flex items-center gap-4 mb-4">
+            <button
+              onClick={handleBack}
+              className="text-black hover:text-blue-500 transition duration-300 no-print"
+            >
+              <CircleArrowLeft className="w-7 h-7" />
+            </button>
+            <h1 className="ml-4 text-4xl font-bold">{recipe.title}</h1>
+            <div className="ml-auto flex gap-3">
+              <button
+                onClick={handlePrint}
+                className="no-print px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition"
+              >
+                In
+              </button>
+            </div>
           </div>
-
-          <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
-
+          <div className="mt-10 flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
             <Clock className="w-6 h-6 text-black" />
             <div className="text-black">
               <strong>Thời gian nấu</strong>
@@ -151,7 +178,7 @@ const RecipeDetail: React.FC = () => {
             <img
               src={recipe.image}
               alt={recipe.title}
-              className="w-2/3 max-h-[500px] object-cover rounded-lg shadow-md"
+              className="w-2/3 max-h-[500px] object-cover rounded-lg shadow-md "
             />
 
             <div className="w-1/3 bg-blue-50 p-6 rounded-lg shadow">
@@ -224,46 +251,48 @@ const RecipeDetail: React.FC = () => {
             </div>
           </div>
         </article>
+        <section className="comments-section">
+          <div className="bg-gray-50 p-6 rounded-lg shadow mt-8">
+            <CommentForm recipeId={recipe.recipe_id} />
 
-        <div className="bg-gray-50 p-6 rounded-lg shadow mt-8">
-          <CommentForm recipeId={recipe.recipe_id} />
-          
-          <div className="mt-8">
-            <h3 className="text-xl font-semibold text-gray-700 mb-4">Bình luận</h3>
-            {comments.length > 0 ? (
-              <div className="space-y-4">
-                {comments.map((comment: any) => (
-                  <div key={comment.id} className="p-4 border-2 rounded-md">
-                    <div className="flex items-center gap-2 mb-2">
-                      {comment.user.avatar && (
-                        <img
-                          src={comment.user.avatar}
-                          alt={`${comment.user.name}'s avatar`}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      )}
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-800">{comment.user.first_name} {comment.user.last_name}</span>
-                          <span className="text-yellow-700"> {Array(comment.rating).fill('★').join('')}</span>
-                        </div>
-                        {comment.created_at && (
-                          <span className="text-gray-500 text-sm">
-                           {new Date(new Date(comment.created_at).getTime() + 7 * 60 * 60 * 1000).toLocaleString()}
-                          </span>
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold text-gray-700 mb-4">Bình luận</h3>
+              {comments.length > 0 ? (
+                <div className="space-y-4">
+                  {comments.map((comment: any) => (
+                    <div key={comment.id} className="p-4 border-2 rounded-md">
+                      <div className="flex items-center gap-2 mb-2">
+                        {comment.user.avatar && (
+                          <img
+                            src={comment.user.avatar}
+                            alt={`${comment.user.name}'s avatar`}
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
                         )}
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-800">{comment.user.first_name} {comment.user.last_name}</span>
+                            {Array.from({ length: comment.rating }).map((_, idx) => (
+                              <Star key={idx} className="text-yellow-500 w-4 h-4 fill-yellow-500" />
+                            ))}
+                          </div>
+                          {comment.created_at && (
+                            <span className="text-gray-500 text-sm">
+                              {new Date(new Date(comment.created_at).getTime() + 7 * 60 * 60 * 1000).toLocaleString()}
+                            </span>
+                          )}
+                        </div>
                       </div>
+                      <p className="text-gray-600 mt-2">{comment.comment}</p>
                     </div>
-                    <p className="text-gray-600 mt-2">{comment.comment}</p>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500">Chưa có bình luận nào.</p>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">Chưa có bình luận nào.</p>
+              )}
+            </div>
           </div>
-
-        </div>
+        </section>
       </main>
     </div>
   );
