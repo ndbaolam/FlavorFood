@@ -12,106 +12,103 @@ interface CreatePostProps {
   isEditing?: boolean;
 }
 
-// Di chuyển CategoryDropdown ra ngoài để tránh định nghĩa lồng nhau
 const CategoryDropdown: React.FC<{
   categories: Category[];
   selectedCategoryIds: number[];
   setSelectedCategoryIds: React.Dispatch<React.SetStateAction<number[]>>;
   formErrors: { [key: string]: string };
-}> = ({ 
-  categories, 
-  selectedCategoryIds, 
-  setSelectedCategoryIds, 
-  formErrors 
+}> = ({
+  categories,
+  selectedCategoryIds,
+  setSelectedCategoryIds,
+  formErrors
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setIsOpen(false);
+        }
+      };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => {
+        document.removeEventListener("mousedown", handleClickOutside);
+      };
+    }, []);
 
-  // Get labels of selected categories for display
-  const selectedCategoryLabels = categories
-    .filter(cat => selectedCategoryIds.includes(cat.category_id))
-    .map(cat => cat.title);
+    const selectedCategoryLabels = categories
+      .filter(cat => selectedCategoryIds.includes(cat.category_id))
+      .map(cat => cat.title);
 
-  return (
-    <div className="mb-4" ref={dropdownRef}>
-      <label className="block font-medium mb-1">
-        Danh mục <span className="text-red-500">*</span>
-      </label>
-      
-      <div className="relative">
-        {/* Dropdown button */}
-        <button
-          type="button"
-          className="flex justify-between items-center w-full p-2 border rounded-lg bg-white"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span className="truncate">
-            {selectedCategoryLabels.length > 0 
-              ? selectedCategoryLabels.join(', ') 
-              : 'Chọn danh mục'}
-          </span>
-          <svg 
-            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
+    return (
+      <div className="mb-4" ref={dropdownRef}>
+        <label className="block font-medium mb-1">
+          Danh mục <span className="text-red-500">*</span>
+        </label>
+
+        <div className="relative">
+          {/* Dropdown button */}
+          <button
+            type="button"
+            className="flex justify-between items-center w-full p-2 border rounded-lg bg-white"
+            onClick={() => setIsOpen(!isOpen)}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-        
-        {/* Dropdown options */}
-        {isOpen && (
-          <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-            {categories.map((category) => (
-              <div key={category.category_id} className="flex items-center p-2 hover:bg-gray-100">
-                <input
-                  type="checkbox"
-                  id={`category-${category.category_id}`}
-                  value={category.category_id}
-                  checked={selectedCategoryIds.includes(category.category_id)}
-                  onChange={(e) => {
-                    const categoryId = Number(e.target.value);
-                    setSelectedCategoryIds((prev) =>
-                      e.target.checked
-                        ? [...prev, categoryId]
-                        : prev.filter((id) => id !== categoryId)
-                    );
-                  }}
-                  className="mr-2"
-                />
-                <label 
-                  htmlFor={`category-${category.category_id}`}
-                  className="w-full cursor-pointer"
-                >
-                  {category.title}
-                </label>
-              </div>
-            ))}
-          </div>
+            <span className="truncate">
+              {selectedCategoryLabels.length > 0
+                ? selectedCategoryLabels.join(', ')
+                : 'Chọn danh mục'}
+            </span>
+            <svg
+              className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {/* Dropdown options */}
+          {isOpen && (
+            <div className="absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              {categories.map((category) => (
+                <div key={category.category_id} className="flex items-center p-2 hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    id={`category-${category.category_id}`}
+                    value={category.category_id}
+                    checked={selectedCategoryIds.includes(category.category_id)}
+                    onChange={(e) => {
+                      const categoryId = Number(e.target.value);
+                      setSelectedCategoryIds((prev) =>
+                        e.target.checked
+                          ? [...prev, categoryId]
+                          : prev.filter((id) => id !== categoryId)
+                      );
+                    }}
+                    className="mr-2"
+                  />
+                  <label
+                    htmlFor={`category-${category.category_id}`}
+                    className="w-full cursor-pointer"
+                  >
+                    {category.title}
+                  </label>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {formErrors?.category && (
+          <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
         )}
       </div>
-      
-      {formErrors?.category && (
-        <p className="text-red-500 text-sm mt-1">{formErrors.category}</p>
-      )}
-    </div>
-  );
-};
+    );
+  };
 
 const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData, isEditing }) => {
   const [title, setTitle] = useState<string>(initialData?.title || "");
@@ -232,7 +229,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
       toast.error("Lỗi tải ảnh!", { autoClose: 2000 });
     }
   };
-  
+
+
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
@@ -249,6 +247,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
       }
     }
   }, [initialData]);
+
+
 
   const handleSubmit = () => {
     if (validateForm()) {
@@ -380,8 +380,8 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
                 <option value="Khó">Khó</option>
               </select>
             </div>
-            
-            {/* Sử dụng component CategoryDropdown thay vì viết lại code */}
+
+
             <CategoryDropdown
               categories={categories}
               selectedCategoryIds={selectedCategoryIds}
@@ -534,36 +534,42 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
           <div>
             <label className="block font-medium">Các bước thực hiện  <span className="text-red-500">* </span></label>
             <ul>
-              {steps.map((step, index) => (
-                <li key={index} className="flex items-center justify-between">
-                  <span
-                    onClick={() => {
-                      const editedStep = prompt(
-                        "Chỉnh sửa bước thực hiện",
-                        step.step
-                      );
-                      if (editedStep && editedStep.trim()) {
-                        const updatedSteps = [...steps];
-                        updatedSteps[index] = {
-                          ...step,
-                          step: editedStep.trim(),
-                        };
-                        setSteps(updatedSteps);
+              {steps
+                .slice() // tạo bản sao để không thay đổi mảng gốc khi sort
+                .sort((a, b) => a.number - b.number)
+                .map((step, index) => (
+                  <li key={step.number} className="flex items-center justify-between">
+                    <span
+                      onClick={() => {
+                        const editedStep = prompt("Chỉnh sửa bước thực hiện", step.step);
+                        if (editedStep && editedStep.trim()) {
+                          const updatedSteps = [...steps];
+                          const realIndex = updatedSteps.findIndex((s) => s.number === step.number);
+                          if (realIndex !== -1) {
+                            updatedSteps[realIndex] = {
+                              ...step,
+                              step: editedStep.trim(),
+                            };
+                            setSteps(updatedSteps);
+                          }
+                        }
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {step.number}. {step.step}
+                    </span>
+                    <button
+                      onClick={() =>
+                        setSteps(steps.filter((s) => s.number !== step.number))
                       }
-                    }}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {step.number}. {step.step}
-                  </span>
-                  <button
-                    onClick={() => setSteps(steps.filter((_, i) => i !== index))}
-                    className="text-red-500 px-2"
-                  >
-                    X
-                  </button>
-                </li>
-              ))}
+                      className="text-red-500 px-2"
+                    >
+                      X
+                    </button>
+                  </li>
+                ))}
             </ul>
+
             <div className="flex gap-2">
               <input
                 type="text"

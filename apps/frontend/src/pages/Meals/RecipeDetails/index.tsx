@@ -233,20 +233,22 @@ const RecipeDetail: React.FC = () => {
                 Hướng dẫn nấu ăn
               </h3>
               <ul className="text-gray-700 space-y-2 mt-4">
-                {recipe.steps.map((item) => (
-                  <li key={item.number} className="flex items-start gap-2">
-                    <span
-                      className={`bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs font-bold cursor-pointer ${completedSteps[item.number] ? 'line-through' : ''}`}
-                      onClick={() => setCompletedSteps((prev) => ({
-                        ...prev,
-                        [item.number]: !prev[item.number],
-                      }))}
-                    >
-                      {item.number}
-                    </span>
-                    {item.step}
-                  </li>
-                ))}
+                {[...recipe.steps]
+                  .sort((a, b) => a.number - b.number)
+                  .map((item) => (
+                    <li key={item.number} className="flex items-start gap-2">
+                      <span
+                        className={`bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs font-bold cursor-pointer ${completedSteps[item.number] ? 'line-through' : ''}`}
+                        onClick={() => setCompletedSteps((prev) => ({
+                          ...prev,
+                          [item.number]: !prev[item.number],
+                        }))}
+                      >
+                        {item.number}
+                      </span>
+                      {item.step}
+                    </li>
+                  ))}
               </ul>
             </div>
           </div>
