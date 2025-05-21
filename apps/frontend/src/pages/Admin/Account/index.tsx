@@ -120,7 +120,7 @@ const Account: React.FC = () => {
         </button>
         <div className="flex space-x-3">
           <div className="h-[38px]">
-            <SearchBox onSearch={setSearchTitle} isPopupOpen={false} />
+            <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
           </div>
           <select
             value={selectedRole}

@@ -25,8 +25,8 @@ const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ set
 
   const menuItems = [
     { to: "/admin/accounts", icon: <Users className="w-5 h-5" />, label: "Quản lý tài khoản" },
-    { to: "/admin/posts", icon: <FileText className="w-5 h-5" />, label: "Quản lý bài viết" },
-    { to: "/admin/tips", icon: <Lightbulb className="w-5 h-5" />, label: "Quản lý Tips" },
+    { to: "/admin/posts", icon: <FileText className="w-5 h-5" />, label: "Quản lý công thức" },
+    { to: "/admin/tips", icon: <Lightbulb className="w-5 h-5" />, label: "Quản lý mẹo vặt" },
     { to: "/admin/settings", icon: <Settings className="w-5 h-5" />, label: "Cài đặt" },
   ];
 
