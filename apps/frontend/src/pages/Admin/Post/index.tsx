@@ -73,37 +73,37 @@ const Posts: React.FC = () => {
       await axiosInstance.post('/recipes', newPost, {
         withCredentials: true,
       });
-  
+
       setIsPopupOpen(false);
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
       setPosts(response.data);
       setCurrentPage(1);
-      
+
       toast.success("Tạo bài viết thành công");
     } catch (err: any) {
       setError(err.message);
       toast.error("Tạo bài viết thất bại");
     }
   };
-  
+
   const handleUpdatePost = async (updatedPost: Recipe) => {
     setError(null);
     try {
       await axiosInstance.patch(`/recipes/${updatedPost.recipe_id}`, updatedPost, {
         withCredentials: true,
       });
-  
+
       setEditingPost(null);
       setIsPopupOpen(false);
-      
+
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
-      
+
       setPosts(response.data);
-      setCurrentPage(1); 
+      setCurrentPage(1);
       toast.success("Cập nhật bài viết thành công");
     } catch (err: any) {
       setError(err.message);
@@ -135,10 +135,10 @@ const Posts: React.FC = () => {
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
-  
+
       setPosts(response.data);
       setCurrentPage(1);
-      
+
       toast.success("Xóa bài viết thành công");
       setSelectedPosts(selectedPosts.filter(id => id !== recipeId));
     } catch (err: any) {
@@ -157,10 +157,10 @@ const Posts: React.FC = () => {
       const response = await axiosInstance.get<Recipe[]>('/recipes', {
         withCredentials: true,
       });
-    
+
       setPosts(response.data);
       setCurrentPage(1);
-      
+
       toast.success("Xóa bài viết thành công");
       setSelectedPosts([]);
     } catch (err: any) {
@@ -185,22 +185,22 @@ const Posts: React.FC = () => {
   const sortedPosts = [...posts].sort((a, b) => {
     return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
   });
-  
+
   const filteredPosts = sortedPosts.filter((post) => {
     const matchesTitle = post.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
       post.categories.some((category) =>
         category.title.toLowerCase().includes(searchTitle.toLowerCase())
       );
-  
+
     const matchesCategory = selectedCategory === 'all' ||
       post.categories.some((category) => category.category_id === selectedCategory);
-  
+
     return matchesTitle && matchesCategory;
   });
-  
+
   const totalPages = Math.ceil(filteredPosts.length / LIMIT);
   const paginatedPosts = filteredPosts.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
-  
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTitle, selectedCategory]);
@@ -212,18 +212,17 @@ const Posts: React.FC = () => {
       <button
         key={label || pageNum}
         onClick={() => handlePageChange(pageNum)}
-        className={`px-3 py-1 rounded ${
-          currentPage === pageNum
+        className={`px-3 py-1 rounded ${currentPage === pageNum
             ? "bg-blue-500 text-white font-medium"
             : "bg-white text-gray-700 hover:bg-blue-100"
-        }`}
+          }`}
       >
         {label || pageNum}
       </button>
     );
 
     const paginationItems = [];
-    
+
     paginationItems.push(
       <button
         key="prev"
@@ -252,11 +251,11 @@ const Posts: React.FC = () => {
       if (currentPage > 2) {
         paginationItems.push(renderPageButton(currentPage));
       }
-      
+
       if (currentPage < totalPages - 1) {
         paginationItems.push(renderPageButton(currentPage + 1));
       }
-      
+
       if (currentPage < totalPages - 2) {
         paginationItems.push(<span key="ellipsis2" className="px-2">...</span>);
       } else if (currentPage === totalPages - 2) {
@@ -289,7 +288,7 @@ const Posts: React.FC = () => {
 
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
-      <div className="mb-4 flex items-center justify-between p-4">
+      <div className=" mt-4 flex items-center justify-between p-4">
         <div className="flex space-x-3">
           <div>
             <button
@@ -305,15 +304,15 @@ const Posts: React.FC = () => {
 
             {isPopupOpen && (
               <CreatePost
-              onClose={() => {
-                setIsPopupOpen(false);
-                setEditingPost(null);
-              }}
-              onSubmit={editingPost ? handleUpdatePost : handleAddPost}
-              initialData={editingPost || undefined}
-              isEditing={!!editingPost}
-            />
-            
+                onClose={() => {
+                  setIsPopupOpen(false);
+                  setEditingPost(null);
+                }}
+                onSubmit={editingPost ? handleUpdatePost : handleAddPost}
+                initialData={editingPost || undefined}
+                isEditing={!!editingPost}
+              />
+
             )}
           </div>
 
@@ -327,8 +326,9 @@ const Posts: React.FC = () => {
           </button>
 
         </div>
+
         <div className="flex space-x-3">
-          <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} />
+          <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
@@ -342,7 +342,14 @@ const Posts: React.FC = () => {
             ))}
           </select>
         </div>
-
+      </div>
+      <div className="flex justify-between p-4 text-md">
+        <div>
+          Tổng số công thức: {filteredPosts.length}
+        </div>
+        <div>
+          Trang {currentPage} / {totalPages}
+        </div>
       </div>
 
       <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">

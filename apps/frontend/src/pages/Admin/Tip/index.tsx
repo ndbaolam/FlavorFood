@@ -229,7 +229,7 @@ const Tip: React.FC = () => {
 
   return (
     <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
-      <div className="mb-4 flex items-center justify-between p-4">
+      <div className="mt-4 flex items-center justify-between p-4">
         <div className="flex space-x-3">
           <div>
             <button
@@ -266,7 +266,15 @@ const Tip: React.FC = () => {
           </button>
         </div>
 
-        <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} />
+        <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
+      </div>
+      <div className="flex justify-between p-4 text-md">
+        <div>
+          Tổng số công thức: {filteredTips.length}
+        </div>
+        <div>
+          Trang {currentPage} / {totalPages}
+        </div>
       </div>
 
       <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">
