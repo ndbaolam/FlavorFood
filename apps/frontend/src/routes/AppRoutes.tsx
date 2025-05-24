@@ -20,6 +20,7 @@ import SellerLayout from '../layouts/Seller/SellerLayout';
 import SellerHome from '../pages/Seller/Home';
 import SellerProfile from '../pages/Seller/Profile';
 import StoreRegistration from '../pages/Market/StoreRegistration';
+import AdminStore from '../pages/Admin/Store';
 // Route definitions
 const routes: RouteObject[] = [
   {
@@ -98,6 +99,7 @@ const routes: RouteObject[] = [
       { path: "accounts", element: <Accounts /> },
       { path: "posts", element: <Posts /> },
       { path: "tips", element: <Tip /> },
+      {path:"stores", element:<AdminStore/>},
      
     ],
   },
