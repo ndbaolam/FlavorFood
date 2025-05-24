@@ -13,6 +13,8 @@ export interface Store {
   phone_number: string; 
   image:string,
   user: User;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Ingredient {

@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Users, FileText, Lightbulb, Settings, LogOut, Menu } from "lucide-react";
+import { Home, Users, FileText, Lightbulb, Settings, LogOut, Menu, Store } from "lucide-react";
 import { useState } from "react";
 import axiosInstance from "../../../services/axiosInstance";
 
@@ -27,7 +27,7 @@ const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ set
     { to: "/admin/accounts", icon: <Users className="w-5 h-5" />, label: "Quản lý tài khoản" },
     { to: "/admin/posts", icon: <FileText className="w-5 h-5" />, label: "Quản lý công thức" },
     { to: "/admin/tips", icon: <Lightbulb className="w-5 h-5" />, label: "Quản lý mẹo vặt" },
-    { to: "/admin/settings", icon: <Settings className="w-5 h-5" />, label: "Cài đặt" },
+    { to: "/admin/stores", icon: <Store className="w-5 h-5" />, label: "Quản lý cửa hàng " },
   ];
 
   const handlePageChange = (label: string) => {

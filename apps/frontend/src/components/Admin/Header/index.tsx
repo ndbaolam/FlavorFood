@@ -9,8 +9,9 @@ const AdminHeader = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const pageTitles: { [key: string]: string } = {
     "/admin/accounts": "Quản lý tài khoản",
-    "/admin/posts": "Quản lý bài viết",
-    "/admin/tips": "Quản lý Tips",
+    "/admin/posts": "Quản lý công thức",
+    "/admin/tips": "Quản lý mẹo vặt",
+    "/admin/stores": "Quản lý cửa hàng",
   };
 
   const matchedPath = Object.keys(pageTitles).find((path) =>

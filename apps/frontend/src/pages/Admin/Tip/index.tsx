@@ -240,7 +240,7 @@ const Tip: React.FC = () => {
               className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2"
             >
               <SquarePlus className="text-white" size={18} />
-              <span>Tạo mẹo vặt nhà bếp</span>
+              <span>Tạo mẹo vặt</span>
             </button>
 
             {isPopupOpen && (
@@ -270,7 +270,7 @@ const Tip: React.FC = () => {
       </div>
       <div className="flex justify-between p-4 text-md">
         <div>
-          Tổng số công thức: {filteredTips.length}
+          Tổng số mẹo vặt: {filteredTips.length}
         </div>
         <div>
           Trang {currentPage} / {totalPages}
