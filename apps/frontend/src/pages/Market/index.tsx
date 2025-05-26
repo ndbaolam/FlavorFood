@@ -12,18 +12,29 @@ import { checkAuth } from "../../utils/auth";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
 
+interface Location {
+  latitude: number;
+  longitude: number;
+}
+
+interface StoreWithLocation extends Store {
+  location: Location;
+  distance?: number | null;
+}
+
 const Market: React.FC = () => {
   const navigate = useNavigate();
-  const [stores, setStores] = useState<Store[]>([]);
+  const [stores, setStores] = useState<StoreWithLocation[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStore, setSelectedStore] = useState<Store | null>(null);
-  const [userLocation, setUserLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [selectedStore, setSelectedStore] = useState<StoreWithLocation | null>(null);
+  const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSeller, setIsSeller] = useState(false);
   
   useEffect(() => {
     checkAuth();
   }, []);
+
   const handleStoreRegistration = async () => {
     const isAuthenticated = await checkAuth();
     if (isAuthenticated) {
@@ -33,53 +44,75 @@ const Market: React.FC = () => {
     }
   };
 
-  const geocodeAddress = async (address: string): Promise<[number, number] | null> => {
+ 
+  const geocodeAddress = async (address: string): Promise<Location | null> => {
     try {
       const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&limit=1`;
       const response = await fetch(url);
       const data = await response.json();
-      return data.features?.[0]?.geometry?.coordinates ?? null;
+      if (data.features && data.features.length > 0) {
+        const [longitude, latitude] = data.features[0].geometry.coordinates;
+        return { latitude, longitude };
+      }
+      return null;
     } catch (error) {
       console.error("Geocode error:", error);
       return null;
     }
   };
 
-  useEffect(() => {
-    const fetchStores = async () => {
-      try {
-        const response = await axiosInstance.get("/stores");
-        const storesData = response.data ?? [];
+  const fetchStores = async () => {
+    try {
+      const response = await axiosInstance.get("/stores");
+      const storesData = response.data ?? [];
 
-        const storesWithData: Store[] = await Promise.all(
-          storesData.map(async (store: Store) => {
-            const location = await geocodeAddress(store.address);
-            if (!location) return { ...store, location: [0, 0] };
-
-            const res = await axiosInstance.get(`/stores/${store.store_id}`);
-            const fullStoreData = res.data;
-            const ingredientsData = (fullStoreData.ingredients || []).map((ingredient: any) => ({
-              ingredient_id: ingredient.ingredient_id,
-              title: ingredient.title,
-              price: ingredient.price,
-              quantity: ingredient.quantity,
-            }));
-
-            return {
-              ...store,
-              location,
-              ingredients: ingredientsData,
+      const storesWithData: StoreWithLocation[] = await Promise.all(
+        storesData.map(async (store: Store) => {
+          let location: Location | null = null;
+          if (
+            typeof store.latitude === "number" &&
+            typeof store.longitude === "number" &&
+            !isNaN(store.latitude) &&
+            !isNaN(store.longitude)
+          ) {
+            location = {
+              latitude: store.latitude,
+              longitude: store.longitude,
             };
-          })
-        );
-        setStores(storesWithData);
-      } catch (error) {
-        console.error("Lỗi khi gọi API:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+          } else {
+      
+            location = await geocodeAddress(store.address);
+          }
+          if (!location) {
+            location = { latitude: 0, longitude: 0 };
+          }
 
+          const res = await axiosInstance.get(`/stores/${store.store_id}`);
+          const fullStoreData = res.data;
+          const ingredientsData = (fullStoreData.ingredients || []).map((ingredient: any) => ({
+            ingredient_id: ingredient.ingredient_id,
+            title: ingredient.title,
+            price: ingredient.price,
+            quantity: ingredient.quantity,
+          }));
+
+          return {
+            ...store,
+            location,
+            ingredients: ingredientsData,
+          };
+        })
+      );
+
+      setStores(storesWithData);
+    } catch (error) {
+      console.error("Lỗi khi gọi API:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  console.log(new Date("2025-05-24T07:00:00.000Z").toString());
+  useEffect(() => {
     fetchStores();
   }, []);
 
@@ -101,17 +134,21 @@ const Market: React.FC = () => {
     .filter((store) =>
       searchTerm.trim()
         ? store.ingredients?.some((ingredient) =>
-          ingredient.title.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+            ingredient.title?.toLowerCase().includes(searchTerm.toLowerCase())
+          )
         : true
     )
     .map((store) => {
-      const distance = userLocation && store.location
+      const validUserLocation = userLocation != null;
+      const validStoreLocation = store.location && store.location.latitude != null && store.location.longitude != null;
+
+      const distance = validUserLocation && validStoreLocation
         ? getDistance(
-          { latitude: userLocation.latitude, longitude: userLocation.longitude },
-          { latitude: store.location[1], longitude: store.location[0] }
-        )
+            userLocation!,
+            store.location
+          )
         : null;
+
       return { ...store, distance, id: store.store_id };
     })
     .sort((a, b) => {
@@ -120,7 +157,7 @@ const Market: React.FC = () => {
       return a.distance - b.distance;
     });
 
-  const handleMapClick = (store: Store) => {
+  const handleMapClick = (store: StoreWithLocation) => {
     window.open(`https://www.google.com/maps?q=${encodeURIComponent(store.address)}`, "_blank");
   };
 

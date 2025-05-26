@@ -93,7 +93,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
       onSubmit={handleSubmit}
       className="bg-white p-6 rounded-lg shadow-md w-full max-w-xl border border-gray-300 mx-auto"
     >
-      <h2 className="text-2xl font-bold mb-6 text-center">Tạo Cửa Hàng Mới</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center">Tạo cửa hàng</h2>
 
       <div className="mb-4">
         <label className="block text-gray-700 font-semibold mb-2">Tên cửa hàng *</label>
@@ -190,7 +190,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
         disabled={loading}
         className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300"
       >
-        {loading ? "Đang tạo..." : "Tạo cửa hàng"}
+        {loading ? "Đang tạo..." : "Lưu"}
       </button>
     </form>
   );

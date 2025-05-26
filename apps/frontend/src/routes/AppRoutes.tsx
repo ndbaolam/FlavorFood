@@ -1,8 +1,7 @@
 import { createBrowserRouter, RouteObject } from 'react-router-dom';
 import ErrorPage from '../error-page';
-import SignIn from '../pages/Signin';
-import SignUp from '../pages/Signup';
 import MainLayout from '../layouts/MainLayout';
+import AdminLayout from '../layouts/Admin/AdminLayout';
 import Home from '../pages/Home';
 import Meals from '../pages/Meals';
 import Tips from '../pages/Tips';
@@ -10,115 +9,51 @@ import RecipeDetail, { clientLoader as recipeLoader } from '../pages/Meals/Recip
 import TipDetails, { clientLoader as tipLoader } from '../pages/Tips/TipDetails';
 import Profile from '../pages/Profile';
 import Favourite from '../pages/Favourite';
-import AdminLayout from '../layouts/Admin/AdminLayout';
 import Market from '../pages/Market';
+import StoreRegistration from '../pages/Market/StoreRegistration';
+import SignIn from '../pages/Signin';
+import SignUp from '../pages/Signup';
+import LogIn from '../components/Admin/LogIn';
 import Accounts from '../pages/Admin/Account';
 import Posts from '../pages/Admin/Post';
 import Tip from '../pages/Admin/Tip';
-import LogIn from '../components/Admin/LogIn';
-import SellerLayout from '../layouts/Seller/SellerLayout';
-import SellerHome from '../pages/Seller/Home';
-import SellerProfile from '../pages/Seller/Profile';
-import StoreRegistration from '../pages/Market/StoreRegistration';
 import AdminStore from '../pages/Admin/Store';
-// Route definitions
+import SellerHome from '../pages/Seller/Home';
+
 const routes: RouteObject[] = [
   {
     path: '/',
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        index: true,
-        element: <Home />,
-      },
-      {
-        path: 'sign-in',
-        element: <SignIn />,
-      },
-      {
-        path: 'sign-up',
-        element: <SignUp />,
-      },
-      {
-        path: 'dish',
-        element: <Meals />,
-      },
-      {
-        path: 'dish/:slug.html',
-        element: <RecipeDetail />,
-        loader: recipeLoader,
-      }, 
-      {
-        path: 'tips',
-        element: <Tips/>
-      },
-      {
-        path: 'tips/:slug.html',
-        element: <TipDetails/>,
-        loader: tipLoader,
-      },
-    
-      {
-        path:'profile',
-        element:<Profile />
-      },
-      {
-        path:'favorite',
-        element:<Favourite />
-      },
-  
-      {
-        path: '*',
-        element: <ErrorPage />,
-      },
-      {
-        path:'market',
-        element:<Market />
-      },
-      {
-        path:'store-registration',
-        element:<StoreRegistration />
-      },
-      {
-        path: 'my-store',
-        element:<SellerHome />
-      }
+      { index: true, element: <Home /> },
+      { path: 'dish', element: <Meals /> },
+      { path: 'dish/:slug.html', element: <RecipeDetail />, loader: recipeLoader },
+      { path: 'tips', element: <Tips /> },
+      { path: 'tips/:slug.html', element: <TipDetails />, loader: tipLoader },
+      { path: 'profile', element: <Profile /> },
+      { path: 'favorite', element: <Favourite /> },
+      { path: 'market', element: <Market /> },
+      { path: 'store-registration', element: <StoreRegistration /> },
+      { path: 'my-store', element: <SellerHome /> },  
+      { path: '*', element: <ErrorPage /> },
     ],
   },
-  {
-  path:"admin/login", 
-  element:<LogIn />,
-   errorElement: <ErrorPage />,
-  },
+  { path: '/sign-in', element: <SignIn />, errorElement: <ErrorPage /> },
+  { path: '/sign-up', element: <SignUp />, errorElement: <ErrorPage /> },
+  { path: '/admin/login', element: <LogIn />, errorElement: <ErrorPage /> },
   {
     path: '/admin',
     element: <AdminLayout />,
     errorElement: <ErrorPage />,
     children: [
-      { path: "accounts", element: <Accounts /> },
-      { path: "posts", element: <Posts /> },
-      { path: "tips", element: <Tip /> },
-      {path:"stores", element:<AdminStore/>},
-     
+      { path: 'accounts', element: <Accounts /> },
+      { path: 'posts', element: <Posts /> },
+      { path: 'tips', element: <Tip /> },
+      { path: 'stores', element: <AdminStore /> },
     ],
   },
-  {
-  path :'/seller',
-  element:<SellerLayout />,
-  errorElement: <ErrorPage />,
-  children: [
-    {
-      element: <SellerHome />,
-      index: true,},
-    {
-      path:"profile", element:<SellerProfile />
-    }
-  ]
-  }
-
 ];
 
 const AppRoutes = createBrowserRouter(routes);
-
 export default AppRoutes;

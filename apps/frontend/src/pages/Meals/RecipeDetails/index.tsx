@@ -4,7 +4,7 @@ import { useLoaderData, LoaderFunctionArgs, useNavigate, useLocation } from "rea
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useFavorite } from "../../Favourite/FavoriteContext";
+import { useFavorite } from "../../../lib/FavoriteContext";
 import { Recipe } from "../recipe.interface";
 import CommentForm from "../../../components/Comment";
 import { checkAuth } from "../../../utils/auth";

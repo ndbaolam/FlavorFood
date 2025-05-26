@@ -162,7 +162,7 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
           </div>
 
           <div >
-            <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} />
+          <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
           </div>
         </div>
       </div>

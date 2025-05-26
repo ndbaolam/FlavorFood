@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import axiosInstance from "../../services/axiosInstance";
+import axiosInstance from "../services/axiosInstance";
 
 interface FavoriteItem {
   favorite_id: number;
