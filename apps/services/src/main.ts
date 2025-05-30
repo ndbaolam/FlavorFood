@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import * as express from 'express';
 import cookieParser from 'cookie-parser';
+import './instrumentation'
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -43,6 +44,7 @@ async function bootstrap() {
   await app.listen(port);
   Logger.log(`🚀 Application is running on: http://localhost:${port}/${globalPrefix}`);
   Logger.log(`🚀 Open SwaggerUI: http://localhost:${port}/docs`);
+  Logger.log(`🚀 Open JaegerUI: http://localhost:16686`);
 }
 
 bootstrap();

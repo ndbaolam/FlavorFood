@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Users } from './entity/users.entity';
+import { Users, UserStatus } from './entity/users.entity';
 import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 
 @Injectable()
@@ -24,10 +24,33 @@ export class UsersService {
         'last_name',
         'avatar',
         'role',
+        'status',
         'created_at',
         'updated_at',
       ],
     });
+  }
+
+  async searchUsers(mail: string, status: UserStatus): Promise<Users[]> {
+    return await this.usersRepository.find(
+      {
+        where: {
+          mail: mail ? `%${mail}%` : undefined,
+          status: status !== undefined ? status : undefined,
+        },
+        select: [
+          'user_id',
+          'mail',
+          'first_name',
+          'last_name',
+          'avatar',
+          'role',
+          'status',
+          'created_at',
+          'updated_at',
+        ],
+      }
+    );
   }
 
   async getUserById(userId: number): Promise<Users> {
@@ -39,7 +62,8 @@ export class UsersService {
         'first_name',
         'last_name',
         'avatar',
-        'role',        
+        'role',   
+        'status',     
         'created_at',
         'updated_at',
       ],
@@ -84,7 +108,8 @@ export class UsersService {
         'first_name',
         'last_name',
         'avatar',
-        'role',        
+        'role',  
+        'status',      
         'created_at',
         'updated_at',
       ],

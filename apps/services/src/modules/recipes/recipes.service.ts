@@ -46,7 +46,7 @@ export class RecipesService {
   }
 
   async searchRecipes(searchDto: SearchRecipeDto): Promise<Recipes[]> {
-    const { title, description, difficulty_level, offset, limit, categories, lang } =
+    const { title, description, difficulty_level, offset, limit, categories, feature, most_rating } =
       searchDto;
     const qb = this.recipesRepository
       .createQueryBuilder('recipes')
@@ -54,6 +54,7 @@ export class RecipesService {
       .leftJoinAndSelect('recipes.ingredients', 'ingredients')
       .leftJoinAndSelect('recipes.nutrition', 'nutrition')
       .leftJoin('recipes.steps', 'steps')
+      .leftJoin('recipes.reviews', 'reviews')
       .addSelect(['categories.category_id', 'categories.title'])    
       .addSelect(['steps.number', 'steps.step']);
 
@@ -73,6 +74,21 @@ export class RecipesService {
     if (categories && categories.length > 0) {
       qb.andWhere('categories.title IN (:...categories)', { categories });
     }
+    if (feature) {            
+      qb.addSelect('COUNT(reviews.review_id)', 'review_count')
+        .groupBy('recipes.recipe_id')
+        .addGroupBy('categories.category_id')
+        .addGroupBy('categories.title')
+        .addGroupBy('ingredients.id')
+        .addGroupBy('nutrition.id')
+        .addGroupBy('steps.number')
+        .addGroupBy('steps.step')
+        .orderBy('review_count', 'DESC');
+    }
+
+    if(most_rating) {
+      qb.orderBy('recipes.rating', 'DESC');
+    }
 
     if (offset) {
       qb.skip(offset);
@@ -88,7 +104,7 @@ export class RecipesService {
       );
     }
     return recipes;
-  }
+  }  
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipes> {
     try {
@@ -204,8 +220,7 @@ export class RecipesService {
       const updateObj: Partial<Recipes> = {};
       if (updateRecipeDto.title) updateObj.title = updateRecipeDto.title;
       if (updateRecipeDto.description) updateObj.description = updateRecipeDto.description;      
-      if (updateRecipeDto.difficulty_level) updateObj.difficulty_level = updateRecipeDto.difficulty_level;
-      if (updateRecipeDto.lang) updateObj.lang = updateRecipeDto.lang;
+      if (updateRecipeDto.difficulty_level) updateObj.difficulty_level = updateRecipeDto.difficulty_level;      
       if (updateRecipeDto.image) updateObj.image = updateRecipeDto.image;
       if (updateRecipeDto.serving) updateObj.serving = updateRecipeDto.serving;
       if (updateRecipeDto.time) updateObj.time = updateRecipeDto.time;

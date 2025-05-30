@@ -6,7 +6,7 @@ import {
   IsNumber,
   IsArray,
 } from 'class-validator';
-import { DifficultyLevel, Lang } from '../entity/recipes.entity';
+import { DifficultyLevel } from '../entity/recipes.entity';
 import { Transform, Type } from 'class-transformer';
 import { PartialType } from '@nestjs/mapped-types';
 import { IngredientDto } from '../ingredient/dto/ingredient.dto';
@@ -27,12 +27,7 @@ export class CreateRecipeDto {
 
   @IsEnum(DifficultyLevel)
   @ApiProperty({ enum: DifficultyLevel, example: DifficultyLevel.EASY })
-  difficulty_level: DifficultyLevel;
-
-  @IsOptional()
-  @IsEnum(Lang)
-  @ApiPropertyOptional({ enum: Lang, example: Lang.ENG })
-  lang?: Lang;
+  difficulty_level: DifficultyLevel;  
 
   @IsOptional()
   @Type(() => Number)

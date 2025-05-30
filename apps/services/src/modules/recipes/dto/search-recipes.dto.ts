@@ -1,12 +1,12 @@
-import { IsOptional, IsString, IsInt, Min, IsEnum, IsArray } from 'class-validator';
+import { IsOptional, IsString, IsInt, Min, IsEnum, IsArray, IsBoolean } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { DifficultyLevel, Lang } from '../entity/recipes.entity';
+import { DifficultyLevel } from '../entity/recipes.entity';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SearchRecipeDto {
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'Pizza', description: 'Search by title' })
+  @ApiPropertyOptional({ example: '', description: 'Search by title' })
   title?: string;
 
   @IsOptional()
@@ -16,13 +16,8 @@ export class SearchRecipeDto {
 
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'pizza', description: 'Search by description' })
-  description?: string;
-
-  @IsOptional()
-  @IsEnum(Lang)
-  @ApiPropertyOptional({ enum: Lang, example: Lang.ENG, description: 'Filter by language' })
-  lang?: Lang;
+  @ApiPropertyOptional({ example: '', description: 'Search by description' })
+  description?: string;  
 
   @IsOptional()
   @Type(() => Number)
@@ -39,9 +34,21 @@ export class SearchRecipeDto {
   limit?: number;
 
   @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  @ApiPropertyOptional({ example: true, description: 'Filter by most popular' })
+  feature?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @Type(() => Boolean)
+  @ApiPropertyOptional({ example: true, description: 'Filter by most rating' })
+  most_rating?: boolean;
+
+  @IsOptional()
   @IsString({ each: true })
   @Type(() => String)
   @Transform(({ value }) => Array.isArray(value) ? value : [value])
-  @ApiPropertyOptional({ type: [String], example: ['1', '2'], description: 'Category filter as array of strings' })
+  @ApiPropertyOptional({ type: [String], example: [], description: 'Category filter as array of strings' })
   categories: string[];
 }

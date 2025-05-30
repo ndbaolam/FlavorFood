@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsString, IsEnum, IsOptional, IsStrongPassword, IsDate } from 'class-validator';
-import { UserRole } from '../entity/users.entity';
+import { UserRole, UserStatus } from '../entity/users.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
@@ -30,6 +30,10 @@ export class CreateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
+
+  @IsOptional()
+  @IsEnum(UserStatus)
+  status?: UserStatus;
 }
 
 export class UpdateUserDto {
@@ -44,4 +48,8 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
+
+  @IsOptional()
+  @IsEnum(UserStatus)
+  status?: UserStatus;
 }

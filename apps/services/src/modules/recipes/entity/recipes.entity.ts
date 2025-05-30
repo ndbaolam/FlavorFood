@@ -21,11 +21,6 @@ export enum DifficultyLevel {
   HARD = 'Khó',
 }
 
-export enum Lang {
-  ENG = 'en',
-  VN = 'vn'
-}
-
 @Entity('recipes')
 export class Recipes {
   @PrimaryGeneratedColumn()
@@ -42,15 +37,7 @@ export class Recipes {
     enum: DifficultyLevel,
     default: DifficultyLevel.MEDIUM,
   })
-  difficulty_level: DifficultyLevel;
-
-  @Column({
-    type: 'enum',
-    enum: Lang,
-    nullable: true,
-    default: Lang.ENG
-  })
-  lang: Lang
+  difficulty_level: DifficultyLevel;  
 
   @Column({    
     nullable: true,

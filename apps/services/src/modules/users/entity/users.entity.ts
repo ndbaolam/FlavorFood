@@ -19,6 +19,12 @@ export enum UserRole {
   SELLER = 'seller',
 }
 
+export enum UserStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+  BANNED = 'banned',
+}
+
 @Entity('users')
 export class Users {
   @PrimaryGeneratedColumn()
@@ -47,6 +53,13 @@ export class Users {
     default: UserRole.NORMAL,
   })
   role: UserRole;
+
+  @Column({
+    type: 'enum',
+    enum: UserStatus,
+    default: UserStatus.ACTIVE,
+  })
+  status: UserStatus;
 
   @OneToMany(() => Favorite, favorite => favorite.user)
   favorites: Favorite[];
