@@ -5,7 +5,7 @@ import { Request } from 'express';
 import { UsersService } from '../users/users.service';
 import { ConfigService } from '@nestjs/config';
 import { MomoConfig, MomoPaymentQuery } from './momo.interface';
-import { UserRole, Users } from '../users/entity/users.entity';
+import { UserRole, Users, UserStatus } from '../users/entity/users.entity';
 import { Invoice, InvoiceStatus } from '../invoice/entity/invoice.entity';
 import { Subscription } from '../subscription/entity/subscription.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -159,7 +159,13 @@ export class PaymentService {
       
           savedInvoice = await manager.save(invoice);
       
-          await manager.update('users', { user_id: userId }, { role: UserRole.SELLER });
+          await manager.update('users', { user_id: userId },
+            {
+              role: UserRole.SELLER,
+              expired_at: new Date(Date.now() + subscription.day_remain * 24 * 60 * 60 * 1000), // Set expiration date based on subscription time
+              status: user.status == UserStatus.ACTIVE ? user.status : UserStatus.ACTIVE, // Ensure user status is set to ACTIVE
+            }
+          );
         });
       
         return {

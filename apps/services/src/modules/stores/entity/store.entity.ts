@@ -37,6 +37,13 @@ export class Stores {
   @Column({ nullable: true, type: 'double precision' })
   latitude: number;
   
+  @Column({
+    nullable: true,
+    type: 'enum',
+    enum: ['active', 'inactive', 'closed'],
+    default: 'active',
+  })
+  status: 'active' | 'inactive' | 'closed';
 
   @Column({ nullable: true })
   phone_number: string;

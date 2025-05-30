@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateStoreDto {
   @ApiProperty()
@@ -25,12 +26,19 @@ export class CreateStoreDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   longitude: number;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsNumber()
+  @Type(() => Number)
   latitude: number;
+
+  @ApiProperty({ required: false, enum: ['active', 'inactive', 'closed'], default: 'active' })
+  @IsOptional()
+  @IsString()
+  status?: 'active' | 'inactive' | 'closed' = 'active';
 
   @ApiProperty({ required: false })
   @IsOptional()

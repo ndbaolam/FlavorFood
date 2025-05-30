@@ -24,6 +24,9 @@ export class Subscription {
   @Column('decimal')
   price: number;
 
+  @Column()
+  day_remain: number; // Number of days remaining in the subscription
+
   @OneToOne(() => Invoice, Invoice => Invoice.subscription, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
   invoice: Invoice;
 

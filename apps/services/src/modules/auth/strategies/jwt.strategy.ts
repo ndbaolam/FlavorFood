@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 import { Request } from 'express';
+import { UserStatus } from '../../users/entity/users.entity';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -33,6 +34,10 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     if (!user) {
       throw new UnauthorizedException('Please log in to continue');
     }
+
+    if(user['status'] !== UserStatus.ACTIVE) {
+      throw new UnauthorizedException('Your account is not active');
+    }    
 
     return {
       sub: payload.user_id,

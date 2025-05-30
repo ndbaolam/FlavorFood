@@ -38,12 +38,12 @@ export class SellerStrategy extends PassportStrategy(Strategy, 'seller') {
       throw new UnauthorizedException('You are not authorized to access this resource');
     }
   
-    // if (
-    //   user['role'] === 'seller' &&
-    //   new Date(user['exp_date']) < new Date()
-    // ) {
-    //   throw new UnauthorizedException('Your account has expired');
-    // }
+    if (
+      user['role'] === 'seller' &&
+      new Date(user['expired_at']) < new Date()
+    ) {
+      throw new UnauthorizedException('Your account has expired');
+    }
   
     return {
       sub: payload.user_id,

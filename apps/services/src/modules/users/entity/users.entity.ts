@@ -73,6 +73,18 @@ export class Users {
   @OneToOne(() => Stores, (store) => store.user)
   store: Stores;  
 
+  //For Seller only
+  @CreateDateColumn(
+    { 
+      nullable: true,
+      type: 'timestamp',
+      default: null,
+      comment: 'The date when the seller account was expired'
+    }
+  )
+  expired_at: Date;
+
+
   @CreateDateColumn({
     type: 'timestamp',
   })
