@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/axiosInstance";
-import { useFavorite } from "./FavoriteContext";
+import { useFavorite } from "../../lib/FavoriteContext";
 import RecipeCard from "../../components/RecipeCard";
 
 const Favourite: React.FC = () => {

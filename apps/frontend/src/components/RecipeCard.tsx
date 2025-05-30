@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Clock, Heart } from "lucide-react";
-import formatString from "../services/formatString";
+import formatString from "../utils/formatString";
 import { Recipe } from "../pages/Meals/recipe.interface";
 import { toast } from "react-toastify";
 import { Link, useLocation, useNavigate } from "react-router-dom";

@@ -4,5 +4,8 @@ export interface User {
     first_name: string;
     last_name: string;
     avatar: string | null;
-    role: "norm" | "admin" | "seller";
+    role: "normal" | "admin" | "seller";
+    created_at: string;
+    updated_at: string;
+    
   }

@@ -8,6 +8,7 @@ import {
 } from '@react-oauth/google';
 import axiosInstance from '../services/axiosInstance';
 import { User } from '../pages/Profile/Profile.interface';
+import { toast } from 'react-toastify';
 
 interface CardProps {
   children?: ReactNode;
@@ -36,28 +37,22 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-
+  
     try {
       await axiosInstance.post(
         '/auth/login',
         { mail, password },
         { withCredentials: true }
       );
-
-      const response = await axiosInstance.get<User>('/auth/profile');
-      const loginUser = response.data;
-
-      if (loginUser.role === 'seller') {
-        navigate('/seller');
-      } else {
-        const returnTo = (location.state as any)?.returnTo;
-        navigate(returnTo || '/');
-      }
+      window.dispatchEvent(new CustomEvent('userLoggedIn'));
+      const returnTo = (location.state as any)?.returnTo;
+      navigate(returnTo || '/');
     } catch (error) {
       console.error('Đăng nhập thất bại:', error);
-      alert('Tên đăng nhập hoặc mật khẩu không đúng');
+      toast.error('Tên đăng nhập hoặc mật khẩu không đúng');
     }
   };
+  
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse: CodeResponse | TokenResponse) => {

@@ -140,7 +140,7 @@ const CreateTip: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubm
                 </div>
                 <div className="flex justify-end gap-2 mt-4">
                     <button onClick={handleSubmit} className="text-white bg-blue-600 px-4 py-2 rounded-lg">
-                        {isEditing ? 'Cập nhật công thức' : 'Tạo công thức'}
+                        {isEditing ? 'Cập nhật' : 'Lưu'}
                     </button>
                 </div>
             </div>

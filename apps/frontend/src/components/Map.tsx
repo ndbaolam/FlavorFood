@@ -2,7 +2,8 @@ import mapboxgl from "mapbox-gl";
 import { useEffect, useRef } from "react";
 import { Store } from "../pages/Market/store.interface";
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
+mapboxgl.accessToken =
+  "pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q";
 
 interface MapProps {
   stores: Store[];
@@ -11,7 +12,12 @@ interface MapProps {
   onMapClick?: (store: Store) => void;
 }
 
-const Map: React.FC<MapProps> = ({ stores, selectedStore, userLocation, onMapClick }) => {
+const Map: React.FC<MapProps> = ({
+  stores,
+  selectedStore,
+  userLocation,
+  onMapClick,
+}) => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<mapboxgl.Map | null>(null);
 
@@ -20,49 +26,81 @@ const Map: React.FC<MapProps> = ({ stores, selectedStore, userLocation, onMapCli
 
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/streets-v11',
-      center: [105.854444, 21.028511], 
+      style: "mapbox://styles/mapbox/streets-v11",
+      center: [105.854444, 21.028511],
       zoom: 12,
     });
   }, []);
 
   useEffect(() => {
     if (!map.current) return;
-  
+
     stores.forEach((store) => {
-      if (store.location) {
+      if (
+        typeof store.longitude === "number" &&
+        typeof store.latitude === "number" &&
+        store.latitude >= -90 &&
+        store.latitude <= 90 &&
+        store.longitude >= -180 &&
+        store.longitude <= 180
+      ) {
         const marker = new mapboxgl.Marker()
-          .setLngLat(store.location)
+          .setLngLat([store.longitude, store.latitude])
           .setPopup(
             new mapboxgl.Popup().setHTML(
-              `<h2>${store.name}</h2><p>${store.address}</p>`
+              `<h2><strong>${store.name}</strong></h2><p>${store.address}</p>`
             )
           )
           .addTo(map.current!);
 
-        // Gọi hàm onMapClick khi bấm vào marker
         marker.getElement().addEventListener("click", () => {
-          if (onMapClick) onMapClick(store); 
+          if (onMapClick) onMapClick(store);
         });
+      } else {
+        console.warn("Invalid coordinates for store:", store);
       }
     });
   }, [stores, onMapClick]);
-  
+
   useEffect(() => {
     if (!map.current || !userLocation) return;
-    const userMarker = new mapboxgl.Marker({ color: "blue" }) 
-      .setLngLat([userLocation.longitude, userLocation.latitude])
-      .setPopup(new mapboxgl.Popup().setHTML("<strong>Vị trí của bạn</strong>"))
-      .addTo(map.current);
-    return () => {
-      userMarker.remove();
-    };
+
+    const { latitude, longitude } = userLocation;
+
+    if (
+      typeof longitude === "number" &&
+      typeof latitude === "number" &&
+      latitude >= -90 &&
+      latitude <= 90 &&
+      longitude >= -180 &&
+      longitude <= 180
+    ) {
+      const userMarker = new mapboxgl.Marker({ color: "blue" })
+        .setLngLat([longitude, latitude])
+        .setPopup(new mapboxgl.Popup().setHTML("<strong>Vị trí của bạn</strong>"))
+        .addTo(map.current);
+
+      return () => {
+        userMarker.remove();
+      };
+    } else {
+      console.warn("Invalid user location:", userLocation);
+    }
   }, [userLocation]);
 
   useEffect(() => {
-    if (selectedStore && map.current) {
+    if (
+      selectedStore &&
+      map.current &&
+      typeof selectedStore.longitude === "number" &&
+      typeof selectedStore.latitude === "number" &&
+      selectedStore.latitude >= -90 &&
+      selectedStore.latitude <= 90 &&
+      selectedStore.longitude >= -180 &&
+      selectedStore.longitude <= 180
+    ) {
       map.current.flyTo({
-        center: selectedStore.location,
+        center: [selectedStore.longitude, selectedStore.latitude],
         zoom: 15,
         essential: true,
       });

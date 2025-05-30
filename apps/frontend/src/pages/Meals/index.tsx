@@ -5,7 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import FilterMenu from '../../components/FilterMenu';
 import RecipeCard from '../../components/RecipeCard';
 import SearchBox from '../../components/Search';
-import { useFavorite } from '../Favourite/FavoriteContext';
+import { useFavorite } from '../../lib/FavoriteContext';
 import axiosInstance from '../../services/axiosInstance';
 import { Recipe } from './recipe.interface';
 import { checkAuth } from '../../utils/auth';

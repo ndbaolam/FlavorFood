@@ -355,7 +355,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
               {formErrors.time && <p className="text-red-500">{formErrors.time}</p>}
             </div>
             <div>
-              <label className="block font-medium">Khẩu phần  <span className="text-red-500">* </span></label>
+              <label className="block font-medium">Khẩu phần (người) <span className="text-red-500">* </span></label>
               <input
                 type="number"
                 value={serving === 0 ? "" : serving}
@@ -590,7 +590,7 @@ const CreatePost: React.FC<CreatePostProps> = ({ onClose, onSubmit, initialData,
         </div>
         <div className="flex justify-end gap-2 mt-4">
           <button onClick={handleSubmit} className="text-white bg-blue-600 px-4 py-2 rounded-lg">
-            {isEditing ? 'Cập nhật công thức' : 'Tạo công thức'}
+            {isEditing ? 'Cập nhật' : 'Lưu'}
           </button>
         </div>
       </div>
