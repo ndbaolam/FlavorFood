@@ -72,9 +72,8 @@ const Home: React.FC = () => {
   return (
     <div className="min-h-screen  max-w-screen">
 
-      <Banner></Banner>
-      <main className="container mx-auto py-8 ">
-
+      <main className="container mx-auto px-4 sm:px-6 md:px-8 py-8">
+        <Banner></Banner>
         <div className="py-16">
           <div className="text-center mb-12">
             <h2 className="font-lobster text-4xl font-semibold">Hôm nay ăn gì</h2>
@@ -89,7 +88,8 @@ const Home: React.FC = () => {
             </div>
           )}
 
-          <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 px-4 md:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
+
             {menuItems.map(({ icon: Icon, title, description, category_id }) => (
               <div
                 key={title}
@@ -119,8 +119,8 @@ const Home: React.FC = () => {
             Món ăn thịnh hành
           </h2>
           {/* Recipes Grid */}
-          {/* 
-          <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+
+          {/* <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
             {recipes.length > 0 ? (
               recipes.map((recipe) => (
                 <RecipeCard key={recipe.recipe_id} recipe={recipe} />

@@ -66,7 +66,8 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
       className="block relative pt-20 cursor-pointer"
       aria-label={`Xem chi tiết cho ${recipe.title}`}
     >
-      <div className="bg-gradient-to-b from-blue-100 to-white rounded-3xl shadow-lg hover:scale-105 transition-all ease-in-out flex flex-col justify-between h-[450px] w-[300px]">
+      <div className="bg-gradient-to-b from-blue-100 to-white rounded-xl shadow-lg hover:scale-105 transition-all ease-in-out flex flex-col h-[460px] w-[300px]">
+
         {/* Hình ảnh */}
         <div className="relative flex justify-center h-[220px]">
           {recipe.image ? (
@@ -91,15 +92,15 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
               {recipe.title}
             </h2>
 
-            <p className="text-gray-600 text-center text-sm line-clamp-3 h-[60px] mb-2">
+            <p className="text-gray-600 text-center text-sm line-clamp-3 h-[70px] mb-2">
               {recipe.description}
             </p>
           </div>
 
-          <div className="border-t border-gray-300 my-4 w-full"></div>
+          <div className="border-t border-gray-300 my-2 w-full" />
 
           {/* Thời gian và yêu thích */}
-          <div className="flex justify-between items-center text-gray-500 text-sm w-full gap-4">
+          <div className="flex justify-between items-center text-gray-500 text-sm w-full gap-4 mb-4">
             {/* Thời gian */}
             <div className="flex items-center gap-2">
               <Clock className="w-5 h-5" />
