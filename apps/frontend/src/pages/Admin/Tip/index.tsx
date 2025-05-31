@@ -153,8 +153,8 @@ const Tip: React.FC = () => {
         key={label || pageNum}
         onClick={() => handlePageChange(pageNum)}
         className={`px-3 py-1 rounded ${currentPage === pageNum
-            ? "bg-blue-500 text-white font-medium"
-            : "bg-white text-gray-700 hover:bg-blue-100"
+          ? "bg-blue-500 text-white font-medium"
+          : "bg-white text-gray-700 hover:bg-blue-100"
           }`}
       >
         {label || pageNum}
@@ -342,7 +342,7 @@ const Tip: React.FC = () => {
               ))
             ) : (
               <tr>
-                <td colSpan={5} className="p-4 text-center text-gray-500">
+                <td colSpan={5} className="p-4 text-center text-black">
                   Không tìm thấy kết quả nào
                 </td>
               </tr>

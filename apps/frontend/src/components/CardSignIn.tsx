@@ -122,7 +122,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
                 type="button"
                 onClick={togglePasswordVisibility}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-600"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-black"
               >
                 {showPassword ? (
                   <svg
@@ -156,7 +156,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
               ĐĂNG NHẬP
             </button>
           </form>
-          <div className="mt-10 grid grid-cols-3 items-center text-gray-400">
+          <div className="mt-10 grid grid-cols-3 items-center text-black">
             <hr className="border-gray-400" />
             <p className="text-center text-sm">HOẶC</p>
             <hr className="border-gray-400" />

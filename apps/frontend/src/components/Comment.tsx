@@ -5,9 +5,10 @@ import axiosInstance from "../services/axiosInstance";
 
 interface CommentFormProps {
   recipeId: number;
+  onCommentCreated: () => void;
 }
 
-const CommentForm: React.FC<CommentFormProps> = ({ recipeId }) => {
+const CommentForm: React.FC<CommentFormProps> = ({ recipeId, onCommentCreated }) => {
   const [rating, setRating] = useState<number>(0);
   const [comment, setComment] = useState<string>("");
   const [userId, setUserId] = useState<number | null>(null);
@@ -62,6 +63,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ recipeId }) => {
       toast.success("Bình luận thành công!", { position: "top-right", autoClose: 2000 });
       setRating(0);
       setComment("");
+      onCommentCreated();
     } catch (error) {
       toast.error("Đã có lỗi xảy ra!", { position: "top-right", autoClose: 2000 });
     } finally {
@@ -71,7 +73,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ recipeId }) => {
 
   return (
     <form onSubmit={handleSubmit} className="mt-8 ">
-      <h3 className="text-xl font-semibold text-gray-800 mb-4">Đánh giá món ăn</h3>
+      <h3 className="text-xl font-semibold text-black mb-4">Đánh giá món ăn</h3>
 
       <div className="flex items-center gap-2 mb-4">
         {[1, 2, 3, 4, 5].map((star) => (
@@ -85,7 +87,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ recipeId }) => {
         ))}
       </div>
       <textarea
-        className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        className="w-full border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
         rows={4}
         placeholder="Viết bình luận của bạn..."
         value={comment}

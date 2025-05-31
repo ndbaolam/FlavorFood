@@ -28,11 +28,11 @@ const TipsCard: React.FC<TipsCardProps> = ({ tips, currentCategoryPath, onToggle
       </div>
 
       <div className="flex flex-col items-center p-2">
-        <h2 className="text-xl font-semibold text-gray-800 mb-2 text-center hover:text-blue-500 transition-colors duration-300">
+        <h2 className="text-xl font-semibold text-black mb-2 text-center hover:text-blue-500 transition-colors duration-300">
           {tips.title}
         </h2>
 
-        <p className="text-gray-600 text-center mb-4 text-sm line-clamp-5 overflow-hidden text-ellipsis" dangerouslySetInnerHTML={{ __html: tips.content.replace(/(\d+\.\s[^<]+)/g, '<strong>$1</strong>') }} />
+        <p className="text-black text-center mb-4 text-sm line-clamp-5 overflow-hidden text-ellipsis" dangerouslySetInnerHTML={{ __html: tips.content.replace(/(\d+\.\s[^<]+)/g, '<strong>$1</strong>') }} />
       </div>
     </div>
   );

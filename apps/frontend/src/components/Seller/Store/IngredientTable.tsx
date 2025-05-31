@@ -259,7 +259,7 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
                           </button>
                           <button
                             onClick={() => setEditingId(null)}
-                            className="text-gray-600 hover:text-gray-800"
+                            className="text-black"
                           >
                             Hủy
                           </button>
@@ -279,7 +279,7 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
                             onClick={() => handleDeleteIngredient(product.ingredient_id)}
                             className="text-red-600 hover:text-red-800"
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={22} />
                           </button>
                         </>
                       )}

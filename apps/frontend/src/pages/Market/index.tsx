@@ -214,7 +214,7 @@ const Market: React.FC = () => {
                     onClick={() => setSelectedStore(store)}
                   >
                     <h3>{store.name}</h3>
-                    <p className="text-gray-500">{store.address}</p>
+                    <p className="text-black">{store.address}</p>
                     <p>
                       Giờ mở cửa: <span className="text-green-300">{formatTime(store.openHours)}</span> -{" "}
                       <span className="text-green-300">{formatTime(store.closeHours)}</span>

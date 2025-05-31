@@ -30,7 +30,7 @@ const FilterTips: React.FC<FilterTipsProps> = ({ activeFilter, setActiveFilter }
   return (
     <div className="flex flex-wrap justify-center gap-4 p-4">
       {loading ? (
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-black">Đang tải...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
@@ -39,7 +39,7 @@ const FilterTips: React.FC<FilterTipsProps> = ({ activeFilter, setActiveFilter }
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
               ${activeFilter === null
                 ? 'bg-red-700 text-white'
-                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+                : 'bg-white text-black border border-gray-200 hover:bg-gray-50'}`}
             onClick={() => setActiveFilter(null)}
           >
             Tất cả
@@ -49,7 +49,7 @@ const FilterTips: React.FC<FilterTipsProps> = ({ activeFilter, setActiveFilter }
               key={genre.genre_id}
               onClick={() => setActiveFilter(genre.genre_id)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
-                ${activeFilter === genre.genre_id ? 'bg-red-700 text-white' : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+                ${activeFilter === genre.genre_id ? 'bg-red-700 text-white' : 'bg-white text-black border border-gray-200 hover:bg-gray-50'}`}
             >
               {genre.title}
             </button>

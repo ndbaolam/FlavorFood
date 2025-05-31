@@ -38,7 +38,7 @@ const Profile: React.FC = () => {
 
             <div className="flex flex-col md:flex-row gap-4 mb-4">
               <div className="flex-1">
-                <label className="block text-gray-600 mb-1">Họ</label>
+                <label className="block text-black mb-1">Họ</label>
                 <input
                   className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
@@ -47,7 +47,7 @@ const Profile: React.FC = () => {
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-gray-600 mb-1">Tên</label>
+                <label className="block text-black mb-1">Tên</label>
                 <input
                   className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
@@ -58,7 +58,7 @@ const Profile: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-600 mb-1">Email</label>
+              <label className="block text-black mb-1">Email</label>
               <input
                 className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-gray-100"
                 type="text"
