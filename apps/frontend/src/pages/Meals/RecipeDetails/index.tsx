@@ -173,39 +173,43 @@ const RecipeDetail: React.FC = () => {
               <Heart color={isLiked ? "white" : "gray"} fill={isLiked ? "white" : "none"} size={18} />
             </button>
           </div>
+          <div className="flex justify-between w-full gap-16 items-stretch">
+            <div className="w-2/3">
+              <img
+                src={recipe.image}
+                alt={recipe.title}
+                className="w-full h-full max-h-[500px] object-cover rounded-lg shadow-md"
+              />
+            </div>
 
-          <div className="flex justify-between w-full gap-20">
-            <img
-              src={recipe.image}
-              alt={recipe.title}
-              className="w-2/3 max-h-[500px] object-cover rounded-lg shadow-md "
-            />
-
-            <div className="w-1/3 bg-blue-50 p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-4 text-center">Thông tin dinh dưỡng</h2>
-              <p className="text-gray-700 text-sm text-center">(Dành cho 1 khẩu phần ăn)</p>
-              <ul className="text-gray-700 space-y-2 mt-16">
-                {recipe.nutrition?.length ? (
-                  recipe.nutrition.map((nutrient) => (
-                    <li key={nutrient.id} className="text-sm flex flex-col">
-                      <div className="flex items-center justify-between">
-                        <span>{nutrient.name}:</span>
-                        <span>{nutrient.amount} {nutrient.unit}</span>
-                      </div>
-                      <hr className="my-2 border-gray-300" />
-                    </li>
-                  ))
-                ) : (
-                  <li>Không có thông tin dinh dưỡng nào.</li>
-                )}
-              </ul>
-              <div className="mt-12 pt-12 border-t text-center">
+            <div className="w-1/3 bg-blue-50 p-6 rounded-lg shadow max-h-[500px] flex flex-col justify-between">
+              <div>
+                <h2 className="text-xl font-semibold mb-4 text-center">Thông tin dinh dưỡng</h2>
+                <p className="text-gray-700 text-sm text-center">(Dành cho 1 khẩu phần ăn)</p>
+                <ul className="text-gray-700 space-y-2 mt-4">
+                  {recipe.nutrition?.length ? (
+                    recipe.nutrition.map((nutrient) => (
+                      <li key={nutrient.id} className="text-sm flex flex-col">
+                        <div className="flex items-center justify-between">
+                          <span>{nutrient.name}:</span>
+                          <span>{nutrient.amount} {nutrient.unit}</span>
+                        </div>
+                        <hr className="my-2 border-gray-300" />
+                      </li>
+                    ))
+                  ) : (
+                    <li>Không có thông tin dinh dưỡng nào.</li>
+                  )}
+                </ul>
+              </div>
+              <div className="mt-4 pt-4 border-t text-center">
                 <p className="text-gray-600 italic font-medium">
                   "Dinh dưỡng hợp lý là chìa khóa cho một cơ thể khỏe mạnh!"
                 </p>
               </div>
             </div>
           </div>
+
 
           <div className="mt-8">
             <h2 className="p-4 text-gray-700 text-xl">{recipe.description}</h2>

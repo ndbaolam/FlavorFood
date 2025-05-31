@@ -78,7 +78,7 @@ const CreateTip: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubm
                 <div className="grid grid-cols-1 gap-4">
 
                     <div className="mb-4">
-                        <label className="block  font-medium ">Tiêu đề</label>
+                        <label className="block  font-medium ">Tiêu đề <span className="text-red-500">*</span></label>
                         <input
                             type="text"
                             value={title}
@@ -89,7 +89,7 @@ const CreateTip: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubm
                     </div>
 
                     <div className="mb-4">
-                        <label className="block font-medium">Hình ảnh</label>
+                        <label className="block font-medium">Hình ảnh <span className="text-red-500">*</span></label>
                         <div className="flex space-x-4">
                             <label>
                                 <input
@@ -131,7 +131,7 @@ const CreateTip: React.FC<TipDetailPopupProps> = ({ initialData, onClose, onSubm
                     </div>
 
                     <div className="mb-4">
-                        <label className="block  font-medium ">Nội dung</label>
+                        <label className="block  font-medium ">Nội dung <span className="text-red-500">*</span></label>
                         <TextEditor
                             value={content}
                             onChange={setContent}

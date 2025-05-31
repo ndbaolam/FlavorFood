@@ -4,6 +4,7 @@ export interface User {
     first_name: string;
     last_name: string;
     avatar: string | null;
+    status: "active" | "inactive";
     role: "normal" | "admin" | "seller";
     created_at: string;
     updated_at: string;
