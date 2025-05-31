@@ -203,7 +203,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                             onClick();
                           }
                         }}
-                        className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100"
+                        className="flex items-center px-4 py-2  hover:bg-blue-100"
                       >
                         {icon}
                         {label}

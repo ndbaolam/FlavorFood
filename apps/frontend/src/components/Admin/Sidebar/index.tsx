@@ -1,92 +1,104 @@
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, Users, FileText, Lightbulb, Settings, LogOut, Menu, Store } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import {
+  Users,
+  FileText,
+  Lightbulb,
+  Store,
+  Menu,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { useState } from "react";
-import axiosInstance from "../../../services/axiosInstance";
 
-const AdminSidebar: React.FC<{ setActivePage: (page: string) => void }> = ({ setActivePage }) => {
+interface Props {
+  setActivePage: (page: string) => void;
+  isCollapsed: boolean;
+  setIsCollapsed: (val: boolean) => void;
+}
+
+const AdminSidebar: React.FC<Props> = ({
+  setActivePage,
+  isCollapsed,
+  setIsCollapsed,
+}) => {
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
-  const fontStyle = document.createElement('style');
-  fontStyle.textContent = `
-  @import url('https://fonts.googleapis.com/css2?family=Niconne&display=swap');
-`;
-  document.head.appendChild(fontStyle);
-  const handleLogout = async () => {
-    try {
-      await axiosInstance.post("/auth/logout", {}, {});
-
-      navigate("/admin/login");
-    } catch (error) {
-      console.error("Đăng xuất thất bại:", error);
-    }
-  };
-
+  const [isOpenMobile, setIsOpenMobile] = useState(false);
 
   const menuItems = [
     { to: "/admin/accounts", icon: <Users className="w-5 h-5" />, label: "Quản lý tài khoản" },
     { to: "/admin/posts", icon: <FileText className="w-5 h-5" />, label: "Quản lý công thức" },
     { to: "/admin/tips", icon: <Lightbulb className="w-5 h-5" />, label: "Quản lý mẹo vặt" },
-    { to: "/admin/stores", icon: <Store className="w-5 h-5" />, label: "Quản lý cửa hàng " },
+    { to: "/admin/stores", icon: <Store className="w-5 h-5" />, label: "Quản lý cửa hàng" },
   ];
 
   const handlePageChange = (label: string) => {
     setActivePage(label);
-    setIsOpen(false);
+    setIsOpenMobile(false);
   };
 
   return (
     <>
+      {/* Mobile open button */}
       <button
         className="md:hidden fixed top-4 left-4 z-50 bg-blue-600 p-2 rounded-md text-white"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpenMobile(!isOpenMobile)}
       >
         <Menu className="w-6 h-6" />
       </button>
 
+
       <aside
-        className={`fixed inset-y-0 left-0 w-64 bg-blue-100 p-6 flex flex-col transition-transform duration-300 ease-in-out transform ${isOpen ? "translate-x-0" : "-translate-x-64"
-          } md:relative md:translate-x-0`}
+        className={`
+          fixed md:relative top-0 left-0 h-full  border-b border-gray-200 shadow-sm z-40
+          transition-all duration-300
+          ${isCollapsed ? "w-16" : "w-64"}
+          ${isOpenMobile ? "block" : "hidden"} md:block
+        `}
       >
-        <div className="flex items-center space-x-4">
-          <span
-            style={{ fontFamily: "'Niconne', cursive" }}
-            className="text-4xl font-bold text-blue-700 "
+        <div className="hidden md:block absolute top-1/2 right-[-12px] transform -translate-y-1/2 z-50">
+          <button
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="flex items-center justify-center w-6 h-6 bg-blue-600 text-white rounded-full shadow"
           >
-            Flavor Food
-          </span>
+            {isCollapsed ? (
+              <ChevronRight className="w-4 h-4" />
+            ) : (
+              <ChevronLeft className="w-4 h-4" />
+            )}
+          </button>
         </div>
 
-        <nav className="space-y-4 mt-6">
-          {menuItems.map((item) => {
-            const isActive = location.pathname === item.to;
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => handlePageChange(item.label)}
-                className={`flex items-center space-x-2 py-2 px-4 rounded-lg w-full text-left transition ${isActive ? "bg-blue-700 font-bold text-white" : "hover:bg-blue-500"
+        <div className="mt-16 px-2">
+          <nav className="space-y-2">
+            {menuItems.map((item) => {
+              const isActive = location.pathname === item.to;
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => handlePageChange(item.label)}
+                  className={`flex items-center ${
+                    isCollapsed ? "justify-center" : "justify-start"
+                  } space-x-2 py-2 px-4 rounded-lg w-full text-left transition ${
+                    isActive
+                      ? "bg-blue-700 font-bold text-white"
+                      : "hover:bg-blue-300 hover:text-black"
                   }`}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="mt-auto">
-          <button
-            className="flex items-center p-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-            onClick={handleLogout}
-          >
-            <LogOut className="w-5 h-5 mr-2" /> Đăng xuất
-          </button>
+                >
+                  {item.icon}
+                  {!isCollapsed && <span>{item.label}</span>}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
       </aside>
 
-      {isOpen && (
-        <div className="fixed inset-0 bg-black opacity-50 md:hidden" onClick={() => setIsOpen(false)}></div>
+      {isOpenMobile && (
+        <div
+          className="fixed inset-0 bg-black opacity-50 md:hidden z-30"
+          onClick={() => setIsOpenMobile(false)}
+        />
       )}
     </>
   );
