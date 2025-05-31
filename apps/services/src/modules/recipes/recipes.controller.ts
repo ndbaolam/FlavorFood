@@ -45,7 +45,7 @@ export class RecipesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Search recipes by title' })
+  @ApiOperation({ summary: 'Search recipes' })
   @ApiQuery({ name: 'title', required: false, type: String })
   @ApiResponse({ status: 200, description: 'List of matching recipes', type: [Recipes] })
   async searchRecipeByTitle(

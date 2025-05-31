@@ -53,9 +53,6 @@ export class Recipes {
   @Column()
   serving: number;
 
-  @Column({ type: 'float', default: 0 })
-  rating: number;  
-
   // One Recipe can be favorited many times
   @OneToMany(() => Favorite, (favorite) => favorite.recipe)
   favorites: Favorite[];

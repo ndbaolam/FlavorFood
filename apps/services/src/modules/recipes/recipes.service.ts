@@ -30,15 +30,16 @@ export class RecipesService {
 
   async findOne(id: number): Promise<Recipes> {
     const recipe = await this.recipesRepository
-    .createQueryBuilder('recipes')
-    .leftJoin('recipes.categories', 'categories')
-    .leftJoinAndSelect('recipes.ingredients', 'ingredients')
-    .leftJoinAndSelect('recipes.nutrition', 'nutrition')
-    .leftJoin('recipes.steps', 'steps')
-    .addSelect(['categories.category_id', 'categories.title'])    
-    .addSelect(['steps.number', 'steps.step'])
-    .where('recipes.recipe_id = :id', { id })
-    .getOne();
+      .createQueryBuilder('recipes')
+      .leftJoin('recipes.categories', 'categories')
+      .leftJoinAndSelect('recipes.ingredients', 'ingredients')
+      .leftJoinAndSelect('recipes.nutrition', 'nutrition')
+      .leftJoinAndSelect('recipes.reviews', 'reviews')
+      .leftJoin('recipes.steps', 'steps')
+      .addSelect(['categories.category_id', 'categories.title'])    
+      .addSelect(['steps.number', 'steps.step'])
+      .where('recipes.recipe_id = :id', { id })
+      .getOne();
     if (!recipe) {
       throw new NotFoundException(`Recipe with id ${id} not found.`);
     }
@@ -53,8 +54,8 @@ export class RecipesService {
       .leftJoin('recipes.categories', 'categories')
       .leftJoinAndSelect('recipes.ingredients', 'ingredients')
       .leftJoinAndSelect('recipes.nutrition', 'nutrition')
+      .leftJoinAndSelect('recipes.reviews', 'reviews')
       .leftJoin('recipes.steps', 'steps')
-      .leftJoin('recipes.reviews', 'reviews')
       .addSelect(['categories.category_id', 'categories.title'])    
       .addSelect(['steps.number', 'steps.step']);
 
@@ -87,7 +88,16 @@ export class RecipesService {
     }
 
     if(most_rating) {
-      qb.orderBy('recipes.rating', 'DESC');
+      qb.addSelect('AVG(reviews.rating)', 'average_rating')
+        .groupBy('recipes.recipe_id')
+        .addGroupBy('categories.category_id')
+        .addGroupBy('categories.title')
+        .addGroupBy('ingredients.id')
+        .addGroupBy('nutrition.id')
+        .addGroupBy('steps.number')
+        .addGroupBy('steps.step')
+        .addGroupBy('reviews.review_id')
+        .orderBy('average_rating', 'DESC');
     }
 
     if (offset) {

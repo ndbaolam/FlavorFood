@@ -12,6 +12,11 @@ export class CreateStoreIngredientDto {
   @IsString()
   title: string;
 
+  @ApiProperty({ description: 'The unit of measurement for the ingredient', required: false })
+  @IsString()
+  @IsOptional()
+  unit?: string;
+
   @ApiProperty({ description: 'The quantity of the ingredient in stock' })
   @IsNumber()
   @Type(() => Number)

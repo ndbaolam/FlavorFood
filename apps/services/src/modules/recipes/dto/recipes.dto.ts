@@ -50,12 +50,6 @@ export class CreateRecipeDto {
   serving: number;
 
   @IsOptional()
-  @IsNumber()
-  @Type(() => Number)
-  @ApiPropertyOptional({ example: 4.5 })
-  rating?: number;
-
-  @IsOptional()
   @Transform(({ value }) => Array.isArray(value) ? value : [value])
   @Type(() => Number)
   @ApiPropertyOptional({ type: [Number], example: [1, 2] })

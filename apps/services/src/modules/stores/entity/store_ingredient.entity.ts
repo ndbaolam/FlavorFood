@@ -12,6 +12,9 @@ export class StoreIngredient {
   @Column()
   title: string;
 
+  @Column({ nullable: true })
+  unit: string;
+
   @Column('decimal', { precision: 10, scale: 2 })
   quantity: number;
 

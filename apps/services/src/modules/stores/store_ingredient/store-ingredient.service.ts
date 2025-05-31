@@ -18,7 +18,7 @@ export class StoreIngredientService {
   ) {}
 
   async create(createStoreIngredientDto: CreateStoreIngredientDto): Promise<StoreIngredient> {
-    const {price, title, quantity, store_id} = createStoreIngredientDto
+    const {price, title, quantity, unit, store_id} = createStoreIngredientDto
 
     const store = await this.storeRepository.findOne({ where: { store_id } });
     if (!store) {
@@ -29,6 +29,7 @@ export class StoreIngredientService {
       price,
       title,
       quantity,
+      unit,
       store: { store_id }
     });
 

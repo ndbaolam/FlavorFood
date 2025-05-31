@@ -14,6 +14,11 @@ export class UpdateStoreIngredientDto {
   @IsOptional()
   title?: string;
 
+  @ApiProperty({ description: 'The unit of measurement for the ingredient', required: false })
+  @IsString()
+  @IsOptional()
+  unit?: string;
+
   @ApiProperty({ description: 'The quantity of the ingredient in stock', required: false })
   @IsNumber()
   @IsOptional()
