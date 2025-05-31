@@ -61,7 +61,7 @@ const CardSignUp: React.FC<CardProps> = ({ children }) => {
                 type="button"
                 onClick={togglePasswordVisibility}
                 aria-label={showPassword ? "Hide password" : "Show password"}
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-600"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-black"
               >
                 {showPassword ? (
                   <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" className="bi bi-eye" viewBox="0 0 16 16" width="16" height="16">

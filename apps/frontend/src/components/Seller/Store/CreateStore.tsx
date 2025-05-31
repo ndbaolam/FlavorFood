@@ -96,7 +96,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
       <h2 className="text-2xl font-bold mb-6 text-center">Tạo cửa hàng</h2>
 
       <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">Tên cửa hàng *</label>
+        <label className="block text-black font-semibold mb-2">Tên cửa hàng *</label>
         <input
           type="text"
           name="name"
@@ -108,7 +108,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">Địa chỉ *</label>
+        <label className="block text-black font-semibold mb-2">Địa chỉ *</label>
         <input
           type="text"
           name="address"
@@ -120,7 +120,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">Mô tả</label>
+        <label className="block text-black font-semibold mb-2">Mô tả</label>
         <textarea
           name="description"
           value={formData.description}
@@ -131,7 +131,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
       </div>
 
       <div className="mb-4">
-        <label className="block text-gray-700 font-semibold mb-2">Số điện thoại *</label>
+        <label className="block text-black font-semibold mb-2">Số điện thoại *</label>
         <input
           type="text"
           name="phone_number"
@@ -144,7 +144,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
 
       <div className="flex gap-4 mb-4">
         <div className="flex-1">
-          <label className="block text-gray-700 font-semibold mb-2">Giờ mở cửa</label>
+          <label className="block text-black font-semibold mb-2">Giờ mở cửa</label>
           <input
             type="time"
             name="openHours"
@@ -155,7 +155,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
         </div>
 
         <div className="flex-1">
-          <label className="block text-gray-700 font-semibold mb-2">Giờ đóng cửa</label>
+          <label className="block text-black font-semibold mb-2">Giờ đóng cửa</label>
           <input
             type="time"
             name="closeHours"
@@ -167,7 +167,7 @@ const CreateStore = ({ onCreate , currentUser}: CreateStoreProps) => {
       </div>
 
       <div className="mb-6">
-        <label className="block text-gray-700 font-semibold mb-2">Link ảnh cửa hàng</label>
+        <label className="block text-black font-semibold mb-2">Link ảnh cửa hàng</label>
         <input
           type="text"
           name="image"

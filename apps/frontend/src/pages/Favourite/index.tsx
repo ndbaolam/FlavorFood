@@ -27,7 +27,7 @@ const Favourite: React.FC = () => {
     if (favorites.length > 0) {
       fetchDetails();
     } else {
-      setDetailedFavorites([]); 
+      setDetailedFavorites([]);
     }
   }, [favorites]);
 
@@ -60,18 +60,17 @@ const Favourite: React.FC = () => {
       <button
         key={label || pageNum}
         onClick={() => handlePageChange(pageNum)}
-        className={`px-3 py-1 rounded ${
-          currentPage === pageNum
+        className={`px-3 py-1 rounded ${currentPage === pageNum
             ? "bg-blue-500 text-white font-medium"
             : "bg-white text-gray-600 hover:bg-blue-100"
-        }`}
+          }`}
       >
         {label || pageNum}
       </button>
     );
 
     const paginationItems = [];
-    
+
     paginationItems.push(
       <button
         key="prev"
@@ -100,11 +99,11 @@ const Favourite: React.FC = () => {
       if (currentPage > 2) {
         paginationItems.push(renderPageButton(currentPage));
       }
-      
+
       if (currentPage < totalPages - 1) {
         paginationItems.push(renderPageButton(currentPage + 1));
       }
-      
+
       if (currentPage < totalPages - 2) {
         paginationItems.push(<span key="ellipsis2" className="px-2">...</span>);
       } else if (currentPage === totalPages - 2) {
@@ -138,15 +137,15 @@ const Favourite: React.FC = () => {
   return (
     <div className="min-h-screen">
       <main className="mx-auto container">
-      <section className="relative text-center mt-20">
+        <section className="relative text-center mt-20">
           <h2 className="text-4xl font-bold mb-2">Danh sách món ăn yêu thích</h2>
-          <p className="text-gray-600 text-lg mb-8 mt-4">
-          Những hương vị bạn yêu thích nhất – được lưu giữ ở đây, chờ bạn khám phá lại từng khoảnh khắc ngon miệng.
+          <p className="text-black text-lg mb-8 mt-4">
+            Những hương vị bạn yêu thích nhất – được lưu giữ ở đây, chờ bạn khám phá lại từng khoảnh khắc ngon miệng.
           </p>
         </section>
-        
+
         {detailedFavorites.length === 0 ? (
-          <p className="text-center text-gray-500">Bạn chưa có món ăn yêu thích nào.</p>
+          <p className="text-center text-black">Bạn chưa có món ăn yêu thích nào.</p>
         ) : (
           <>
             <div className="p-4 mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -159,7 +158,7 @@ const Favourite: React.FC = () => {
                 />
               ))}
             </div>
-            
+
             {renderPagination()}
           </>
         )}

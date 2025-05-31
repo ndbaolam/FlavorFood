@@ -13,7 +13,7 @@ const TipDetailPopup: React.FC<TipDetailPopupProps> = ({ tip, onClose }) => {
             <div className="bg-white p-6 rounded-lg shadow-lg w-10/12 max-w-6xl overflow-y-auto max-h-[90vh] ml-44">
                 <article>
                     <div className="flex justify-between items-center mb-4">
-                        <h1 className="text-4xl font-extrabold mb-6 text-center text-gray-800">{tip.title}</h1>
+                        <h1 className="text-4xl font-extrabold mb-6 text-center text-black">{tip.title}</h1>
                         <button onClick={onClose} className="text-black  font-bold text-2xl">
                             <X size={36} />
                         </button>

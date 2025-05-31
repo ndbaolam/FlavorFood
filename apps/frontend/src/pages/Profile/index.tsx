@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../services/axiosInstance";
-
-interface User {
-  user_id: number;
-  mail: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
-  role: "Norm" | "Admin" | "Seller";
-}
+import { User } from "./Profile.interface";
 
 const Profile: React.FC = () => {
   const [formData, setFormData] = useState<User | null>(null);
@@ -27,6 +19,7 @@ const Profile: React.FC = () => {
   if (!formData) {
     return <div className="text-center mt-10">Loading...</div>;
   }
+  console.log("User data:", formData.avatar);
 
   return (
     <div className="min-h-screen flex justify-center bg-gray-100">
@@ -34,7 +27,7 @@ const Profile: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-center items-start gap-6 p-6">
           <div className="text-center w-full md:w-[300px] flex flex-col items-center">
             <img
-              src={formData.avatar}
+              src={formData.avatar || ""}
               alt="User Avatar"
               className="w-[150px] h-[150px] rounded-full object-cover mb-4"
             />
@@ -45,7 +38,7 @@ const Profile: React.FC = () => {
 
             <div className="flex flex-col md:flex-row gap-4 mb-4">
               <div className="flex-1">
-                <label className="block text-gray-600 mb-1">Họ</label>
+                <label className="block text-black mb-1">Họ</label>
                 <input
                   className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
@@ -54,7 +47,7 @@ const Profile: React.FC = () => {
                 />
               </div>
               <div className="flex-1">
-                <label className="block text-gray-600 mb-1">Tên</label>
+                <label className="block text-black mb-1">Tên</label>
                 <input
                   className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-gray-100"
                   type="text"
@@ -65,7 +58,7 @@ const Profile: React.FC = () => {
             </div>
 
             <div className="mb-4">
-              <label className="block text-gray-600 mb-1">Email</label>
+              <label className="block text-black mb-1">Email</label>
               <input
                 className="w-full p-3 text-lg border border-gray-300 rounded-lg bg-gray-100"
                 type="text"

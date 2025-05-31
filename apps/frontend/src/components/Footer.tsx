@@ -3,43 +3,43 @@ import React from "react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="text-base-content p-10 mt-20" style={{ backgroundColor: '#f0f0f0' }}>
-      <div className="max-w-7xl mx-auto grid grid-cols-3 gap-6">
+    <footer className="text-base p-10 mt-20 text-black bg-gray-100" >
+      <div className="max-w-7xl mx-auto grid grid-cols-3 gap-6 text-black">
         {/* Services Section */}
-        <nav>
-          <h6 className="footer-title">Dịch vụ</h6>
-          <div className="link link-hover">Công thức nấu ăn</div>
-          <div className="link link-hover">Chợ</div>
-          <div className="link link-hover">Mẹo vặt bếp</div>
+        <nav  className=" text-black">
+          <h6 className="footer-title text-black">Dịch vụ</h6>
+          <div className="link link-hover text-black">Công thức nấu ăn</div>
+          <div className="link link-hover text-black">Chợ</div>
+          <div className="link link-hover text-black">Mẹo vặt bếp</div>
         </nav>
 
         {/* About Us Section */}
         <nav>
-          <h6 className="footer-title">Về chúng tôi</h6>
-          <div className="link link-hover">Giới thiệu</div>
-          <div className="link link-hover">Liên hệ</div>
+          <h6 className="footer-title text-black">Về chúng tôi</h6>
+          <div className="link link-hover text-black">Giới thiệu</div>
+          <div className="link link-hover text-black">Liên hệ</div>
        
         </nav>
 
         {/* Legal Section */}
         <nav>
-          <h6 className="footer-title">Pháp lý</h6>
+          <h6 className="footer-title ">Pháp lý</h6>
           <div className="link link-hover">Điều khoản sử dụng</div>
           <div className="link link-hover">Chính sách bảo mật</div>
           <div className="link link-hover">Chính sách cookie</div>
         </nav>
       </div>
-
-      <div className="border-t border-base-300 py-4 mt-6">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      <div className="border-t border-gray-300 border-2 mt-4"/>
+      <div className="mt-4">
+        <div className="max-w-7xl mx-auto flex justify-between items-center text-black">
           <p>
             Flavor Food Ltd.
             <br />
-            Cung cấp công thức nấu ăn ngon từ 2024
+            Cung cấp công thức nấu ăn ngon từ 2025
           </p>
           <div className="flex space-x-4">
             {/* Social Media Icons */}
-            <a href="#" className="text-gray-700 hover:text-gray-900" aria-label="Facebook">
+            <a href="#" className="text-black hover:text-gray-900" aria-label="Facebook">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"

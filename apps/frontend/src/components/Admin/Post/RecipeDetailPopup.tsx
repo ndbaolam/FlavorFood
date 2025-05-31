@@ -21,9 +21,7 @@ const RecipeDetailPopup: React.FC<RecipeDetailPopupProps> = ({ recipe, onClose }
             </button>
           </div>
 
-          {/* Time, Calories, and Categories Section */}
-          <div className="flex flex-wrap items-center text-gray-500 text-sm gap-4 mb-8">
-
+          <div className="flex flex-wrap items-center text-black text-sm gap-4 mb-8">
             <Clock className="w-6 h-6 text-black" />
             <div className="text-black">
               <strong>Thời gian nấu</strong>
