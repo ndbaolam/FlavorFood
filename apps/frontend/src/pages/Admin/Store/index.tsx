@@ -126,8 +126,8 @@ const AdminStore = () => {
             <div className="overflow-x-auto px-4 pb-4">
                 <table className="min-w-full bg-white shadow-md rounded-lg border">
                     <thead>
-                        <tr className="bg-blue-700 text-white text-left">
-                            <th className="p-3">
+                        <tr className="bg-blue-700 text-white  text-center">
+                            <th className="p-3  text-center">
                                 <input
                                     type="checkbox"
                                     onChange={(e) =>
@@ -143,18 +143,19 @@ const AdminStore = () => {
                                     }
                                 />
                             </th>
-                            <th className="p-3">Tên cửa hàng</th>
-                            <th className="p-3">Số điện thoại</th>
-                            <th className="p-3">Chủ sở hữu</th>
-                            <th className="p-3">Email</th>
-                            <th className="p-3">Địa chỉ</th>
-                            <th className="p-3">Ngày tạo</th>
+                            <th className="p-3  text-center">Tên cửa hàng</th>
+                            <th className="p-3 text-center">Số điện thoại</th>
+                            <th className="p-3 text-center">Chủ sở hữu</th>
+                            <th className="p-3 text-center">Email</th>
+                            <th className="p-3 text-center">Địa chỉ</th>
+                            <th className="p-3 text-center">Trạng thái</th>
+                            <th className="p-3 text-center">Ngày tạo</th>
                         </tr>
                     </thead>
                     <tbody>
                         {paginatedStores.length > 0 ? (
                             paginatedStores.map((store) => (
-                                <tr key={store.store_id} className="border-b hover:bg-gray-100">
+                                <tr key={store.store_id} className="border-b hover:bg-gray-100 ">
                                     <td className="p-3">
                                         <input
                                             type="checkbox"
@@ -162,12 +163,18 @@ const AdminStore = () => {
                                             onChange={() => toggleSelect(store.store_id)}
                                         />
                                     </td>
-                                    <td className="p-3">{store.name}</td>
-                                    <td className="p-3">{store.phone_number}</td>
-                                    <td className="p-3">{store.user.first_name} {store.user.last_name}</td>
-                                    <td className="p-3">{store.user.mail}</td>
+                                    <td className="p-3 text-center">{store.name}</td>
+                                    <td className="p-3 text-center">{store.phone_number}</td>
+                                    <td className="p-3 ">{store.user.first_name} {store.user.last_name}</td>
+                                    <td className="p-3 ">{store.user.mail}</td>
                                     <td className="p-3">{store.address}</td>
-                                    <td className="p-3">{new Date(store.created_at).toLocaleDateString()}</td>
+                                    <td className="p-3 text-center">
+                                        <span className={`px-2 py-1 rounded-full text-xs ${store.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                            {store.status}
+                                        </span>
+                                    </td>
+                                    <td className="p-3 text-center">{new Date(store.created_at).toLocaleDateString()}</td>
+
                                 </tr>
                             ))
                         ) : (

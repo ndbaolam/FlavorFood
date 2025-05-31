@@ -213,8 +213,8 @@ const Posts: React.FC = () => {
         key={label || pageNum}
         onClick={() => handlePageChange(pageNum)}
         className={`px-3 py-1 rounded ${currentPage === pageNum
-            ? "bg-blue-500 text-white font-medium"
-            : "bg-white text-gray-700 hover:bg-blue-100"
+          ? "bg-blue-500 text-white font-medium"
+          : "bg-white text-gray-700 hover:bg-blue-100"
           }`}
       >
         {label || pageNum}
@@ -356,8 +356,8 @@ const Posts: React.FC = () => {
         <table className="min-w-full bg-white shadow-md rounded-lg border">
           <thead>
             <tr
-              className="bg-blue-700 text-white text-left">
-              <th className="p-3">
+              className="bg-blue-700 text-white text-center">
+              <th className="p-3 text-center">
                 <input
                   type="checkbox"
                   onChange={(e) =>
@@ -366,10 +366,10 @@ const Posts: React.FC = () => {
                   checked={selectedPosts.length === posts.length && posts.length > 0}
                 />
               </th>
-              <th className="p-3">Tên món ăn</th>
-              <th className="p-3">Danh mục</th>
-              <th className="p-3">Ngày tạo</th>
-              <th className="p-3">Cập nhật lần cuối</th>
+              <th className="p-3 text-center">Tên món ăn</th>
+              <th className="p-3 text-center">Danh mục</th>
+              <th className="p-3 text-center">Ngày tạo</th>
+              <th className="p-3 text-center">Cập nhật lần cuối</th>
               <th className="p-3 text-center"></th>
             </tr>
           </thead>
@@ -378,9 +378,9 @@ const Posts: React.FC = () => {
               paginatedPosts.map((post) => (
                 <tr
                   key={post.recipe_id}
-                  className="border-b hover:bg-gray-100 "
+                  className="border-b hover:bg-gray-100  "
                   onClick={() => handleRecipeClick(post)} >
-                  <td className="p-3">
+                  <td className="p-3 text-center">
                     <input
                       type="checkbox"
                       checked={selectedPosts.includes(post.recipe_id)}
@@ -388,10 +388,10 @@ const Posts: React.FC = () => {
                     />
                   </td>
                   <td className="p-3">{post.title}</td>
-                  <td className="p-3">{post.categories.map((c) => c.title).join(', ')}</td>
-                  <td className="p-3">{new Date(post.created_at).toLocaleDateString()}</td>
-                  <td className="p-3">{new Date(post.updated_at).toLocaleDateString()}</td>
-                  <td className="p-3 flex justify-center space-x-3">
+                  <td className="p-3 text-center">{post.categories.map((c) => c.title).join(', ')}</td>
+                  <td className="p-3 text-center">{new Date(post.created_at).toLocaleDateString()}</td>
+                  <td className="p-3 text-center">{new Date(post.updated_at).toLocaleDateString()}</td>
+                  <td className="p-3 flex justify-center space-x-3 text-center">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

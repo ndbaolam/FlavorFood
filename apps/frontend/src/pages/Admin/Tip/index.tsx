@@ -290,9 +290,9 @@ const Tip: React.FC = () => {
                   checked={selectedTipIds.length === tip.length && tip.length > 0}
                 />
               </th>
-              <th className="p-3">Tiêu đề mẹo vặt</th>
-              <th className="p-3">Ngày tạo</th>
-              <th className="p-3">Cập nhật lần cuối</th>
+              <th className="p-3 text-center">Tiêu đề mẹo vặt</th>
+              <th className="p-3 text-center">Ngày tạo</th>
+              <th className="p-3 text-center">Cập nhật lần cuối</th>
               <th className="p-3 text-center"></th>
             </tr>
           </thead>
@@ -301,10 +301,10 @@ const Tip: React.FC = () => {
               paginatedTips.map((t) => (
                 <tr
                   key={t.tip_id}
-                  className="border-b hover:bg-gray-100 cursor-pointer"
+                  className="border-b hover:bg-gray-100"
                   onClick={() => handleTipClick(t)}
                 >
-                  <td className="p-3">
+                  <td className="p-3 text-center">
                     <input
                       type="checkbox"
                       checked={selectedTipIds.includes(t.tip_id)}
@@ -312,8 +312,8 @@ const Tip: React.FC = () => {
                     />
                   </td>
                   <td className="p-3">{t.title}</td>
-                  <td className="p-3"> {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
-                  <td className="p-3">{t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="p-3 text-center"> {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="p-3 text-center">{t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : 'N/A'}</td>
 
                   <td className="p-3 flex justify-center space-x-3">
                     <button
