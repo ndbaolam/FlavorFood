@@ -9,6 +9,7 @@ import {
 import axiosInstance from '../services/axiosInstance';
 import { User } from '../pages/Profile/Profile.interface';
 import { toast } from 'react-toastify';
+import { Console } from 'console';
 
 interface CardProps {
   children?: ReactNode;
@@ -39,11 +40,14 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
     setErrorMessage(null);
   
     try {
-      await axiosInstance.post(
+      const response = await axiosInstance.post(
         '/auth/login',
         { mail, password },
         { withCredentials: true }
       );
+      console.log('Đăng nhập thành công:', response.data);
+      
+      
       window.dispatchEvent(new CustomEvent('userLoggedIn'));
       const returnTo = (location.state as any)?.returnTo;
       navigate(returnTo || '/');
@@ -63,21 +67,22 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
           '/auth/google/verify',
           { access_token },
         );
+     
   
-        console.log(response.data);  
         localStorage.setItem('authToken', response.data.token);
-        console.log(localStorage.getItem('authToken'));
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
-        
-        // Check if there's a return URL in the location state
+  
         const returnTo = (location.state as any)?.returnTo;
         navigate(returnTo || '/');
       } catch (error) {
-        console.error('Login Failed:', error);
-        alert('Login Failed');
+        console.error('Đăng nhập với Google thất bại:', error);
+        toast.error('Đăng nhập với Google thất bại. Vui lòng thử lại.');
       }
     },
-    onError: (error) => console.log('Login Failed:', error),
+    onError: (error) => {
+      console.error('Google login error:', error);
+      toast.error('Đăng nhập với Google thất bại.');
+    },
   });
   
   return (

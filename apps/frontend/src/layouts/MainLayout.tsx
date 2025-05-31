@@ -7,7 +7,7 @@ import Footer  from "../components/Footer";
 const MainLayout: FC = () => {
   return (
     <div className="bg-white">
-      <Navbar/>
+      <Navbar setActivePage={(page: string) => console.log(`Active page set to: ${page}`)} />
       <main >
         <Outlet /> {}
       </main>

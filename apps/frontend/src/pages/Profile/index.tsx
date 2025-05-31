@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../../services/axiosInstance";
-
-interface User {
-  user_id: number;
-  mail: string;
-  first_name: string;
-  last_name: string;
-  avatar: string;
-  role: "Norm" | "Admin" | "Seller";
-}
+import { User } from "./Profile.interface";
 
 const Profile: React.FC = () => {
   const [formData, setFormData] = useState<User | null>(null);
@@ -27,6 +19,7 @@ const Profile: React.FC = () => {
   if (!formData) {
     return <div className="text-center mt-10">Loading...</div>;
   }
+  console.log("User data:", formData.avatar);
 
   return (
     <div className="min-h-screen flex justify-center bg-gray-100">
@@ -34,7 +27,7 @@ const Profile: React.FC = () => {
         <div className="flex flex-col md:flex-row justify-center items-start gap-6 p-6">
           <div className="text-center w-full md:w-[300px] flex flex-col items-center">
             <img
-              src={formData.avatar}
+              src={formData.avatar || ""}
               alt="User Avatar"
               className="w-[150px] h-[150px] rounded-full object-cover mb-4"
             />
