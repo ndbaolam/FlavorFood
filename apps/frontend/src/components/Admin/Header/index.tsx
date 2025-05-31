@@ -57,7 +57,7 @@ const AdminHeader = () => {
   ];
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm flex justify-between items-center z-50">
+    <header className="bg-white border-2 border-gray-200 shadow-sm flex justify-between items-center z-50">
       <div className="flex items-center space-x-3 ml-8">
         <img src="/logo.png" alt="Logo" className="h-14" />
       </div>

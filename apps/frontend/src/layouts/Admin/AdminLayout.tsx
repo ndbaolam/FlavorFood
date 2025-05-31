@@ -10,18 +10,12 @@ const AdminLayout: FC = () => {
     <div className="flex flex-col h-screen">
       <AdminHeader />
       <div className="flex flex-1 overflow-hidden">
-        <div
-          className={`relative justify-center{
-            isCollapsed ? "w-20" : "w-72"
-          }`}
-        >
-          <AdminSidebar
-            setActivePage={() => { }}
-            isCollapsed={isCollapsed}
-            setIsCollapsed={setIsCollapsed}
-          />
-        </div>
-        <main className="flex-1 overflow-y-auto p-4 bg-gray-100">
+        <AdminSidebar
+          setActivePage={() => { }}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+        />
+        <main className="flex-1 overflow-y-auto p-4 bg-gray-50">
           <Outlet />
         </main>
       </div>

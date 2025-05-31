@@ -17,12 +17,12 @@ const Tip: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const LIMIT = 6;
+  const LIMIT = 5;
 
   useEffect(() => {
     const fetchTip = async () => {
       setLoading(true);
-      setError(null); 
+      setError(null);
       try {
         const response = await axiosInstance.get<TipsItem[]>('/tips/all', {
           withCredentials: true,
@@ -137,10 +137,10 @@ const Tip: React.FC = () => {
   const filteredTips = sortedTips.filter((t) =>
     t.title.toLowerCase().includes(searchTitle.toLowerCase())
   );
-  
+
   const totalPages = Math.ceil(filteredTips.length / LIMIT);
   const paginatedTips = filteredTips.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
-  
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTitle]);
@@ -152,18 +152,17 @@ const Tip: React.FC = () => {
       <button
         key={label || pageNum}
         onClick={() => handlePageChange(pageNum)}
-        className={`px-3 py-1 rounded ${
-          currentPage === pageNum
+        className={`px-3 py-1 rounded ${currentPage === pageNum
             ? "bg-blue-500 text-white font-medium"
             : "bg-white text-gray-700 hover:bg-blue-100"
-        }`}
+          }`}
       >
         {label || pageNum}
       </button>
     );
 
     const paginationItems = [];
-    
+
     paginationItems.push(
       <button
         key="prev"
@@ -192,11 +191,11 @@ const Tip: React.FC = () => {
       if (currentPage > 2) {
         paginationItems.push(renderPageButton(currentPage));
       }
-      
+
       if (currentPage < totalPages - 1) {
         paginationItems.push(renderPageButton(currentPage + 1));
       }
-      
+
       if (currentPage < totalPages - 2) {
         paginationItems.push(<span key="ellipsis2" className="px-2">...</span>);
       } else if (currentPage === totalPages - 2) {
@@ -228,7 +227,10 @@ const Tip: React.FC = () => {
   };
 
   return (
-    <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
+    <div>
+      <div className="text-4xl font-bold ml-3">
+        Quản lý tài mẹo vặt
+      </div>
       <div className="mt-4 flex items-center justify-between p-4">
         <div className="flex space-x-3">
           <div>
@@ -239,7 +241,7 @@ const Tip: React.FC = () => {
               }}
               className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2"
             >
-              <SquarePlus className="text-white" size={18} />
+              <SquarePlus className="text-white" size={22} />
               <span>Tạo mẹo vặt</span>
             </button>
 
@@ -258,10 +260,10 @@ const Tip: React.FC = () => {
 
           <button
             onClick={handleBulkDelete}
-            className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
+            className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
             disabled={selectedTipIds.length === 0}
           >
-            <Trash2 className="text-red-600 hover:text-red-800" size={18} />
+            <Trash2 className="text-red-600 hover:text-red-800" size={22} />
             <span>Xóa</span>
           </button>
         </div>
@@ -277,11 +279,11 @@ const Tip: React.FC = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">
-        <table className="min-w-full bg-white shadow-md rounded-lg border">
+      <div className="overflow-x-auto ml-4 mr-4 mb-4">
+        <table className="min-w-full bg-white shadow-md border border-black">
           <thead>
-            <tr className="bg-blue-700 text-white text-left">
-              <th className="p-3">
+            <tr className="bg-blue-700 text-white border-b  border-black">
+              <th className="p-3 border-r border-white">
                 <input
                   type="checkbox"
                   onChange={(e) =>
@@ -290,10 +292,10 @@ const Tip: React.FC = () => {
                   checked={selectedTipIds.length === tip.length && tip.length > 0}
                 />
               </th>
-              <th className="p-3 text-center">Tiêu đề mẹo vặt</th>
-              <th className="p-3 text-center">Ngày tạo</th>
-              <th className="p-3 text-center">Cập nhật lần cuối</th>
-              <th className="p-3 text-center"></th>
+              <th className="p-3 text-center border-r border-white ">Tiêu đề mẹo vặt</th>
+              <th className="p-3 text-center border-r border-white ">Ngày tạo</th>
+              <th className="p-3 text-center border-r border-white ">Cập nhật lần cuối</th>
+              <th className="p-3 text-center">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -304,36 +306,37 @@ const Tip: React.FC = () => {
                   className="border-b hover:bg-gray-100"
                   onClick={() => handleTipClick(t)}
                 >
-                  <td className="p-3 text-center">
+                  <td className="p-3 text-center border-black border-b">
                     <input
                       type="checkbox"
                       checked={selectedTipIds.includes(t.tip_id)}
                       onChange={() => toggleSelect(t.tip_id)}
                     />
                   </td>
-                  <td className="p-3">{t.title}</td>
-                  <td className="p-3 text-center"> {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
-                  <td className="p-3 text-center">{t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : 'N/A'}</td>
-
-                  <td className="p-3 flex justify-center space-x-3">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(t.tip_id);
-                      }}
-                      className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-                    >
-                      <PencilRuler className="text-blue-600 hover:text-blue-800" size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(t.tip_id);
-                      }}
-                      className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-                    >
-                      <Trash2 className="text-red-600 hover:text-red-800" size={18} />
-                    </button>
+                  <td className="p-3 border-l border-black border-b">{t.title}</td>
+                  <td className="p-3 text-center border-l border-black border-b"> {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="p-3 border border-black">
+                    <div className="flex justify-center items-center h-full">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(t.tip_id);
+                        }}
+                        className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
+                      >
+                        <PencilRuler className="text-blue-600 hover:text-blue-800" size={22} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(t.tip_id);
+                        }}
+                        className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2 ml-4"
+                      >
+                        <Trash2 className="text-red-600 hover:text-red-800" size={22} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

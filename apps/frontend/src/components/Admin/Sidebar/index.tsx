@@ -47,14 +47,14 @@ const AdminSidebar: React.FC<Props> = ({
       </button>
 
 
-      <aside
-        className={`
-          fixed md:relative top-0 left-0 h-full  border-b border-gray-200 shadow-sm z-40
-          transition-all duration-300
-          ${isCollapsed ? "w-16" : "w-64"}
-          ${isOpenMobile ? "block" : "hidden"} md:block
-        `}
-      >
+        <aside
+          className={`
+            fixed md:relative top-0 left-0 h-full border-r-2 border-gray-200 shadow-sm z-40
+            transition-all duration-300 bg-white
+            ${isCollapsed ? "w-16" : "w-64"}
+            ${isOpenMobile ? "block" : "hidden"} md:block
+          `}
+        >
         <div className="hidden md:block absolute top-1/2 right-[-12px] transform -translate-y-1/2 z-50">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}

@@ -28,7 +28,7 @@ const Posts: React.FC = () => {
     const savedCategory = localStorage.getItem('selectedCategory');
     return savedCategory ? (savedCategory === 'all' ? 'all' : parseInt(savedCategory)) : 'all';
   });
-  const LIMIT = 6;
+  const LIMIT = 5;
 
   useEffect(() => {
     localStorage.setItem('selectedCategory', selectedCategory.toString());
@@ -287,7 +287,10 @@ const Posts: React.FC = () => {
   };
 
   return (
-    <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
+    <div>
+      <div className="text-4xl font-bold ml-3">
+        Quản lý tài công thức
+      </div>
       <div className=" mt-4 flex items-center justify-between p-4">
         <div className="flex space-x-3">
           <div>
@@ -298,7 +301,7 @@ const Posts: React.FC = () => {
               }}
               className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2"
             >
-              <SquarePlus className="text-white" size={18} />
+              <SquarePlus className="text-white" size={22} />
               <span>Tạo công thức</span>
             </button>
 
@@ -318,11 +321,11 @@ const Posts: React.FC = () => {
 
           <button
             onClick={handleBulkDelete}
-            className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
+            className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
             disabled={selectedPosts.length === 0}
           >
-            <Trash2 className="text-red-600 hover:text-red-800" size={18} />
-            <span>Xóa</span>
+            <Trash2 className="text-red-600 text-bold hover:text-red-800" size={22} />
+            <span className='text-base text-bold text-center'>Xóa</span>
           </button>
 
         </div>
@@ -332,7 +335,7 @@ const Posts: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
-            className="border border-gray-300 rounded-lg px-3 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border-2 border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">Tất cả danh mục</option>
             {categories.map((category) => (
@@ -352,12 +355,11 @@ const Posts: React.FC = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg ">
-        <table className="min-w-full bg-white shadow-md rounded-lg border">
+      <div className="overflow-x-auto ml-4 mr-4 mb-4">
+        <table className="min-w-full bg-white shadow-md border border-black">
           <thead>
-            <tr
-              className="bg-blue-700 text-white text-center">
-              <th className="p-3 text-center">
+            <tr className="bg-blue-700 text-white border-b  border-black">
+              <th className="p-3 border-r border-white">
                 <input
                   type="checkbox"
                   onChange={(e) =>
@@ -366,11 +368,11 @@ const Posts: React.FC = () => {
                   checked={selectedPosts.length === posts.length && posts.length > 0}
                 />
               </th>
-              <th className="p-3 text-center">Tên món ăn</th>
-              <th className="p-3 text-center">Danh mục</th>
-              <th className="p-3 text-center">Ngày tạo</th>
-              <th className="p-3 text-center">Cập nhật lần cuối</th>
-              <th className="p-3 text-center"></th>
+              <th className="p-3 text-center border-r border-white ">Tên món ăn</th>
+              <th className="p-3 text-center border-r border-white ">Danh mục</th>
+              <th className="p-3 text-center border-r border-white ">Ngày tạo</th>
+              <th className="p-3 text-center border-r border-white ">Cập nhật lần cuối</th>
+              <th className="p-3 text-center">Hành động</th>
             </tr>
           </thead>
           <tbody>
@@ -380,37 +382,39 @@ const Posts: React.FC = () => {
                   key={post.recipe_id}
                   className="border-b hover:bg-gray-100  "
                   onClick={() => handleRecipeClick(post)} >
-                  <td className="p-3 text-center">
+                  <td className="p-3 text-center border-black border-b">
                     <input
                       type="checkbox"
                       checked={selectedPosts.includes(post.recipe_id)}
                       onChange={() => toggleSelect(post.recipe_id)}
                     />
                   </td>
-                  <td className="p-3">{post.title}</td>
-                  <td className="p-3 text-center">{post.categories.map((c) => c.title).join(', ')}</td>
-                  <td className="p-3 text-center">{new Date(post.created_at).toLocaleDateString()}</td>
-                  <td className="p-3 text-center">{new Date(post.updated_at).toLocaleDateString()}</td>
-                  <td className="p-3 flex justify-center space-x-3 text-center">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(post.recipe_id);
-                      }}
-                      className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-                    >
-                      <PencilRuler className="text-blue-600 hover:text-blue-800" size={18} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(post.recipe_id);
-                      }}
+                  <td className="p-3 border-l border-black border-b">{post.title}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{post.categories.map((c) => c.title).join(', ')}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{new Date(post.created_at).toLocaleDateString()}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{new Date(post.updated_at).toLocaleDateString()}</td>
+                  <td className="p-3 border border-black">
+                    <div className="flex justify-center items-center h-full">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(post.recipe_id);
+                        }}
+                        className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
+                      >
+                        <PencilRuler className="text-blue-600 hover:text-blue-800" size={22} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(post.recipe_id);
+                        }}
 
-                      className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-                    >
-                      <Trash2 className="text-red-600 hover:text-red-800" size={18} />
-                    </button>
+                        className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2 ml-4"
+                      >
+                        <Trash2 className="text-red-600 hover:text-red-800" size={22} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))

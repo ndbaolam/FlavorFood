@@ -5,7 +5,7 @@ import SearchBox from "../../../components/Search";
 import axiosInstance from '../../../services/axiosInstance';
 import { toast } from "react-toastify";
 
-const LIMIT = 6;
+const LIMIT = 5;
 
 interface Role {
   role_id: number;
@@ -150,15 +150,18 @@ const Account: React.FC = () => {
   };
 
   return (
-    <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
+    <div>
+      <div className="text-4xl font-bold ml-3">
+        Quản lý tài khoản
+      </div>
       <div className="mt-4 flex items-center justify-between p-4">
         <div className="flex space-x-3">
           <button
             onClick={handleBulkToggleStatus}
-            className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
+            className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
             disabled={selectedAccounts.length === 0}
           >
-            <LockKeyhole className="text-red-600 hover:text-red-800" size={18} />
+            <LockKeyhole className="text-red-600 hover:text-red-800" size={22} />
             <span>Khóa/Mở khóa</span>
           </button>
         </div>
@@ -167,7 +170,7 @@ const Account: React.FC = () => {
           <select
             value={selectedRole}
             onChange={(e) => setSelectedRole(e.target.value)}
-            className="border border-gray-300 rounded-lg px-3 py-1 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="border-2 border-gray-300 rounded-lg px-3 py-1  focus:outline-none focus:ring-2 focus:ring-blue-500 "
           >
             <option value="all">Tất cả vai trò</option>
             <option value="user">Normal</option>
@@ -181,11 +184,11 @@ const Account: React.FC = () => {
         <div>Trang {currentPage} / {totalPages}</div>
       </div>
 
-      <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg">
-        <table className="min-w-full bg-white shadow-md rounded-lg border items-center">
+      <div className="overflow-x-auto ml-4 mr-4 mb-4">
+        <table className="min-w-full bg-white shadow-md border border-black">
           <thead>
-            <tr className="bg-blue-700 text-white">
-              <th className="p-3 text-center">
+            <tr className="bg-blue-700 text-white border-b  border-black">
+              <th className="p-3 border-r border-white ">
                 <input
                   type="checkbox"
                   onChange={(e) =>
@@ -197,47 +200,50 @@ const Account: React.FC = () => {
                   }
                 />
               </th>
-              <th className="p-3 text-center">Họ</th>
-              <th className="p-3 text-center">Tên</th>
-              <th className="p-3 text-center">Email</th>
-              <th className="p-3 text-center">Vai trò</th>
-              <th className="p-3 text-center">Trạng thái</th>
-              <th className="p-3 text-center">Ngày tạo</th>
-              <th className="p-3 text-center"></th>
+              <th className="p-3 text-center border-r border-white ">Họ</th>
+              <th className="p-3 text-center border-r border-white ">Tên</th>
+              <th className="p-3 text-center border-r border-white ">Email</th>
+              <th className="p-3 text-center border-r border-white ">Vai trò</th>
+              <th className="p-3 text-center border-r border-white ">Trạng thái</th>
+              <th className="p-3 text-center border-r border-white ">Ngày tạo</th>
+              <th className="p-3 text-center">Hành động</th>
             </tr>
           </thead>
           <tbody>
             {paginatedAccounts.length > 0 ? (
               paginatedAccounts.map((account) => (
                 <tr key={account.user_id} className="border-b hover:bg-gray-100 ">
-                  <td className="p-3">
+                  <td className="p-3 text-center border-black border-b">
                     <input
                       type="checkbox"
                       checked={selectedAccounts.includes(account.user_id)}
                       onChange={() => toggleSelect(account.user_id)}
                     />
                   </td>
-                  <td className="p-3 text-center">{account.first_name}</td>
-                  <td className="p-3 text-center">{account.last_name}</td>
-                  <td className="p-3">{account.mail}</td>
-                  <td className="p-3 text-center">{account.role.charAt(0).toUpperCase() + account.role.slice(1)}</td>
-                  <td className="p-3 text-center">
-                    <span className={`px-2 py-1 rounded-full text-sm font-semibold ${account.status === "active"
+                  <td className="p-3 border-l border-black border-b">{account.first_name}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{account.last_name}</td>
+                  <td className="p-3 border-l border-black border-b">{account.mail}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{account.role.charAt(0).toUpperCase() + account.role.slice(1)}</td>
+                  <td className="p-3 text-center border-l border-black border-b">
+                    <span className={`px-2 py-1 rounded-full text-sm font-semibold  ${account.status === "active"
                       ? "bg-green-100 text-green-800"
                       : "bg-red-100 text-red-800"
                       }`}>
                       {account.status}
                     </span>
                   </td>
-                  <td className="p-3 text-center">{new Date(account.created_at).toLocaleDateString()}</td>
-                  <td className="p-3 flex justify-center space-x-3">
-                    <button
-                      onClick={() => handleToggleStatus(account.user_id, account.status)}
-                      className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-                    >
-                      <LockKeyhole className="text-red-600 hover:text-red-800" size={18} />
-                    </button>
+                  <td className="p-3 text-center border-l border-black border-b">{new Date(account.created_at).toLocaleDateString()}</td>
+                  <td className="p-3 border border-black">
+                    <div className="flex justify-center items-center h-full">
+                      <button
+                        onClick={() => handleToggleStatus(account.user_id, account.status)}
+                        className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center justify-center"
+                      >
+                        <LockKeyhole className="text-red-600 hover:text-red-800" size={22} />
+                      </button>
+                    </div>
                   </td>
+
                 </tr>
               ))
             ) : (

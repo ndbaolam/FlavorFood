@@ -3,7 +3,7 @@ import { Store } from "../../Market/store.interface";
 import axiosInstance from '../../../services/axiosInstance';
 import SearchBox from "../../../components/Search";
 
-const LIMIT = 3;
+const LIMIT = 5;
 
 const AdminStore = () => {
     const [stores, setStores] = useState<Store[]>([]);
@@ -108,26 +108,25 @@ const AdminStore = () => {
     };
 
     return (
-        <div className="m-12 border border-white rounded-xl shadow-lg bg-white">
-            <div className="mt-4 flex items-center justify-end p-4">
-                <div>
-                    <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
-                </div>
-
+        <div>
+            <div className="text-4xl font-bold ml-3">
+                Quản lý cửa hàng
             </div>
-            <div className="flex justify-between p-4 text-md">
+            <div className="mt-12 flex items-center justify-between px-4 text-md  mb-4">
                 <div>
                     Tổng số cửa hàng: {filteredStores.length}
                 </div>
-                <div>
-                    Trang {currentPage} / {totalPages}
+                <div className="flex items-center gap-x-4">
+                    <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
+                    <span>Trang {currentPage} / {totalPages}</span>
                 </div>
             </div>
-            <div className="overflow-x-auto px-4 pb-4">
-                <table className="min-w-full bg-white shadow-md rounded-lg border">
+
+            <div className="overflow-x-auto ml-4 mr-4 mb-4">
+                <table className="min-w-full bg-white shadow-md border border-black">
                     <thead>
-                        <tr className="bg-blue-700 text-white  text-center">
-                            <th className="p-3  text-center">
+                        <tr className="bg-blue-700 text-white border-b  border-black">
+                            <th className="p-3 border-r border-white ">
                                 <input
                                     type="checkbox"
                                     onChange={(e) =>
@@ -143,12 +142,12 @@ const AdminStore = () => {
                                     }
                                 />
                             </th>
-                            <th className="p-3  text-center">Tên cửa hàng</th>
-                            <th className="p-3 text-center">Số điện thoại</th>
-                            <th className="p-3 text-center">Chủ sở hữu</th>
-                            <th className="p-3 text-center">Email</th>
-                            <th className="p-3 text-center">Địa chỉ</th>
-                            <th className="p-3 text-center">Trạng thái</th>
+                            <th className="p-3 text-center border-r border-white">Tên cửa hàng</th>
+                            <th className="p-3 text-center border-r border-white">Số điện thoại</th>
+                            <th className="p-3 text-center border-r border-white">Chủ cửa hàng</th>
+                            <th className="p-3 text-center border-r border-white">Email</th>
+                            <th className="p-3 text-center border-r border-white">Địa chỉ</th>
+                            <th className="p-3 text-center border-r border-white">Trạng thái</th>
                             <th className="p-3 text-center">Ngày tạo</th>
                         </tr>
                     </thead>
@@ -156,24 +155,24 @@ const AdminStore = () => {
                         {paginatedStores.length > 0 ? (
                             paginatedStores.map((store) => (
                                 <tr key={store.store_id} className="border-b hover:bg-gray-100 ">
-                                    <td className="p-3">
+                                    <td className="p-3 text-center border-black border-b">
                                         <input
                                             type="checkbox"
                                             checked={selectedStores.includes(store.store_id)}
                                             onChange={() => toggleSelect(store.store_id)}
                                         />
                                     </td>
-                                    <td className="p-3 text-center">{store.name}</td>
-                                    <td className="p-3 text-center">{store.phone_number}</td>
-                                    <td className="p-3 ">{store.user.first_name} {store.user.last_name}</td>
-                                    <td className="p-3 ">{store.user.mail}</td>
-                                    <td className="p-3">{store.address}</td>
-                                    <td className="p-3 text-center">
+                                    <td className="p-3 text-center border-l border-black border-b">{store.name}</td>
+                                    <td className="p-3 text-center border-l border-black border-b">{store.phone_number}</td>
+                                    <td className="p-3 border-l border-black border-b">{store.user.first_name} {store.user.last_name}</td>
+                                    <td className="p-3 border-l border-black border-b">{store.user.mail}</td>
+                                    <td className="p-3 border-l border-black border-b">{store.address}</td>
+                                    <td className="p-3 text-center border-l border-black border-b">
                                         <span className={`px-2 py-1 rounded-full text-xs ${store.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                                             {store.status}
                                         </span>
                                     </td>
-                                    <td className="p-3 text-center">{new Date(store.created_at).toLocaleDateString()}</td>
+                                    <td className="p-3 text-center border-l border-black border-b">{new Date(store.created_at).toLocaleDateString()}</td>
 
                                 </tr>
                             ))
