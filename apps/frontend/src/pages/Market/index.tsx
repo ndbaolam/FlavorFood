@@ -6,9 +6,12 @@ import Map from "../../components/Map";
 import StoreDetails from "../../components/StoreDetail";
 import { MapPin } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance";
-import { Store, Ingredient, formatTime } from "./store.interface";
+import { Store} from "./store.interface";
 import { useNavigate } from "react-router-dom";
-import { checkAuth } from "../../utils/auth";
+import { checkAuth, getUserProfile } from "../../utils/auth";
+import { formatTime } from "../../utils/fomatDate";
+import { User } from "../Profile/Profile.interface";
+import { toast } from "react-toastify";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
 
@@ -29,21 +32,42 @@ const Market: React.FC = () => {
   const [selectedStore, setSelectedStore] = useState<StoreWithLocation | null>(null);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isSeller, setIsSeller] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
 
   useEffect(() => {
-    checkAuth();
+    const fetchUser = async () => {
+      const profile = await getUserProfile();
+      setUser(profile);
+      setLoadingUser(false);
+    };
+    fetchUser();
+  }, []);
+  const isSellerActive = user?.role === "seller" && user?.status === "active";
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const profile = await getUserProfile();
+      setUser(profile);
+      setLoadingUser(false);
+    };
+    fetchUser();
   }, []);
 
-  const handleStoreRegistration = async () => {
-    const isAuthenticated = await checkAuth();
-    if (isAuthenticated) {
+  const handleStoreRegistration = () => {
+    if (user) {
       navigate('/store-registration');
     } else {
-      navigate('/sign-in', { state: { returnTo: '/market' } });
+      toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
+        position: "top-right",
+        autoClose: 2000
+      });
+      navigate('/sign-in', { state: { returnTo: '/store-registration' } });
+      return;
     }
   };
-
 
   const geocodeAddress = async (address: string): Promise<Location | null> => {
     try {
@@ -94,6 +118,7 @@ const Market: React.FC = () => {
             title: ingredient.title,
             price: ingredient.price,
             quantity: ingredient.quantity,
+            unit: ingredient.unit,
           }));
 
           return {
@@ -168,8 +193,8 @@ const Market: React.FC = () => {
   return (
     <div className="min-h-screen p-8 ">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Tìm kiếm cửa hàng</h2>
-        {!isSeller && (
+        <h2 className="text-2xl font-bold text-center">Tìm kiếm nguyên liệu, cửa hàng</h2>
+        {!isSellerActive && (
           <button
             onClick={handleStoreRegistration}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
@@ -214,8 +239,8 @@ const Market: React.FC = () => {
                     onClick={() => setSelectedStore(store)}
                   >
                     <h3>{store.name}</h3>
-                    <p className="text-black">{store.address}</p>
-                    <p>
+                    <p className="text-black text-sm">{store.address}</p>
+                    <p className="text-black text-sm">
                       Giờ mở cửa: <span className="text-green-300">{formatTime(store.openHours)}</span> -{" "}
                       <span className="text-green-300">{formatTime(store.closeHours)}</span>
                     </p>
@@ -261,4 +286,4 @@ const Market: React.FC = () => {
   );
 };
 
-export default Market;
+export default Market;  

@@ -94,9 +94,9 @@ const SellerHome = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-center">Cửa hàng của tôi</h1>
-      <div className="bg-white rounded-xl shadow-md p-4">
-        <div className="flex space-x-4 mb-6 border-b">
+      <h1 className="text-4xl font-bold mb-6 text-center">Cửa hàng của tôi</h1>
+      <div className="bg-white rounded-lg shadow-md p-4 border-gray-300 border-2">
+        <div className="flex space-x-4 mb-6 border-b  border-gray-300">
           <button
             className={`px-4 py-2 font-semibold ${
               activeTab === "store"

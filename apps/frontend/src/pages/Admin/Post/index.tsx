@@ -371,7 +371,7 @@ const Posts: React.FC = () => {
               <th className="p-3 text-center border-r border-white ">Tên món ăn</th>
               <th className="p-3 text-center border-r border-white ">Danh mục</th>
               <th className="p-3 text-center border-r border-white ">Ngày tạo</th>
-              <th className="p-3 text-center border-r border-white ">Cập nhật lần cuối</th>
+              <th className="p-3 text-center border-r border-white ">Cập nhật</th>
               <th className="p-3 text-center">Hành động</th>
             </tr>
           </thead>

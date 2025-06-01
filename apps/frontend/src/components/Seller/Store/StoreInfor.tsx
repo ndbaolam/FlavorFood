@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Store } from "../../../pages/Market/store.interface";
-import { PencilRuler } from "lucide-react";
+import { PencilRuler, XCircle } from "lucide-react";
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import imageCompression from "browser-image-compression";
@@ -10,6 +10,7 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
     const [isEditing, setIsEditing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [storeData, setStoreData] = useState<Store | null>(null);
+    const [originalData, setOriginalData] = useState<Store | null>(null);
     const [openHourInput, setOpenHourInput] = useState("");
     const [closeHourInput, setCloseHourInput] = useState("");
     const [error, setError] = useState("");
@@ -20,6 +21,7 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
             try {
                 const res = await axiosInstance.get<Store>(`/stores/${store_id}`);
                 setStoreData(res.data);
+                setOriginalData(res.data);
                 setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
                 setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
             } catch (error) {
@@ -29,13 +31,10 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
         fetchStore();
     }, [store_id]);
 
-
     if (!storeData) return null;
-
     if (storeData.user.user_id !== currentUser.user_id) {
         return <p>Cửa hàng này không thuộc về bạn.</p>;
     }
-
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (storeData) {
@@ -62,19 +61,18 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
             try {
                 const open = new Date(`2025-01-01T${openHourInput}:00Z`);
                 const close = new Date(`2025-01-01T${closeHourInput}:00Z`);
-
                 const payload = {
                     ...storeData,
                     openHours: open.toISOString(),
                     closeHours: close.toISOString(),
                 };
-
                 const res = await axiosInstance.patch(`stores/${store_id}`, payload);
                 if (res.data) {
                     setStoreData(res.data);
+                    setOriginalData(res.data); 
                     setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
                     setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
-                    toast.success("Cập nhật thành công!", { position: "top-right", autoClose: 2000 });
+                    toast.success("Cập nhật thành công!", { autoClose: 2000 });
                 }
             } catch (error) {
                 console.error("Error updating store:", error);
@@ -84,6 +82,14 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
         setIsEditing(!isEditing);
     };
 
+    const handleCancelEdit = () => {
+        if (originalData) {
+            setStoreData(originalData);
+            setOpenHourInput(new Date(originalData.openHours).toISOString().slice(11, 16));
+            setCloseHourInput(new Date(originalData.closeHours).toISOString().slice(11, 16));
+        }
+        setIsEditing(false);
+    };
 
     const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -114,26 +120,24 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
 
     const inputStyle = `w-full p-3 text-lg border ${isEditing ? "border-black" : "border-gray-300"} rounded-lg bg-gray-100`;
 
-    if (!storeData) return null;
     return (
-            <div className={`m-8 ${className}`}>
-                <div className="p-4 space-y-6">
-                    <div className="flex flex-col md:flex-row gap-6 items-start">
-                        <div className="md:w-1/2 relative">
-                            <div className="aspect-square w-full max-w-[300px] mx-auto overflow-hidden ">
-                                <img
-                                    src={storeData?.image || ""}
-                                    alt="Store Banner"
-                                    className="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
-                                />
-                            </div>
+        <div className={`m-8 ${className}`}>
+            <div className="p-4 space-y-6">
+                <div className="flex flex-col md:flex-row gap-6 items-start">
+                    <div className="md:w-1/2 w-full relative">
+                        <div className="relative h-[300px] rounded-lg overflow-hidden border border-gray-300">
+                            <img
+                                src={storeData?.image || ""}
+                                alt="Store Banner"
+                                className="w-full h-full object-cover"
+                            />
                             {isEditing && (
-                                <div className="absolute top-4 right-4">
+                                <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-white/80 px-4 py-1 rounded shadow">
                                     <button
-                                        className="p-2 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition bg-white bg-opacity-80"
+                                        className="text-sm text-blue-600 hover:underline"
                                         onClick={() => fileInputRef.current?.click()}
                                     >
-                                        Cập nhật
+                                        Cập nhật ảnh
                                     </button>
                                     <input
                                         ref={fileInputRef}
@@ -145,92 +149,103 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
                                 </div>
                             )}
                         </div>
+                    </div>
+                    <div className="md:w-1/2 w-full relative">
+                    <h1 className="text-center font-bold text-2xl mb-4 w-full">Thông tin cửa hàng</h1>
+                        <div className="absolute top-0 right-0 flex gap-2">
 
-                        <div className="md:w-1/2 w-full relative">
-                            <h1 className="text-left font-bold text-2xl mb-4">Thông tin cửa hàng</h1>
                             <button
                                 onClick={handleEditToggle}
-                                className="absolute top-0 right-0 flex items-center gap-2 px-4 py-2 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition"
+                                className="flex items-center gap-2 px-3 py-1 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition"
                             >
                                 {isEditing ? "Lưu" : <PencilRuler size={20} />}
                             </button>
-                            <label className="block text-lg mb-1 font-bold">Tên cửa hàng</label>
-                            <input
-                                name="name"
-                                className={inputStyle}
-                                type="text"
-                                value={storeData?.name || ""}
-                                onChange={handleInputChange}
-                                disabled={!isEditing}
-                            />
+                            {isEditing && (
+                                <button
+                                    onClick={handleCancelEdit}
+                                    className="flex items-center gap-1 px-3 py-1 border border-red-500 text-red-600 rounded hover:bg-red-100 transition"
+                                >
+                                    Huỷ
+                                </button>
+                            )}
                         </div>
+
+                        <label className="block text-lg mb-1 font-bold">Tên cửa hàng</label>
+                        <input
+                            name="name"
+                            className={inputStyle}
+                            type="text"
+                            value={storeData?.name || ""}
+                            onChange={handleInputChange}
+                            disabled={!isEditing}
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-lg mb-1 font-bold">Mô tả</label>
+                    <textarea
+                        className={`${inputStyle} w-full min-h-[100px] resize-none`}
+                        name="description"
+                        value={storeData?.description || ""}
+                        onChange={handleInputChange}
+                        disabled={!isEditing}
+                    />
+                </div>
+
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1">
+                        <label className="block text-lg mb-1 font-bold">Giờ mở cửa</label>
+                        <input
+                            name="openHours"
+                            className={`${inputStyle} ${error ? "border-red-500" : ""}`}
+                            type="time"
+                            value={openHourInput}
+                            onChange={handleOpenHourChange}
+                            disabled={!isEditing}
+                        />
                     </div>
 
+                    <div className="flex-1">
+                        <label className="block text-lg mb-1 font-bold">Giờ đóng cửa</label>
+                        <input
+                            name="closeHours"
+                            className={`${inputStyle} ${error ? "border-red-500" : ""}`}
+                            type="time"
+                            value={closeHourInput}
+                            onChange={handleCloseHourChange}
+                            disabled={!isEditing}
+                        />
+                    </div>
+                </div>
 
-                    <div>
-                        <label className="block text-lg mb-1 font-bold">Mô tả</label>
-                        <textarea
-                            className={`${inputStyle} w-full min-h-[100px] resize-none`}
-                            name="description"
-                            value={storeData?.description || ""}
+                <div className="flex flex-col md:flex-row gap-4">
+                    <div className="flex-1">
+                        <label className="block text-lg mb-1 font-bold">Địa chỉ</label>
+                        <input
+                            name="address"
+                            className={inputStyle}
+                            type="text"
+                            value={storeData?.address || ""}
                             onChange={handleInputChange}
                             disabled={!isEditing}
                         />
                     </div>
 
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1">
-                            <label className="block text-lg mb-1 font-bold">Giờ mở cửa</label>
-                            <input
-                                name="openHours"
-                                className={`${inputStyle} ${error ? "border-red-500" : ""}`}
-                                type="time"
-                                value={openHourInput}
-                                onChange={handleOpenHourChange}
-                                disabled={!isEditing}
-                            />
-                        </div>
-
-                        <div className="flex-1">
-                            <label className="block text-lg mb-1 font-bold">Giờ đóng cửa</label>
-                            <input
-                                name="closeHours"
-                                className={`${inputStyle} ${error ? "border-red-500" : ""}`}
-                                type="time"
-                                value={closeHourInput}
-                                onChange={handleCloseHourChange}
-                                disabled={!isEditing}
-                            />
-                        </div>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row gap-4">
-                        <div className="flex-1">
-                            <label className="block text-lg mb-1 font-bold">Địa chỉ</label>
-                            <input
-                                name="address"
-                                className={inputStyle}
-                                type="text"
-                                value={storeData?.address || ""}
-                                onChange={handleInputChange}
-                                disabled={!isEditing}
-                            />
-                        </div>
-
-                        <div className="flex-1">
-                            <label className="block text-lg mb-1 font-bold">Số điện thoại</label>
-                            <input
-                                name="phone_number"
-                                className={inputStyle}
-                                type="text"
-                                value={storeData?.phone_number || ""}
-                                onChange={handleInputChange}
-                                disabled={!isEditing}
-                            />
-                        </div>
+                    <div className="flex-1">
+                        <label className="block text-lg mb-1 font-bold">Số điện thoại</label>
+                        <input
+                            name="phone_number"
+                            className={inputStyle}
+                            type="text"
+                            value={storeData?.phone_number || ""}
+                            onChange={handleInputChange}
+                            disabled={!isEditing}
+                        />
                     </div>
                 </div>
             </div>
+        </div>
     );
 };
 
