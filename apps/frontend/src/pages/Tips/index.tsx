@@ -76,8 +76,6 @@ const Tips: React.FC = () => {
     window.scrollTo({ top: 80, behavior: 'smooth' });
   };
 
-  // ... (phần renderPagination và return giữ nguyên)
-
   const renderPagination = () => {
     if (totalPages <= 1) return null;
 

@@ -6,9 +6,12 @@ import Map from "../../components/Map";
 import StoreDetails from "../../components/StoreDetail";
 import { MapPin } from "lucide-react";
 import axiosInstance from "../../services/axiosInstance";
-import { Store, Ingredient, formatTime } from "./store.interface";
+import { Store} from "./store.interface";
 import { useNavigate } from "react-router-dom";
-import { checkAuth } from "../../utils/auth";
+import { checkAuth, getUserProfile } from "../../utils/auth";
+import { formatTime } from "../../utils/fomatDate";
+import { User } from "../Profile/Profile.interface";
+import { toast } from "react-toastify";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
 
@@ -29,22 +32,43 @@ const Market: React.FC = () => {
   const [selectedStore, setSelectedStore] = useState<StoreWithLocation | null>(null);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isSeller, setIsSeller] = useState(false);
-  
+  const [user, setUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(true);
+
+
   useEffect(() => {
-    checkAuth();
+    const fetchUser = async () => {
+      const profile = await getUserProfile();
+      setUser(profile);
+      setLoadingUser(false);
+    };
+    fetchUser();
+  }, []);
+  const isSellerActive = user?.role === "seller" && user?.status === "active";
+
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const profile = await getUserProfile();
+      setUser(profile);
+      setLoadingUser(false);
+    };
+    fetchUser();
   }, []);
 
-  const handleStoreRegistration = async () => {
-    const isAuthenticated = await checkAuth();
-    if (isAuthenticated) {
+  const handleStoreRegistration = () => {
+    if (user) {
       navigate('/store-registration');
     } else {
-      navigate('/sign-in', { state: { returnTo: '/market' } });
+      toast.info("Vui lòng đăng nhập để thêm vào yêu thích!", {
+        position: "top-right",
+        autoClose: 2000
+      });
+      navigate('/sign-in', { state: { returnTo: '/store-registration' } });
+      return;
     }
   };
 
- 
   const geocodeAddress = async (address: string): Promise<Location | null> => {
     try {
       const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(address)}.json?access_token=${mapboxgl.accessToken}&limit=1`;
@@ -80,7 +104,7 @@ const Market: React.FC = () => {
               longitude: store.longitude,
             };
           } else {
-      
+
             location = await geocodeAddress(store.address);
           }
           if (!location) {
@@ -94,6 +118,7 @@ const Market: React.FC = () => {
             title: ingredient.title,
             price: ingredient.price,
             quantity: ingredient.quantity,
+            unit: ingredient.unit,
           }));
 
           return {
@@ -111,7 +136,6 @@ const Market: React.FC = () => {
       setLoading(false);
     }
   };
-  console.log(new Date("2025-05-24T07:00:00.000Z").toString());
   useEffect(() => {
     fetchStores();
   }, []);
@@ -131,22 +155,23 @@ const Market: React.FC = () => {
   }, []);
 
   const filteredStores = stores
-    .filter((store) =>
-      searchTerm.trim()
-        ? store.ingredients?.some((ingredient) =>
-            ingredient.title?.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        : true
-    )
+    .filter((store) => {
+      if (!searchTerm.trim()) return true;
+
+      const lowerSearch = searchTerm.toLowerCase();
+      const matchesIngredient = store.ingredients?.some((ingredient) =>
+        ingredient.title?.toLowerCase().includes(lowerSearch)
+      );
+      const matchesStoreName = store.name?.toLowerCase().includes(lowerSearch);
+
+      return matchesIngredient || matchesStoreName;
+    })
     .map((store) => {
       const validUserLocation = userLocation != null;
       const validStoreLocation = store.location && store.location.latitude != null && store.location.longitude != null;
 
       const distance = validUserLocation && validStoreLocation
-        ? getDistance(
-            userLocation!,
-            store.location
-          )
+        ? getDistance(userLocation!, store.location)
         : null;
 
       return { ...store, distance, id: store.store_id };
@@ -166,10 +191,10 @@ const Market: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen p-8 rounded-xl shadow-lg">
+    <div className="min-h-screen p-8 ">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Tìm kiếm cửa hàng</h2>
-        {!isSeller && (
+        <h2 className="text-2xl font-bold text-center">Tìm kiếm nguyên liệu, cửa hàng</h2>
+        {!isSellerActive && (
           <button
             onClick={handleStoreRegistration}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
@@ -180,15 +205,30 @@ const Market: React.FC = () => {
       </div>
       <div className="flex flex-col md:flex-row h-screen">
         <div className="md:w-1/4 w-full h-1/2 md:h-full p-4 overflow-y-auto rounded-lg shadow-lg">
-          <input
-            type="text"
-            placeholder="Nhập tên nguyên liệu..."
-            className="w-full p-2 border border-gray-300 rounded-lg mb-4"
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setSelectedStore(null);
-            }}
-          />
+          <div className="relative mb-4">
+            <input
+              type="text"
+              placeholder="Nhập tên nguyên liệu / tên cửa hàng..."
+              className="w-full p-2 border-2 border-gray-300 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setSelectedStore(null);
+              }}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setSelectedStore(null);
+                }}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl hover:text-red-500 focus:outline-none"
+              >
+                ×
+              </button>
+            )}
+          </div>
+
           {userLocation ? (
             <ul>
               {filteredStores.length > 0 ? (
@@ -199,8 +239,8 @@ const Market: React.FC = () => {
                     onClick={() => setSelectedStore(store)}
                   >
                     <h3>{store.name}</h3>
-                    <p className="text-gray-500">{store.address}</p>
-                    <p>
+                    <p className="text-black text-sm">{store.address}</p>
+                    <p className="text-black text-sm">
                       Giờ mở cửa: <span className="text-green-300">{formatTime(store.openHours)}</span> -{" "}
                       <span className="text-green-300">{formatTime(store.closeHours)}</span>
                     </p>
@@ -246,4 +286,4 @@ const Market: React.FC = () => {
   );
 };
 
-export default Market;
+export default Market;  

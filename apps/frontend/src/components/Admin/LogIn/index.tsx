@@ -89,7 +89,7 @@ const LogIn: React.FC<CardProps> = ({ children }) => {
                 type="button"
                 onClick={togglePasswordVisibility}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-600"
+                className="absolute top-1/2 right-3 transform -translate-y-1/2 text-black"
               >
                 {showPassword ? (
                   <svg

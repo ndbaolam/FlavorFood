@@ -26,38 +26,44 @@ const RecipeDetail: React.FC = () => {
   const { isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
   const [completedSteps, setCompletedSteps] = useState<{ [key: number]: boolean }>({});
   const [comments, setComments] = useState<any[]>([]);
-
+  const [averageRating, setAverageRating] = useState(0);
+  const [reviewCount, setReviewCount] = useState(0);
 
   useEffect(() => {
-    const fetchComments = async () => {
-      try {
-        const response = await axiosInstance.get("reviews", {
-          params: {
-            recipeId: recipe.recipe_id,
+    if (comments.length > 0) {
+      const total = comments.reduce((sum, c) => sum + c.rating, 0);
+      setAverageRating(total / comments.length);
+      setReviewCount(comments.length);
+    }
+  }, [comments]);
 
-          },
-        });
-        setComments(response.data);
-      } catch (error) {
-        console.error("Error fetching comments:", error);
-        toast.error("Lỗi khi tải bình luận!", { position: "top-right", autoClose: 2000 });
-      }
-    };
 
+  const fetchComments = async () => {
+    try {
+      const response = await axiosInstance.get("reviews", {
+        params: {
+          recipeId: recipe.recipe_id,
+        },
+      });
+      setComments(response.data);
+    } catch (error) {
+      console.error("Error fetching comments:", error);
+      toast.error("Lỗi khi tải bình luận!", { position: "top-right", autoClose: 2000 });
+    }
+  };
+
+  useEffect(() => {
     fetchComments();
   }, [recipe.recipe_id]);
 
-
-  const toggleStep = (stepNumber: number) => {
-    setCompletedSteps((prev) => ({
-      ...prev,
-      [stepNumber]: !prev[stepNumber],
-    }));
+  const handleCommentCreated = () => {
+    fetchComments();
   };
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const isLiked = isFavorite(recipe.recipe_id);
-
-
   const handleLike = async () => {
     try {
       const isAuthenticated = await checkAuth();
@@ -110,6 +116,7 @@ const RecipeDetail: React.FC = () => {
   };
 
 
+
   return (
     <div className="min-h-screen py-12 bg-white">
       <main className="container mx-auto px-4">
@@ -125,9 +132,9 @@ const RecipeDetail: React.FC = () => {
             <div className="ml-auto flex gap-3">
               <button
                 onClick={handlePrint}
-                className="no-print px-6 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition"
+                className="no-print px-6 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition"
               >
-                In
+                In công thức
               </button>
             </div>
           </div>
@@ -151,6 +158,13 @@ const RecipeDetail: React.FC = () => {
             </div>
             <span className="text-gray-400">|</span>
 
+            <Star className="w-5 h-5 text-yellow-700" />
+            <div className=" text-black">
+              <span className="font-semibold"> {averageRating.toFixed(1)}</span>
+              <p className="text-gray-700">({reviewCount} đánh giá)</p>
+            </div>
+            <span className="text-gray-400">|</span>
+
             <UtensilsCrossed className="w-6 h-6 text-black" />
             <span className="flex flex-wrap gap-2">
               {recipe.categories?.length ? (
@@ -160,7 +174,7 @@ const RecipeDetail: React.FC = () => {
                   </span>
                 ))
               ) : (
-                <span className="text-gray-500">Không có danh mục</span>
+                <span className="text-gray-500"></span>
               )}
             </span>
 
@@ -170,7 +184,7 @@ const RecipeDetail: React.FC = () => {
               className={`w-7 h-7 flex items-center justify-center p-2 rounded-full ${isLiked ? "bg-red-500 text-white" : "bg-gray-200"
                 }`}
             >
-              <Heart color={isLiked ? "white" : "gray"} fill={isLiked ? "white" : "none"} size={18} />
+              <Heart color={isLiked ? "white" : "black"} fill={isLiked ? "white" : "none"} size={18} />
             </button>
           </div>
           <div className="flex justify-between w-full gap-16 items-stretch">
@@ -259,14 +273,14 @@ const RecipeDetail: React.FC = () => {
         </article>
         <section className="comments-section">
           <div className="bg-gray-50 p-6 rounded-lg shadow mt-8">
-            <CommentForm recipeId={recipe.recipe_id} />
+            <CommentForm recipeId={recipe.recipe_id} onCommentCreated={handleCommentCreated} />
 
             <div className="mt-8">
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">Bình luận</h3>
+              <h3 className="text-xl font-semibold text-blackmb-4">Bình luận</h3>
               {comments.length > 0 ? (
                 <div className="space-y-4">
                   {comments.map((comment: any) => (
-                    <div key={comment.id} className="p-4 border-2 rounded-md">
+                    <div key={comment.id} className="p-4 border-2 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
                         {comment.user.avatar && (
                           <img
@@ -277,9 +291,9 @@ const RecipeDetail: React.FC = () => {
                         )}
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-gray-800">{comment.user.first_name} {comment.user.last_name}</span>
+                            <span className="font-semibold text-black">{comment.user.first_name} {comment.user.last_name}</span>
                             {Array.from({ length: comment.rating }).map((_, idx) => (
-                              <Star key={idx} className="text-yellow-500 w-4 h-4 fill-yellow-500" />
+                              <Star key={idx} className="text-yellow-700 w-4 h-4 " />
                             ))}
                           </div>
                           {comment.created_at && (
@@ -289,12 +303,12 @@ const RecipeDetail: React.FC = () => {
                           )}
                         </div>
                       </div>
-                      <p className="text-gray-600 mt-2">{comment.comment}</p>
+                      <p className="text-black mt-2">{comment.comment}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-gray-500">Chưa có bình luận nào.</p>
+                <p className="text-black">Chưa có bình luận nào.</p>
               )}
             </div>
           </div>

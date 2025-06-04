@@ -5,6 +5,8 @@ import CreateIngredient from "../../../components/Seller/CreateForm/CreateIngred
 import { Ingredient, Store } from "../../../pages/Market/store.interface";
 import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
+import { formatCurrency } from "../../../utils/fomatPrice";
+import { formatQuantity } from "../../../utils/fomatQuantity";
 
 interface IngredientTableProps {
   className?: string;
@@ -66,9 +68,7 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
     try {
       await Promise.all(
         selectedIngredientId.map((id) =>
-          axiosInstance.delete(`/store-ingredients/${id}`, {
-            withCredentials: true,
-          })
+          axiosInstance.delete(`/store-ingredients/${id}`)
         )
       );
       setFood((prev) => prev.filter((item) => !selectedIngredientId.includes(item.ingredient_id)));
@@ -80,7 +80,6 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
     }
   };
 
-
   const handleEditIngredient = async (ingredientId: number, updatedData: Partial<Ingredient>) => {
     const price = Number(updatedData.price);
     const quantity = Number(updatedData.quantity);
@@ -90,10 +89,11 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
       return;
     }
     try {
-      const response = await axiosInstance.put(`/store-ingredients/${ingredientId}`, {
+      await axiosInstance.put(`/store-ingredients/${ingredientId}`, {
         ...updatedData,
         price,
         quantity,
+        unit: updatedData.unit
       });
       const updatedFood = food.map((item) =>
         item.ingredient_id === ingredientId ? { ...item, ...updatedData } : item
@@ -113,25 +113,66 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
       prev.includes(ingredientId) ? prev.filter((id) => id !== ingredientId) : [...prev, ingredientId]
     );
   };
-  const sortedFood = [...food].sort((a, b) => {
-    const aUpdatedAt = new Date(a.updated_at);
-    const bUpdatedAt = new Date(b.updated_at);
-    if (isNaN(aUpdatedAt.getTime()) || isNaN(bUpdatedAt.getTime())) {
-      return 0;
-    }
 
-    const dateDiff = bUpdatedAt.getTime() - aUpdatedAt.getTime();
-    if (dateDiff !== 0) return dateDiff;
-
-    return a.title.localeCompare(b.title);
-  });
-
-  const filteredFood = sortedFood.filter((item) =>
+  const filteredFood = food.filter((item) =>
     item.title.toLowerCase().includes(searchTitle.toLowerCase())
   );
 
-  const totalPages = Math.ceil(filteredFood.length / LIMIT);
-  const paginatedFood = filteredFood.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
+  const sortedFood = filteredFood.sort((a, b) => {
+    const aUpdatedAt = new Date(a.updated_at).getTime();
+    const bUpdatedAt = new Date(b.updated_at).getTime();
+    return bUpdatedAt - aUpdatedAt || a.title.localeCompare(b.title);
+  });
+
+  const totalPages = Math.ceil(sortedFood.length / LIMIT);
+  const paginatedFood = sortedFood.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const buttons = [];
+
+    buttons.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 hover:bg-blue-100"
+      >
+        &lt;
+      </button>
+    );
+
+    for (let i = 1; i <= totalPages; i++) {
+      buttons.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`px-3 py-1 rounded ${currentPage === i ? "bg-blue-500 text-white" : "bg-white text-gray-700 hover:bg-blue-100"}`}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    buttons.push(
+      <button
+        key="next"
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="px-3 py-1 rounded bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 hover:bg-blue-100"
+      >
+        &gt;
+      </button>
+    );
+
+    return <div className="flex justify-end items-center space-x-1 mt-6">{buttons}</div>;
+  };
 
   return (
     <div className="bg-white">
@@ -140,8 +181,9 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
           <div className="flex space-x-3">
             <button
               onClick={() => setIsPopupOpen(true)}
-              className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2">
-              <SquarePlus className="text-white" size={18} />
+              className="text-white bg-blue-700 px-3 py-1 rounded-lg border-2 border-blue-700 flex items-center gap-x-2"
+            >
+              <SquarePlus className="text-white" size={22} />
               <span>Tạo nguyên liệu</span>
             </button>
             {isPopupOpen && (
@@ -151,27 +193,24 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
                 store={store}
               />
             )}
-
             <button
               onClick={handleBulkDelete}
-              className="text-black px-3 py-1 rounded-lg border-2 flex items-center gap-x-2"
-              disabled={selectedIngredientId.length === 0}>
-              <Trash2 className="text-red-600 hover:text-red-800" size={18} />
+              className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
+              disabled={selectedIngredientId.length === 0}
+            >
+              <Trash2 className="text-red-600 hover:text-red-800" size={22} />
               <span>Xóa</span>
             </button>
           </div>
-
-          <div >
           <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
-          </div>
         </div>
       </div>
 
-      <div className="overflow-x-auto ml-4 mr-4 mb-4 rounded-lg mt-4">
-        <table className="min-w-full bg-white shadow-md rounded-lg border">
+      <div className="overflow-x-auto p-4">
+        <table className="min-w-full bg-white shadow-md border border-black">
           <thead>
-            <tr className="bg-blue-700 text-white text-left">
-              <th className="p-3">
+            <tr className="bg-blue-700 text-white border-b border-black">
+              <th className="p-3 border-r border-white">
                 <input
                   type="checkbox"
                   onChange={(e) =>
@@ -180,35 +219,35 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
                   checked={selectedIngredientId.length === food.length && food.length > 0}
                 />
               </th>
-              <th className="p-3">Tên nguyên liệu</th>
-              <th className="p-3">Giá tiền</th>
-              <th className="p-3">Số lượng</th>
-              <th className="p-3">Cập nhật</th>
-              <th className="p-3"></th>
+              <th className="p-3 text-center border-r border-white">Tên nguyên liệu</th>
+              <th className="p-3 text-center border-r border-white">Giá tiền</th>
+              <th className="p-3 text-center border-r border-white">Đơn vị</th>
+              <th className="p-3 text-center border-r border-white">Số lượng</th>
+              <th className="p-3 text-center border-r border-white">Cập nhật</th>
+              <th className="p-3 text-center">Hành động</th>
             </tr>
           </thead>
           <tbody>
             {paginatedFood.length > 0 ? (
               paginatedFood.map((product: Ingredient) => {
-                const isEditing: boolean = editingId === product.ingredient_id;
+                const isEditing = editingId === product.ingredient_id;
 
                 return (
-                  <tr key={product.ingredient_id} className="border-b">
-                    <td className="p-3">
+                  <tr key={product.ingredient_id} className="border-b hover:bg-gray-100">
+                    <td className="p-3 text-center border-black border-b">
                       <input
                         type="checkbox"
                         checked={selectedIngredientId.includes(product.ingredient_id)}
                         onChange={() => toggleSelect(product.ingredient_id)}
-
                       />
                     </td>
-                    <td className="p-3">
+                    <td className="p-3 border-l border-black border-b">
                       {isEditing ? (
                         <input
                           type="text"
                           className="border rounded px-2 py-1 w-full"
                           value={editingData.title || ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          onChange={(e) =>
                             setEditingData({ ...editingData, title: e.target.value })
                           }
                         />
@@ -216,100 +255,106 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
                         product.title
                       )}
                     </td>
-                    <td className="p-3">
+                    <td className="p-3 text-center border-l border-black border-b">
                       {isEditing ? (
                         <input
                           type="number"
                           className="border rounded px-2 py-1 w-full"
                           value={editingData.price || ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          onChange={(e) =>
                             setEditingData({ ...editingData, price: Number(e.target.value) })
                           }
                         />
                       ) : (
-                        product.price
+                        formatCurrency(product.price)
                       )}
                     </td>
-                    <td className="p-3">
+                    <td className="p-3 text-center border-l border-black border-b">
+                      {isEditing ? (
+                        <input
+                          type="text"
+                          className="border rounded px-2 py-1 w-full"
+                          value={editingData.unit || ""}
+                          onChange={(e) =>
+                            setEditingData({ ...editingData, unit: e.target.value })
+                          }
+                        />
+                      ) : (
+                        product.unit
+                      )}
+                    </td>
+
+                    <td className="p-3 text-center border-l border-black border-b">
                       {isEditing ? (
                         <input
                           type="number"
                           className="border rounded px-2 py-1 w-full"
                           value={editingData.quantity || ""}
-                          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          onChange={(e) =>
                             setEditingData({ ...editingData, quantity: Number(e.target.value) })
                           }
                         />
                       ) : (
-                        product.quantity
+                        formatQuantity(product.quantity)
                       )}
                     </td>
-                    <td className="p-3">
-                      {product.updated_at ? new Date(product.updated_at).toLocaleDateString() : "Chưa có dữ liệu"}
+                    <td className="p-3 text-center border-l border-black border-b">
+                      {product.updated_at
+                        ? new Date(product.updated_at).toLocaleDateString()
+                        : "Chưa có dữ liệu"}
+                    </td>
+                    <td className="p-3 border border-black">
+                      <div className="flex justify-center items-center gap-3 h-full">
+                        {isEditing ? (
+                          <>
+                            <button
+                              onClick={() => handleEditIngredient(product.ingredient_id, editingData)}
+                              className="text-green-600 hover:text-green-800 px-3 py-1 border-2 border-green-300 rounded-md"
+                            >
+                              Lưu
+                            </button>
+                            <button
+                              onClick={() => setEditingId(null)}
+                              className="text-gray-700 hover:text-black px-3 py-1 border-2 border-gray-300 rounded-md"
+                            >
+                              Hủy
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => {
+                                setEditingId(product.ingredient_id);
+                                setEditingData(product);
+                              }}
+                              className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
+                            >
+                              <PencilRuler className="text-blue-600 hover:text-blue-800" size={22} />
+                            </button>
+                            <button
+                              onClick={() => handleDeleteIngredient(product.ingredient_id)}
+                              className="text-black px-3 py-1 rounded-lg border-2 border-gray-300 flex items-center gap-x-2"
+                            >
+                              <Trash2 className="text-red-600 hover:text-red-800" size={22} />
+                            </button>
+                          </>
+                        )}
+                      </div>
                     </td>
 
-                    <td className="p-3 flex justify-center space-x-3">
-                      {isEditing ? (
-                        <>
-                          <button
-                            onClick={() => handleEditIngredient(product.ingredient_id, editingData)}
-                            className="text-green-600 hover:text-green-800"
-                          >
-                            Lưu
-                          </button>
-                          <button
-                            onClick={() => setEditingId(null)}
-                            className="text-gray-600 hover:text-gray-800"
-                          >
-                            Hủy
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => {
-                              setEditingId(product.ingredient_id);
-                              setEditingData(product);
-                            }}
-                            className="text-blue-600 hover:text-blue-800"
-                          >
-                            <PencilRuler size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteIngredient(product.ingredient_id)}
-                            className="text-red-600 hover:text-red-800"
-                          >
-                            <Trash2 size={18} />
-                          </button>
-                        </>
-                      )}
-                    </td>
                   </tr>
                 );
               })
             ) : (
               <tr>
-                <td colSpan={6} className="text-center py-4">Không có nguyên liệu</td>
+                <td colSpan={6} className="text-center py-6">
+                  Không có nguyên liệu nào.
+                </td>
               </tr>
             )}
           </tbody>
         </table>
-        {totalPages > 1 && (
-          <div className="flex justify-center mt-4  space-x-2">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`px-3 py-1 rounded-md ${currentPage === index + 1
-                  ? 'bg-blue-500 text-white font-bold'
-                  : 'bg-gray-200 text-gray-700 hover:bg-blue-100'
-                  }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-          </div>
-        )}
+        {renderPagination()}
       </div>
     </div>
   );

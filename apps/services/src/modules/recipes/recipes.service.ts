@@ -75,44 +75,44 @@ export class RecipesService {
     if (categories && categories.length > 0) {
       qb.andWhere('categories.title IN (:...categories)', { categories });
     }
-    if (feature) {            
-      qb.addSelect('COUNT(reviews.review_id)', 'review_count')
-        .groupBy('recipes.recipe_id')
-        .addGroupBy('categories.category_id')
-        .addGroupBy('categories.title')
-        .addGroupBy('ingredients.id')
-        .addGroupBy('nutrition.id')
-        .addGroupBy('steps.number')
-        .addGroupBy('steps.step')
-        .orderBy('review_count', 'DESC');
-    }
 
-    if(most_rating) {
-      qb.addSelect('AVG(reviews.rating)', 'average_rating')
-        .groupBy('recipes.recipe_id')
-        .addGroupBy('categories.category_id')
-        .addGroupBy('categories.title')
-        .addGroupBy('ingredients.id')
-        .addGroupBy('nutrition.id')
-        .addGroupBy('steps.number')
-        .addGroupBy('steps.step')
-        .addGroupBy('reviews.review_id')
-        .orderBy('average_rating', 'DESC');
-    }
+    let recipes = await qb.getMany();
+
+    recipes.map(recipe => {
+      if (recipe.reviews && recipe.reviews.length > 0) {
+        const total = recipe.reviews.reduce((acc, review) => acc + Number(review.rating), 0);
+        recipe['average_rating'] = total / recipe.reviews.length;
+      } else {
+        recipe['average_rating'] = 0;
+      }
+      recipe['review_count'] = recipe.reviews.length;
+    })
 
     if (offset) {
-      qb.skip(offset);
-    }
-    if (limit) {
-      qb.take(limit);
+      recipes = recipes.slice(offset);
     }
 
-    const recipes = await qb.getMany();
+    if (limit) {
+      recipes = recipes.slice(0, limit);
+    }
+
     if (!recipes.length) {
       throw new NotFoundException(
         `No recipes found matching your search criteria.`
       );
     }
+
+    recipes.sort((a, b) => {
+      if (feature && most_rating) {
+        return b['average_rating'] - a['average_rating'];
+      } else if (feature) {
+        return b['review_count'] - a['review_count'];
+      } else if (most_rating) {
+        return b['average_rating'] - a['average_rating'];
+      }
+      return 0;
+    })
+
     return recipes;
   }  
 

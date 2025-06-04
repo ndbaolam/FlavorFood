@@ -6,10 +6,10 @@ const Banner: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto my-8 p-12 rounded-3xl shadow-lg flex flex-col lg:flex-row items-center justify-between bg-blue-50 relative overflow-hidden">
       <div className="flex flex-col items-start lg:mr-10 mb-8 lg:mb-0">
-        <h2 className="text-2xl lg:text-5xl font-extrabold text-gray-800 mb-6 leading-tight">
+        <h2 className="text-2xl lg:text-5xl font-extrabold text-black mb-6 leading-tight">
           Khám phá món ngon mỗi ngày
         </h2>
-        <p className="text-lg lg:text-xl text-gray-700 mb-8">
+        <p className="text-lg lg:text-xl text-black mb-8">
           Hàng trăm công thức nấu ăn đa dạng, giúp bạn nấu những món ngon dễ dàng hơn mỗi ngày!
         </p>
         <button

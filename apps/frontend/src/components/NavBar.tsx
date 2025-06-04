@@ -120,7 +120,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
     },
     {
       label: "Đăng xuất",
-      icon: <LogOut className="w-5 h-5 mr-2 text-gray-500" />,
+      icon: <LogOut className="w-5 h-5 mr-2 text-black" />,
       onClick: handleLogout,
     },
   ];
@@ -163,7 +163,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                 className={`flex items-center px-3 py-2 rounded-md font-medium transition-colors ${
                   isActiveMenu(to)
                     ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
-                    : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
+                    : "text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
                 }`}        
               >
                 {icon}
@@ -191,7 +191,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                 </button>
 
                 {isAccountOpen && (
-                  <div className="absolute right-4 top-20 w-48 bg-white rounded-md shadow-lg z-50">
+                  <div className="absolute right-4 top-20 w-48 bg-white rounded-lg shadow-lg z-50 text-black">
                     {accountItems.map(({ href, label, icon, onClick }) => (
                       <a
                         key={label}
@@ -215,7 +215,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
             ) : (
               <Link
                 to="/sign-in"
-                className="px-4 py-2 border border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition"
+                className="px-4 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition"
               >
                 Đăng nhập
               </Link>
@@ -226,7 +226,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
           <div className="md:hidden">
             <button
               onClick={toggleMenu}
-              className="p-2 rounded-md text-gray-700 hover:text-blue-900 hover:bg-blue-100"
+              className="p-2 rounded-md text-black hover:text-blue-900 hover:bg-blue-100"
               aria-label="Toggle menu"
               aria-expanded={isMenuOpen}
             >
@@ -242,7 +242,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
 
       {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden px-4 pt-4 pb-6 space-y-2 bg-white border-t border-gray-200">
+        <div className="md:hidden px-4 pt-4 pb-6 space-y-2 bg-white border-t text-black">
          {menuItems.map(({ to, label, icon }) => (
               <Link
                 key={to}
@@ -250,7 +250,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                 className={`flex items-center px-3 py-2 rounded-md font-medium transition-colors ${
                   isActiveMenu(to)
                     ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
-                    : "text-gray-700 hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
+                    : "text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
                 }`}        
               >
                 {icon}
@@ -258,8 +258,8 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
               </Link>
             ))}
 
-          <div className="mt-4 border-t border-gray-200 pt-2">
-            <p className="text-gray-500 mb-2 font-medium">Tài khoản</p>
+          <div className="mt-4 border-t border-gray-300 pt-2">
+            <p className="text-black mb-2 font-medium">Tài khoản</p>
             {avatarUrl ? (
               accountItems.map(({ href, label, icon, onClick }) => (
                 <a
@@ -272,7 +272,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                       onClick();
                     }
                   }}
-                  className="flex items-center px-4 py-2 text-gray-700 hover:bg-blue-100"
+                  className="flex items-center px-4 py-2 text-black hover:bg-blue-100"
                 >
                   {icon}
                   {label}

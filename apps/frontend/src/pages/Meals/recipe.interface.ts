@@ -15,6 +15,8 @@ export interface Recipe {
     isFavorite?: boolean;
     created_at: string;
     updated_at: string;
+    average_rating?: number;
+    review_count?: number;
 }
 
 export interface Ingredient {

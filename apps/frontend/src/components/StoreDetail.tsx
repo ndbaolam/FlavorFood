@@ -1,6 +1,8 @@
 import { Clock, MapPin, Phone } from "lucide-react";
 import React, { useState } from "react";
-import { formatTime } from "../pages/Market/store.interface";
+import { formatTime } from "../utils/fomatDate";
+import { formatCurrency } from "../utils/fomatPrice";
+import { formatQuantity } from "../utils/fomatQuantity";
 
 const highlightSearchTerm = (text: string, searchTerm: string) => {
   if (!searchTerm) return text;
@@ -10,6 +12,8 @@ const highlightSearchTerm = (text: string, searchTerm: string) => {
 
 const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, searchTerm }) => {
   const [imgError, setImgError] = useState(false);
+
+  console.log("store.ingredients:", store.ingredients);
 
   const toLocalHoursMinutes = (date: Date) => {
     return {
@@ -47,7 +51,6 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
     }
   };
 
-
   return (
     <div className="p-4 bg-white h-full shadow-inner border-l border-gray-200">
       <div className="flex justify-between items-center mb-2">
@@ -67,15 +70,15 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
         onError={() => setImgError(true)}
       />
       <p className="mb-1">{store.description}</p>
-      <p className="flex items-center gap-2 mt-4 mb-1 text-gray-700">
+      <p className="flex items-center gap-2 mt-4 mb-1 text-black">
         <MapPin className="text-blue-500 w-4 h-4" />
         <span>Địa chỉ: {store.address}</span>
       </p>
-      <p className="flex items-center gap-2 mb-1 text-gray-700">
+      <p className="flex items-center gap-2 mb-1 text-black">
         <Phone className="text-green-500 w-4 h-4" />
         <span>SĐT: {store.phone_number}</span>
       </p>
-      <p className="flex items-center gap-2 mb-1 text-gray-700">
+      <p className="flex items-center gap-2 mb-1 text-black0">
         <Clock className="text-black w-4 h-4" />
         <span>
           Giờ mở cửa: {formatTime(store.openHours)} - {formatTime(store.closeHours)}
@@ -93,20 +96,29 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
           </tr>
         </thead>
         <tbody>
-          {store.ingredients.map((item: any, index: number) => (
-            <tr key={index} className="border-b">
-              <td className="py-2 px-4">
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: highlightSearchTerm(item.title, searchTerm),
-                  }}
-                />
-              </td>
-              <td className="py-2 px-4">{item.quantity}</td>
-              <td className="py-2 px-4">{item.price} đ</td>
-            </tr>
-          ))}
+          {store.ingredients
+            .slice()
+            .sort((a: any, b: any) => {
+              const aMatch = a.title.toLowerCase().includes(searchTerm.toLowerCase());
+              const bMatch = b.title.toLowerCase().includes(searchTerm.toLowerCase());
+              return (bMatch ? 1 : 0) - (aMatch ? 1 : 0);
+            })
+            .map((item: any, index: number) => {
+              const isMatch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
+              return (
+                <tr key={index} className="border-b">
+                  <td
+                    className={`py-2 px-4 ${isMatch ? 'text-red-600 font-bold' : ''}`}
+                  >
+                    {item.title}
+                  </td>
+                  <td className="py-2 px-4">{formatQuantity(item.quantity)}</td>
+                  <td className="py-2 px-4">{formatCurrency(item.price)}/{item.unit}</td>
+                </tr>
+              );
+            })}
         </tbody>
+
       </table>
     </div>
   );

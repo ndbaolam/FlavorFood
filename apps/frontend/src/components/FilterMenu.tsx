@@ -31,16 +31,16 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter, 
   return (
     <div className="flex flex-wrap justify-center gap-4 p-4">
       {loading ? (
-        <p className="text-gray-500">Đang tải...</p>
+        <p className="text-black">Đang tải...</p>
       ) : error ? (
         <p className="text-red-500">{error}</p>
       ) : (
         <>
           <button
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
+            className={`px-4 py-2 rounded-full text-base font-medium transition-colors 
               ${activeFilter === null
                 ? 'bg-red-700 text-white'
-                : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+                : 'bg-white text-black border-2 border-gray-300 hover:bg-gray-100'}`}
             onClick={() => {
               setActiveFilter(null);
               setCurrentPage(1);
@@ -53,10 +53,10 @@ const FilterMenu: React.FC<FilterMenuProps> = ({ activeFilter, setActiveFilter, 
             <button
               key={category.category_id}
               onClick={() => setActiveFilter(category.category_id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors 
+              className={`px-4 py-2 rounded-full text-base font-medium transition-colors 
                 ${activeFilter === category.category_id
                   ? 'bg-red-700 text-white'
-                  : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-50'}`}
+                  : 'bg-white text-black border-2 border-gray-300 hover:bg-gray-100'}`}
             >
               {category.title.charAt(0).toUpperCase() + category.title.slice(1)}
             </button>

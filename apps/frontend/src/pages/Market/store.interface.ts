@@ -26,17 +26,9 @@ export interface Ingredient {
   price: number;
   quantity: number;
   created_at: Date;
+  unit: string;
   updated_at: Date;
 }
-
-export function formatTime(isoTime: string) {
-  const date = new Date(isoTime);
-  const hours = date.getUTCHours();
-  const minutes = date.getUTCMinutes();
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
-}
-
-
 export interface Subscription {
   subscription_id: number;
   title: string;
