@@ -1,4 +1,4 @@
-import { BookOpen, Check, CircleGauge, Clock, Heart, Star, Users, UtensilsCrossed, Vegan, CircleArrowLeft } from "lucide-react";
+import { BookOpen, Check, CircleGauge, Clock, Heart, Star, Users, UtensilsCrossed, Vegan, CircleArrowLeft, Printer } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { useLoaderData, LoaderFunctionArgs, useNavigate, useLocation } from "react-router-dom";
 import axiosInstance from "../../../services/axiosInstance";
@@ -132,9 +132,9 @@ const RecipeDetail: React.FC = () => {
             <div className="ml-auto flex gap-3">
               <button
                 onClick={handlePrint}
-                className="no-print px-6 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition"
+                className="no-print px-3 py-2 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 rounded-md font-medium transition flex items-center justify-center"
               >
-                In công thức
+                <Printer className="w-5 h-5" />
               </button>
             </div>
           </div>
