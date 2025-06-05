@@ -91,13 +91,14 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
 
         <div className="p-6 flex flex-col h-[230px] ">
           <div>
-            <h2 className="text-xl font-semibold text-black mb-2 text-center hover:text-blue-500 transition-colors duration-300 line-clamp-2 h-[60px]">
+            <h2 className="text-xl font-semibold text-black mb-2 text-center hover:text-blue-500 transition-colors duration-300 line-clamp-2">
               {recipe.title}
             </h2>
-            <p className="text-black text-center text-sm line-clamp-3 h-[70px] mb-2">
+            <p className="text-black text-center text-sm line-clamp-3 mb-2">
               {recipe.description}
             </p>
           </div>
+
 
           <div className="border-t border-black w-full my-2" />
 

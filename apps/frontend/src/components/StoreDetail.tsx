@@ -70,22 +70,26 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
         onError={() => setImgError(true)}
       />
       <p className="mb-1">{store.description}</p>
-      <p className="flex items-center gap-2 mt-4 mb-1 text-black">
-        <MapPin className="text-blue-500 w-4 h-4" />
+
+      <div className="flex items-center gap-4 mt-4 mb-2 text-black">
+        <MapPin className="text-blue-500 w-8 h-8" />
         <span>Địa chỉ: {store.address}</span>
-      </p>
-      <p className="flex items-center gap-2 mb-1 text-black">
-        <Phone className="text-green-500 w-4 h-4" />
+      </div>
+
+      <div className="flex items-center gap-4 mb-2 text-black">
+        <Phone className="text-green-500 w-6 h-6" />
         <span>SĐT: {store.phone_number}</span>
-      </p>
-      <p className="flex items-center gap-2 mb-1 text-black0">
-        <Clock className="text-black w-4 h-4" />
+      </div>
+
+      <div className="flex items-center gap-4 mb-2 text-black">
+        <Clock className="text-black w-6 h-6" />
         <span>
           Giờ mở cửa: {formatTime(store.openHours)} - {formatTime(store.closeHours)}
         </span>
-      </p>
+      </div>
 
-      <h3 className="font-semibold mt-4 mb-2">Nguyên liệu:</h3>
+
+      <h3 className="font-semibold text-xl mt-4 mb-2">Nguyên liệu:</h3>
 
       <table className="w-full table-auto text-sm">
         <thead>
@@ -104,12 +108,10 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
               return (bMatch ? 1 : 0) - (aMatch ? 1 : 0);
             })
             .map((item: any, index: number) => {
-              const isMatch = item.title.toLowerCase().includes(searchTerm.toLowerCase());
+              const isMatch = searchTerm && item.title.toLowerCase().includes(searchTerm.toLowerCase());
               return (
                 <tr key={index} className="border-b">
-                  <td
-                    className={`py-2 px-4 ${isMatch ? 'text-red-600 font-bold' : ''}`}
-                  >
+                  <td className={`py-2 px-4 ${isMatch ? 'text-red-600 font-bold' : ''}`}>
                     {item.title}
                   </td>
                   <td className="py-2 px-4">{formatQuantity(item.quantity)}</td>
