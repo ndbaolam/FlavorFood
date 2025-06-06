@@ -10,8 +10,6 @@ const LIMIT = 12;
 
 const Tips: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  // Khởi tạo state từ URL query params 1 lần khi mount
   const [searchTitle, setSearchTitle] = useState(() => searchParams.get('search') || '');
   const [activeGenre, setActiveGenre] = useState<number | null>(() => {
     const genreParam = searchParams.get('genre');
@@ -24,7 +22,6 @@ const Tips: React.FC = () => {
 
   const [allTips, setAllTips] = useState<TipsItem[]>([]);
 
-  // Fetch tips data khi mount
   useEffect(() => {
     const fetchTips = async () => {
       try {
@@ -39,13 +36,9 @@ const Tips: React.FC = () => {
 
     fetchTips();
   }, []);
-
-  // Khi searchTitle hoặc activeGenre thay đổi, reset currentPage về 1
   useEffect(() => {
     setCurrentPage(1);
   }, [activeGenre, searchTitle]);
-
-  // Cập nhật URL query params khi state thay đổi
   useEffect(() => {
     const params: Record<string, string> = {};
     if (searchTitle) params.search = searchTitle;
@@ -54,8 +47,7 @@ const Tips: React.FC = () => {
 
     setSearchParams(params, { replace: true });
   }, [searchTitle, activeGenre, currentPage, setSearchParams]);
-
-  // Lọc tips theo searchTitle và activeGenre
+  
   const filteredTips = useMemo(() => {
     return allTips.filter(tip => {
       const matchGenre = activeGenre
