@@ -22,47 +22,11 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
     };
   };
 
-  const isStoreOpen = (open: string, close: string) => {
-    if (!open || !close) return false;
-
-    const now = new Date();
-
-    const openDate = new Date(open);
-    const closeDate = new Date(close);
-
-    if (isNaN(openDate.getTime()) || isNaN(closeDate.getTime())) {
-      console.error('Invalid date format');
-      return false;
-    }
-
-    const { hours: openHour, minutes: openMinute } = toLocalHoursMinutes(openDate);
-    const { hours: closeHour, minutes: closeMinute } = toLocalHoursMinutes(closeDate);
-
-    const openTime = new Date(now);
-    openTime.setHours(openHour, openMinute, 0, 0);
-
-    const closeTime = new Date(now);
-    closeTime.setHours(closeHour, closeMinute, 0, 0);
-
-    if (closeTime <= openTime) {
-      return now >= openTime || now <= closeTime;
-    } else {
-      return now >= openTime && now <= closeTime;
-    }
-  };
-
   return (
     <div className="p-4 bg-white h-full shadow-inner border-l border-gray-200">
-      <div className="flex justify-between items-center mb-2">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">{store.name}</h2>
-        <span
-          className={`text-sm font-medium whitespace-nowrap ml-2 ${isStoreOpen(store.openHours, store.closeHours) ? "text-green-600" : "text-red-600"
-            }`}
-        >
-          {isStoreOpen(store.openHours, store.closeHours) ? "Đang mở cửa" : "Đã đóng cửa"}
-        </span>
       </div>
-
       <img
         src={imgError ? '/fallback-image.png' : store.image}
         alt={store.name}

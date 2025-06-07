@@ -205,6 +205,14 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
           <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
         </div>
       </div>
+      <div className="flex justify-between p-4 text-md">
+        <div>
+          Tổng số công thức: {filteredFood.length}
+        </div>
+        <div>
+          Trang {currentPage} / {totalPages}
+        </div>
+      </div>
 
       <div className="overflow-x-auto p-4">
         <table className="min-w-full bg-white shadow-md border border-black">
