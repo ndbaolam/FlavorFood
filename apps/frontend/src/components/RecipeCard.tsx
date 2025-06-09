@@ -64,7 +64,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
   return (
     <Link
       to={linkTo}
-      className="block relative pt-20 cursor-pointer"
+      className="block relative pt-10 cursor-pointer"
       aria-label={`Xem chi tiết cho ${recipe.title}`}
     >
       <div className="bg-gradient-to-b from-blue-100 to-white rounded-xl shadow-lg hover:scale-105 transition-all ease-in-out flex flex-col h-[430px] w-[300px]">
@@ -103,7 +103,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({
             {recipe.description}
           </p>
 
-          <div className="border-t border-black w-full my-2" />
+          <div className="border-t border-gray-400 w-full my-2" />
 
           <div className="flex justify-between items-center text-sm w-full gap-4 mt-2">
             <div className="flex items-center gap-2 text-black">

@@ -8,5 +8,5 @@ export interface User {
     role: "normal" | "admin" | "seller";
     created_at: string;
     updated_at: string;
-    
+    expired_at?: string; 
   }

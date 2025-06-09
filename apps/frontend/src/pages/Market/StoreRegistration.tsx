@@ -52,6 +52,7 @@ const StoreRegistration = () => {
       toast.error('Thanh toán thất bại!', { toastId: 'fail' });
     }
   }, []);
+  
   const closeThankYouPopup = () => {
     setShowThankYouPopup(false);
   };
@@ -131,7 +132,7 @@ const StoreRegistration = () => {
   return (
     <>
       {showThankYouPopup ? (
-        <ThankYou onClose={closeThankYouPopup} />
+        <ThankYou onClose={closeThankYouPopup} hasStore={true} />
       ) : (
         <div className="min-h-screen flex justify-center items-center px-4">
           <div className="w-full max-w-7xl border border-gray-300 shadow-lg bg-white rounded-xl p-12 mt-10">
@@ -264,7 +265,7 @@ const StoreRegistration = () => {
                   : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl'
                   }`}
               >
-                Đăng ký ({selectedPlanId})
+                Đăng ký
                 {acceptedTerms && <ChevronRight className="ml-2 h-5 w-5" />}
               </button>
             </div>
