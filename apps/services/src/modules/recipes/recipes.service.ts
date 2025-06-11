@@ -4,13 +4,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, DataSource } from 'typeorm';
 import { Recipes } from './entity/recipes.entity';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
 import { SearchRecipeDto } from './dto/search-recipes.dto';
 import { Ingredient } from './ingredient/entity/ingredient.entity';
 import { Nutritrion } from './nutrition/entity/nutrition.entity';
 import { Steps } from './steps/entity/step.entity';
+import { EmbeddingService } from '../embedding/embedding.service';
+import { FavoriteService } from '../favorite/favorite.service';
 
 @Injectable()
 export class RecipesService {
@@ -26,6 +28,12 @@ export class RecipesService {
 
     @InjectRepository(Steps)
     private readonly stepRepository: Repository<Steps>,
+
+    private readonly favoriteService: FavoriteService,
+
+    private readonly embeddingService: EmbeddingService,
+
+    private readonly dataSource: DataSource,
   ) {}
 
   async findOne(id: number): Promise<Recipes> {
@@ -118,7 +126,7 @@ export class RecipesService {
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipes> {
     try {
-      const {
+      let {
         categories: categoryIds,
         ingredients,
         nutrition,
@@ -136,6 +144,13 @@ export class RecipesService {
           `Recipe with title ${recipeDetail.title} already exists.`
         );
       }
+      
+      // Embedding
+      recipeDetail['embedding'] = await this.embeddingService.generate({
+        "title": recipeDetail['title'],
+        "description": recipeDetail['description'],
+          "difficulty_level": recipeDetail['difficulty_level']
+      });
 
       const insertResult = await this.recipesRepository
         .createQueryBuilder()
@@ -385,5 +400,47 @@ export class RecipesService {
     if (result.affected === 0) {
       throw new NotFoundException(`Recipe with ID ${id} not found`);
     }
+  }
+
+  async findSimilarRecipes(embedding: number[], limit = 10): Promise<Recipes[]> {
+    const embeddingStr = `[${embedding.join(',')}]`
+    /*
+      https://github.com/pgvector/pgvector
+      <-> - L2 distance
+      <#> - (negative) inner product
+      <=> - cosine distance
+      <+> - L1 distance
+      <~> - Hamming distance (binary vectors)
+      <%> - Jaccard distance (binary vectors)
+    */
+    const query = `
+      SELECT *, embedding <=> $1 AS distance
+      FROM recipes
+      ORDER BY distance ASC
+      LIMIT $2
+    `
+
+    const result = await this.dataSource.query(query, [embeddingStr, limit])
+    return result
+  }
+
+  async recommend(userId: number): Promise<Recipes[]> {
+    const favorite = await this.favoriteService.getFavoritesByUserId(userId)
+
+    const embeddings = await Promise.all(
+      favorite.map(async (item) => {
+        const recipe = item.recipe;
+
+        return await this.embeddingService.generate({
+          title: recipe.title,
+          description: recipe.description,
+        })
+      })
+    )
+
+    const avg = this.embeddingService.average(embeddings)
+    const norm = this.embeddingService.normalize(avg)
+
+    return this.findSimilarRecipes(norm)
   }
 }

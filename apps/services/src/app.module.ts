@@ -17,6 +17,7 @@ import momoConfig from './config/momo.config';
 import { InvoiceModule } from './modules/invoice/invoice.module';
 import { SubscriptionModule } from './modules/subscription/subscription.module';
 import { LoggerMiddleware } from './common/middlewares/logger.middleware';
+import { EmbeddingModule } from './modules/embedding/embedding.module';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
     PaymentModule,
     NotificationsModule,
     InvoiceModule,
-    SubscriptionModule
+    SubscriptionModule,
+    EmbeddingModule
   ],
 })
 export class AppModule implements NestModule{

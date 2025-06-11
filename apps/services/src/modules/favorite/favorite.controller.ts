@@ -31,8 +31,7 @@ import {
 @Controller('favorite')
 export class FavoriteController {
   constructor(
-    private readonly favoriteService: FavoriteService,
-    private readonly recipesService: RecipesService
+    private readonly favoriteService: FavoriteService,    
   ) {}
 
   @Post()
@@ -58,13 +57,11 @@ export class FavoriteController {
 
     if (!user) {
       throw new UnauthorizedException();
-    }
-
-    const recipe = await this.recipesService.findOne(Number(recipeId));
+    }    
 
     const createFavoriteDto: CreateFavoriteDto = {
       user_id: Number(user['sub']),
-      recipe_id: recipe.recipe_id,
+      recipe_id: recipeId,
     };
 
     return await this.favoriteService.createFavorite(createFavoriteDto);

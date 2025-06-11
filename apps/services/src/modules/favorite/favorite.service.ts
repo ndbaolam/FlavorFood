@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Favorite } from './entity/favorite.entity';
 import { CreateFavoriteDto } from './dto/favorite.dto';
 import { RecipesService } from '../recipes/recipes.service';
+import { Recipes } from '../recipes/entity/recipes.entity';
 
 @Injectable()
 export class FavoriteService {
@@ -11,12 +12,18 @@ export class FavoriteService {
     @InjectRepository(Favorite)
     private readonly favoriteRepository: Repository<Favorite>,
 
-    private readonly recipesService: RecipesService
+    @InjectRepository(Recipes)
+    private readonly recipesRepository: Repository<Recipes>,
   ) {}
 
   async createFavorite(createFavoriteDto: CreateFavoriteDto): Promise<Favorite> {    
     try {
-      const existedRecipe = this.recipesService.findOne(createFavoriteDto.recipe_id);
+      const existedRecipe = this.recipesRepository.findOne({
+        where: {
+          recipe_id: createFavoriteDto.recipe_id
+        }
+      });
+      
       if (!existedRecipe) {
         throw new NotFoundException(`Recipe with ID ${createFavoriteDto.recipe_id} not found`);
       }

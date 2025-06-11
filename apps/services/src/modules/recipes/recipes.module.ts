@@ -10,6 +10,8 @@ import { Steps } from './steps/entity/step.entity';
 import { IngredientModule } from './ingredient/ingredient.module';
 import { NutritionModule } from './nutrition/nutrition.module';
 import { StepsModule } from './steps/steps.module';
+import { EmbeddingModule } from '../embedding/embedding.module';
+import { FavoriteModule } from '../favorite/favorite.module';
 
 @Module({
   imports: [
@@ -22,7 +24,10 @@ import { StepsModule } from './steps/steps.module';
     CategoriesModule,
     IngredientModule,
     NutritionModule,
-    StepsModule
+    StepsModule,
+    FavoriteModule,
+    
+    EmbeddingModule
   ],
   controllers: [RecipesController],
   providers: [RecipesService],
