@@ -38,40 +38,46 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-  
+
     try {
       const response = await axiosInstance.post(
         '/auth/login',
         { mail, password },
         { withCredentials: true }
       );
-      console.log('Đăng nhập thành công:', response.data);
-      
-      
-      window.dispatchEvent(new CustomEvent('userLoggedIn'));
-      const returnTo = (location.state as any)?.returnTo;
-      navigate(returnTo || '/');
+
+      const accessToken = response.data.access_token;
+      if (accessToken) {
+        localStorage.setItem('authToken', accessToken);
+        window.dispatchEvent(new CustomEvent('userLoggedIn'));
+
+        const returnTo = (location.state as any)?.returnTo;
+        navigate(returnTo || '/');
+      } else {
+        toast.error('Không nhận được token từ máy chủ.');
+      }
     } catch (error) {
       console.error('Đăng nhập thất bại:', error);
       toast.error('Tên đăng nhập hoặc mật khẩu không đúng');
     }
   };
-  
+
+
 
   const googleLogin = useGoogleLogin({
     onSuccess: async (codeResponse: CodeResponse | TokenResponse) => {
       const { access_token } = codeResponse as TokenResponse;
-  
+
       try {
         const response = await axiosInstance.post(
           '/auth/google/verify',
           { access_token },
         );
-     
-  
+
+
         localStorage.setItem('authToken', response.data.token);
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
-  
+
         const returnTo = (location.state as any)?.returnTo;
         navigate(returnTo || '/');
       } catch (error) {
@@ -84,7 +90,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
       toast.error('Đăng nhập với Google thất bại.');
     },
   });
-  
+
   return (
     <div className="flex justify-center items-center h-screen relative">
       <div className="bg-gray-100 shadow-lg rounded-lg overflow-hidden w-fit max-w-2xl z-20 flex">

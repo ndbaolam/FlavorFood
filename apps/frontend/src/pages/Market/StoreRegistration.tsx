@@ -4,6 +4,8 @@ import axiosInstance from '../../services/axiosInstance';
 import { Subscription } from './store.interface';
 import { toast } from 'react-toastify';
 import ThankYou from './ThankyouPopup';
+import { checkAuth, getUserProfile } from '../../utils/auth';
+import { User } from '../Profile/Profile.interface';
 
 const StoreRegistration = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -11,6 +13,7 @@ const StoreRegistration = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [showThankYouPopup, setShowThankYouPopup] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
@@ -128,11 +131,31 @@ const StoreRegistration = () => {
       console.error('Lỗi khi gọi API thanh toán:', error);
     }
   };
-
+  
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) {
+        toast.error('Bạn cần đăng nhập để đăng ký cửa hàng');
+        window.location.href = '/login'; 
+        return;
+      }
+  
+      const userProfile = await getUserProfile();
+      if (userProfile) {
+        setUser(userProfile);
+      }
+    };
+  
+    checkAuthentication();
+  }, []);
+  const userId = user ? user.user_id : null;
   return (
     <>
       {showThankYouPopup ? (
-        <ThankYou onClose={closeThankYouPopup} hasStore={true} />
+        <ThankYou 
+        onClose={closeThankYouPopup} 
+        userId={userId ?? 0}/>
       ) : (
         <div className="min-h-screen flex justify-center items-center px-4">
           <div className="w-full max-w-7xl border border-gray-300 shadow-lg bg-white rounded-xl p-12 mt-10">
