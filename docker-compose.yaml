@@ -1,9 +1,9 @@
 services:
   postgresql:    
-    image: postgres:16-alpine
+    image: pgvector/pgvector:pg16
     env_file:
       - .env 
-    command: ['postgres', '-c', 'wal_level=logical']
+    #command: ['postgres', '-c', 'wal_level=logical']
     container_name: postgresql    
     ports:
       - "5432:5432"
@@ -44,6 +44,15 @@ services:
       - flavor_food
     ports:
       - "9090:9090"
+
+  # fastapi:
+  #   build:
+  #     context: ./apps/fastapi
+  #     dockerfile: Dockerfile
+  #   container_name: fastapi
+  #   hostname: fastapi
+  #   ports:
+  #     - "8000:8000"
 
 volumes:
   postgres_data:

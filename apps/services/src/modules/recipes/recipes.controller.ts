@@ -10,6 +10,9 @@ import {
   BadRequestException,
   Patch,
   ParseIntPipe,
+  UseGuards,
+  Req,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { RecipesService } from './recipes.service';
 import { CreateRecipeDto, UpdateRecipeDto } from './dto/recipes.dto';
@@ -24,6 +27,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 
 @ApiTags('Recipes')
 @Controller('recipes')
@@ -56,6 +60,19 @@ export class RecipesController {
     } catch (error) {
       Logger.error(error)
     }
+  }
+
+  @Post('/recommend')
+  @ApiOperation({ summary: 'Recommend recipes' })
+  @UseGuards(JwtAuthGuard)
+  async recommend(@Req() req: Request) {
+    const user = req['user'];
+    
+    // if (!user) {
+    //   throw new UnauthorizedException();
+    // }
+    
+    return await this.recipesService.recommend(Number(user['sub']));
   }
 
   @Post()

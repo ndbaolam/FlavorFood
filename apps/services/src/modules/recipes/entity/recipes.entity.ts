@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  ValueTransformer
 } from 'typeorm';
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Categories } from '../../categories/entity/categories.entity';
@@ -14,6 +15,11 @@ import { Review } from '../../review/entity/review.entity';
 import { Ingredient } from '../ingredient/entity/ingredient.entity';
 import { Nutritrion } from '../nutrition/entity/nutrition.entity';
 import { Steps } from '../steps/entity/step.entity';
+
+const vectorTransformer: ValueTransformer = {
+  to: (value: number[]): string => JSON.stringify(value),
+  from: (value: string): number[] => JSON.parse(value),
+};
 
 export enum DifficultyLevel {
   EASY = 'Dễ',
@@ -85,6 +91,14 @@ export class Recipes {
     },
   })
   categories: Categories[];
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    transformer: vectorTransformer,
+    // select: false
+  })
+  embedding: number[]
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
