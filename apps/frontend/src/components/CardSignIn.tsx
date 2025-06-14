@@ -48,7 +48,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
 
       const accessToken = response.data.access_token;
       if (accessToken) {
-        localStorage.setItem('authToken', accessToken);
+        // localStorage.setItem('authToken', accessToken);
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
 
         const returnTo = (location.state as any)?.returnTo;
@@ -75,7 +75,7 @@ const CardSignIn: React.FC<CardProps> = ({ children }) => {
         );
 
 
-        localStorage.setItem('authToken', response.data.token);
+        // localStorage.setItem('authToken', response.data.token);
         window.dispatchEvent(new CustomEvent('userLoggedIn'));
 
         const returnTo = (location.state as any)?.returnTo;
