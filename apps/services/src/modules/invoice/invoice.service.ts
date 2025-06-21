@@ -29,7 +29,6 @@ export class InvoiceService {
     });
     return this.invoiceRepository.save(invoice);
   }
-
   async findAll(userId?: number, status?: InvoiceStatus): Promise<Invoice[]> {
     try {
       const query = this.invoiceRepository
@@ -44,9 +43,32 @@ export class InvoiceService {
       if (status) {
         query.andWhere('invoice.status = :status', { status });
       }
+
       query.orderBy('invoice.created_at', 'DESC');
 
-      return await query.getMany();
+      const invoices = await query.getMany();
+      const now = new Date();
+
+      for (const invoice of invoices) {
+        if (
+          invoice.status === InvoiceStatus.COMPLETED &&
+          invoice.created_at &&
+          invoice.subscription?.day_remain
+        ) {
+          const createdAt = new Date(invoice.created_at);
+          const expiredAt = new Date(createdAt);
+          expiredAt.setDate(
+            createdAt.getDate() + invoice.subscription.day_remain
+          );
+
+          if (expiredAt < now) {
+            invoice.status = InvoiceStatus.EXPIRED;
+            await this.invoiceRepository.save(invoice);
+          }
+        }
+      }
+
+      return invoices;
     } catch (error) {
       console.error('Error in findAll method:', error);
       throw new NotFoundException('Invoices not found');

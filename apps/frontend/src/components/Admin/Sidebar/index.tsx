@@ -7,6 +7,7 @@ import {
   Menu,
   ChevronLeft,
   ChevronRight,
+  CircleDollarSign,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -29,6 +30,7 @@ const AdminSidebar: React.FC<Props> = ({
     { to: "/admin/posts", icon: <FileText className="w-5 h-5" />, label: "Quản lý công thức" },
     { to: "/admin/tips", icon: <Lightbulb className="w-5 h-5" />, label: "Quản lý mẹo vặt" },
     { to: "/admin/stores", icon: <Store className="w-5 h-5" />, label: "Quản lý cửa hàng" },
+    {to:"/admin/invoices", icon: <CircleDollarSign className="w-6 h-6" />,label:"Quản lý hoá đơn"}
   ];
 
   const handlePageChange = (label: string) => {

@@ -55,7 +55,7 @@ const StoreRegistration = () => {
       toast.error('Thanh toán thất bại!', { toastId: 'fail' });
     }
   }, []);
-  
+
   const closeThankYouPopup = () => {
     setShowThankYouPopup(false);
   };
@@ -63,7 +63,7 @@ const StoreRegistration = () => {
     if (!descriptionStr) return [];
     return descriptionStr.split('\n').map(item => item.trim()).filter(item => item.length > 0);
   };
-  
+
   const calculateSavings = (subscription: Subscription) => {
     if (subscription.title.includes("1 tháng")) {
       return "Thanh toán hàng tháng";
@@ -131,31 +131,31 @@ const StoreRegistration = () => {
       console.error('Lỗi khi gọi API thanh toán:', error);
     }
   };
-  
+
   useEffect(() => {
     const checkAuthentication = async () => {
       const isAuthenticated = await checkAuth();
       if (!isAuthenticated) {
         toast.error('Bạn cần đăng nhập để đăng ký cửa hàng');
-        window.location.href = '/login'; 
+        window.location.href = '/login';
         return;
       }
-  
+
       const userProfile = await getUserProfile();
       if (userProfile) {
         setUser(userProfile);
       }
     };
-  
+
     checkAuthentication();
   }, []);
   const userId = user ? user.user_id : null;
   return (
     <>
       {showThankYouPopup ? (
-        <ThankYou 
-        onClose={closeThankYouPopup} 
-        userId={userId ?? 0}/>
+        <ThankYou
+          onClose={closeThankYouPopup}
+          userId={userId ?? 0} />
       ) : (
         <div className="min-h-screen flex justify-center items-center px-4">
           <div className="w-full max-w-7xl border border-gray-300 shadow-lg bg-white rounded-xl p-12 mt-10">
