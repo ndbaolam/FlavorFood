@@ -7,7 +7,6 @@ interface SearchBoxProps {
   value: string; 
 }
 
-
 export default function SearchBox({ onSearch, isPopupOpen, value }: SearchBoxProps) {
   const [focused, setFocused] = useState(false);
 
@@ -15,13 +14,14 @@ export default function SearchBox({ onSearch, isPopupOpen, value }: SearchBoxPro
     <div className="relative min-w-36">
       <input
         type="text"
+        maxLength={50}
         placeholder="Tìm kiếm ..."
         value={value}
-        onChange={(e) => onSearch(e.target.value)}
+        onChange={(e) => onSearch(e.target.value.slice(0, 50))}
         onFocus={() => !isPopupOpen && setFocused(true)}
         onBlur={() => !value && setFocused(false)}
         disabled={isPopupOpen}
-        className="text-black w-full pl-10 pr-4 border-2 border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 h-10"
+        className="text-black w-full pl-10 pr-4 border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 h-10"
       />
       <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black">
         {focused || value ? (
@@ -33,4 +33,3 @@ export default function SearchBox({ onSearch, isPopupOpen, value }: SearchBoxPro
     </div>
   );
 }
-

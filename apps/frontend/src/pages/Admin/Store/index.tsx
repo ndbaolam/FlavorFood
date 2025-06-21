@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Store } from "../../Market/store.interface";
 import axiosInstance from '../../../services/axiosInstance';
 import SearchBox from "../../../components/Search";
-
+import { flexibleSearch } from "../../../utils/vietnameseUtils"
+import { formatDate } from '../../../utils/fomatDate';
 const LIMIT = 5;
 
 const AdminStore = () => {
     const [stores, setStores] = useState<Store[]>([]);
-    const [filteredStores, setFilteredStores] = useState<Store[]>([]);
     const [searchTitle, setSearchTitle] = useState("");
-    const [selectedStores, setSelectedStores] = useState<number[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState('');
 
     useEffect(() => {
         const fetchStores = async () => {
@@ -19,7 +20,6 @@ const AdminStore = () => {
                     withCredentials: true,
                 });
                 setStores(response.data);
-                setFilteredStores(response.data);
             } catch (error) {
                 console.error("Error fetching stores:", error);
             }
@@ -28,47 +28,64 @@ const AdminStore = () => {
     }, []);
 
     useEffect(() => {
-        const searched = stores.filter((store) =>
-            store.name?.toLowerCase().includes(searchTitle.toLowerCase())
-        );
-        setFilteredStores(searched);
         setCurrentPage(1);
-    }, [searchTitle, stores]);
+    }, [searchTitle, selectedStatus]);
 
-    const toggleSelect = (id: number) => {
-        setSelectedStores((prev) =>
-            prev.includes(id) ? prev.filter((uid) => uid !== id) : [...prev, id]
-        );
-    };
+    const sortedStores = useMemo(() => {
+        return [...stores].sort((a, b) => {
+            const dateA = new Date(a.created_at).getTime();
+            const dateB = new Date(b.created_at).getTime();
+            if (dateB !== dateA) {
+                return dateB - dateA;
+            }
+            const nameA = (a.name || '').toLowerCase();
+            const nameB = (b.name || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+    }, [stores]);
+
+    const filteredStore = useMemo(() => {
+        return sortedStores.filter((store) => {
+            const ownerFullName = `${store.user?.first_name || ""} ${store.user?.last_name || ""}`;
+
+            const matchSearch = flexibleSearch([
+                store.name || '',
+                store.address || '',
+                ownerFullName
+            ], searchTitle);
+
+            const matchStatus = selectedStatus === "" || store.status === selectedStatus;
+
+            return matchSearch && matchStatus;
+        });
+    }, [searchTitle, selectedStatus, sortedStores]);
+
+
+    const totalPages = Math.ceil(filteredStore.length / LIMIT);
+
+    const paginatedStores = useMemo(() => {
+        const start = (currentPage - 1) * LIMIT;
+        return filteredStore.slice(start, start + LIMIT);
+    }, [filteredStore, currentPage]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-
-    const sortedStores = [...filteredStores].sort((a, b) =>
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    );
-
-    const totalPages = Math.ceil(sortedStores.length / LIMIT);
-    const paginatedStores = sortedStores.slice(
-        (currentPage - 1) * LIMIT,
-        currentPage * LIMIT
-    );
 
     const renderPagination = () => {
         if (totalPages <= 1) return null;
 
-        const renderPageButton = (pageNum: number) => (
+        const renderPageButton = (pageNum: number, label?: string) => (
             <button
-                key={pageNum}
+                key={label || pageNum}
                 onClick={() => handlePageChange(pageNum)}
                 className={`px-3 py-1 rounded ${currentPage === pageNum
                     ? "bg-blue-500 text-white font-medium"
                     : "bg-white text-gray-700 hover:bg-blue-100"
                     }`}
             >
-                {pageNum}
+                {label || pageNum}
             </button>
         );
 
@@ -80,13 +97,42 @@ const AdminStore = () => {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="px-3 py-1 rounded mr-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+                aria-label="Trang trước"
             >
                 &lt;
             </button>
         );
 
-        for (let i = 1; i <= totalPages; i++) {
-            paginationItems.push(renderPageButton(i));
+        if (totalPages <= 3) {
+            for (let i = 1; i <= totalPages; i++) {
+                paginationItems.push(renderPageButton(i));
+            }
+        } else {
+            paginationItems.push(renderPageButton(1));
+
+            if (currentPage > 2) {
+                paginationItems.push(<span key="ellipsis1" className="px-2">...</span>);
+            } else if (currentPage === 2) {
+                paginationItems.push(renderPageButton(2));
+            }
+
+            if (currentPage > 2) {
+                paginationItems.push(renderPageButton(currentPage));
+            }
+
+            if (currentPage < totalPages - 1) {
+                paginationItems.push(renderPageButton(currentPage + 1));
+            }
+
+            if (currentPage < totalPages - 2) {
+                paginationItems.push(<span key="ellipsis2" className="px-2">...</span>);
+            } else if (currentPage === totalPages - 2) {
+                paginationItems.push(renderPageButton(totalPages - 1));
+            }
+
+            if (currentPage < totalPages) {
+                paginationItems.push(renderPageButton(totalPages));
+            }
         }
 
         paginationItems.push(
@@ -95,6 +141,7 @@ const AdminStore = () => {
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="px-3 py-1 rounded ml-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+                aria-label="Trang sau"
             >
                 &gt;
             </button>
@@ -107,73 +154,58 @@ const AdminStore = () => {
         );
     };
 
+
     return (
         <div>
             <div className="text-4xl font-bold ml-3">
                 Quản lý cửa hàng
             </div>
-            <div className="mt-12 flex items-center justify-between px-4 text-md  mb-4">
-                <div>
-                    Tổng số cửa hàng: {filteredStores.length}
-                </div>
-                <div className="flex items-center gap-x-4">
-                    <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
-                    <span>Trang {currentPage} / {totalPages}</span>
-                </div>
+            <div className="flex flex-wrap items-end justify-end gap-4 px-4 pt-4">
+                <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
+                <select
+                    value={selectedStatus}
+                    onChange={(e) => setSelectedStatus(e.target.value)}
+                    className="border-2 border-gray-300 rounded-lg px-3 py-1  focus:outline-none focus:ring-2 focus:ring-blue-500 h-10"
+                >
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active">Hoạt động</option>
+                    <option value="inactive">Không hoạt động</option>
+                </select>
+            </div>
+
+            <div className="flex justify-between p-4 text-md">
+                <div>Tổng số cửa hàng: {filteredStore.length}</div>
+                <div>Trang {currentPage} / {totalPages}</div>
             </div>
 
             <div className="overflow-x-auto ml-4 mr-4 mb-4">
                 <table className="min-w-full bg-white shadow-md border border-black">
                     <thead>
                         <tr className="bg-blue-700 text-white border-b  border-black">
-                            <th className="p-3 border-r border-white ">
-                                <input
-                                    type="checkbox"
-                                    onChange={(e) =>
-                                        setSelectedStores(
-                                            e.target.checked
-                                                ? paginatedStores.map((a) => a.store_id)
-                                                : []
-                                        )
-                                    }
-                                    checked={
-                                        selectedStores.length === paginatedStores.length &&
-                                        paginatedStores.length > 0
-                                    }
-                                />
-                            </th>
                             <th className="p-3 text-center border-r border-white">Tên cửa hàng</th>
                             <th className="p-3 text-center border-r border-white">Số điện thoại</th>
                             <th className="p-3 text-center border-r border-white">Chủ cửa hàng</th>
                             <th className="p-3 text-center border-r border-white">Email</th>
                             <th className="p-3 text-center border-r border-white">Địa chỉ</th>
-                            <th className="p-3 text-center border-r border-white">Trạng thái</th>
-                            <th className="p-3 text-center">Ngày tạo</th>
+                            <th className="p-3 text-center border-r border-white">Ngày tạo</th>
+                            <th className="p-3 text-center">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
                         {paginatedStores.length > 0 ? (
                             paginatedStores.map((store) => (
                                 <tr key={store.store_id} className="border-b hover:bg-gray-100 ">
-                                    <td className="p-3 text-center border-black border-b">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedStores.includes(store.store_id)}
-                                            onChange={() => toggleSelect(store.store_id)}
-                                        />
-                                    </td>
-                                    <td className="p-3 text-center border-l border-black border-b">{store.name}</td>
+                                    <td className="p-3 border-l border-black border-b">{store.name}</td>
                                     <td className="p-3 text-center border-l border-black border-b">{store.phone_number}</td>
                                     <td className="p-3 border-l border-black border-b">{store.user.first_name} {store.user.last_name}</td>
                                     <td className="p-3 border-l border-black border-b">{store.user.mail}</td>
                                     <td className="p-3 border-l border-black border-b">{store.address}</td>
+                                    <td className="p-3 text-center border-l border-black border-b">{formatDate(store.created_at)}</td>
                                     <td className="p-3 text-center border-l border-black border-b">
-                                        <span className={`px-2 py-1 rounded-full text-xs ${store.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
+                                        <span className={`px-2 py-1 rounded-full text-sm font-semibold ${store.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
                                             {store.status}
                                         </span>
                                     </td>
-                                    <td className="p-3 text-center border-l border-black border-b">{new Date(store.created_at).toLocaleDateString()}</td>
-
                                 </tr>
                             ))
                         ) : (

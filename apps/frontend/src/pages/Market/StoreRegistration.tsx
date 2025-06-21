@@ -4,6 +4,8 @@ import axiosInstance from '../../services/axiosInstance';
 import { Subscription } from './store.interface';
 import { toast } from 'react-toastify';
 import ThankYou from './ThankyouPopup';
+import { checkAuth, getUserProfile } from '../../utils/auth';
+import { User } from '../Profile/Profile.interface';
 
 const StoreRegistration = () => {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -11,6 +13,7 @@ const StoreRegistration = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [showThankYouPopup, setShowThankYouPopup] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
     const fetchSubscriptions = async () => {
       try {
@@ -52,6 +55,7 @@ const StoreRegistration = () => {
       toast.error('Thanh toán thất bại!', { toastId: 'fail' });
     }
   }, []);
+
   const closeThankYouPopup = () => {
     setShowThankYouPopup(false);
   };
@@ -59,7 +63,7 @@ const StoreRegistration = () => {
     if (!descriptionStr) return [];
     return descriptionStr.split('\n').map(item => item.trim()).filter(item => item.length > 0);
   };
-  
+
   const calculateSavings = (subscription: Subscription) => {
     if (subscription.title.includes("1 tháng")) {
       return "Thanh toán hàng tháng";
@@ -128,10 +132,30 @@ const StoreRegistration = () => {
     }
   };
 
+  useEffect(() => {
+    const checkAuthentication = async () => {
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) {
+        toast.error('Bạn cần đăng nhập để đăng ký cửa hàng');
+        window.location.href = '/login';
+        return;
+      }
+
+      const userProfile = await getUserProfile();
+      if (userProfile) {
+        setUser(userProfile);
+      }
+    };
+
+    checkAuthentication();
+  }, []);
+  const userId = user ? user.user_id : null;
   return (
     <>
       {showThankYouPopup ? (
-        <ThankYou onClose={closeThankYouPopup} />
+        <ThankYou
+          onClose={closeThankYouPopup}
+          userId={userId ?? 0} />
       ) : (
         <div className="min-h-screen flex justify-center items-center px-4">
           <div className="w-full max-w-7xl border border-gray-300 shadow-lg bg-white rounded-xl p-12 mt-10">
@@ -264,7 +288,7 @@ const StoreRegistration = () => {
                   : 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl'
                   }`}
               >
-                Đăng ký ({selectedPlanId})
+                Đăng ký
                 {acceptedTerms && <ChevronRight className="ml-2 h-5 w-5" />}
               </button>
             </div>

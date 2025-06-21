@@ -28,9 +28,23 @@ export class StoreService {
     return this.storeRepository.save(store);
   }
 
+  // async findAll(): Promise<Store[]> {
+  //   return this.storeRepository.find({ relations: ['user'] });
+  // }
   async findAll(): Promise<Store[]> {
-    return this.storeRepository.find({ relations: ['user'] });
+    const stores = await this.storeRepository.find({ relations: ['user'] });
+    const now = new Date();
+  
+    return stores.map((store) => {
+      const expiredAt = store.user.expired_at ? new Date(store.user.expired_at) : null;
+  
+      return {
+        ...store,
+        status: expiredAt && expiredAt < now ? 'inactive' : store.status,
+      };
+    });
   }
+  
 
   async findOne(id: number): Promise<Store> {
     const store = await this.storeRepository.findOne({
@@ -39,7 +53,7 @@ export class StoreService {
     });
     if (!store) throw new NotFoundException('Store not found');
     return store;
-  }
+  }a
 
   async update(id: number, updateStoreDto: UpdateStoreDto) {
     const store = await this.storeRepository.findOneBy({ store_id: id });

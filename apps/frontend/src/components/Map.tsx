@@ -44,16 +44,29 @@ const Map: React.FC<MapProps> = ({
         store.longitude >= -180 &&
         store.longitude <= 180
       ) {
+        const popup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        }).setHTML(
+          `<h2><strong>${store.name}</strong></h2><p>${store.address}</p>`
+        );
+  
         const marker = new mapboxgl.Marker()
           .setLngLat([store.longitude, store.latitude])
-          .setPopup(
-            new mapboxgl.Popup().setHTML(
-              `<h2><strong>${store.name}</strong></h2><p>${store.address}</p>`
-            )
-          )
           .addTo(map.current!);
-
-        marker.getElement().addEventListener("click", () => {
+  
+        const el = marker.getElement();
+  
+        el.addEventListener("mouseenter", () => {
+          popup.addTo(map.current!);
+          popup.setLngLat([store.longitude!, store.latitude!]);
+        });
+  
+        el.addEventListener("mouseleave", () => {
+          popup.remove();
+        });
+  
+        el.addEventListener("click", () => {
           if (onMapClick) onMapClick(store);
         });
       } else {

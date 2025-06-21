@@ -34,7 +34,7 @@ export class Invoice {
   @JoinColumn({ name: 'user_id' })
   user: Users;
 
-  @OneToOne(() => Subscription, sub => sub.invoice, { onDelete: 'CASCADE',  onUpdate: 'CASCADE' })
+  @ManyToOne(() => Subscription, sub => sub.invoice, { onDelete: 'CASCADE',  onUpdate: 'CASCADE' })
   @JoinColumn({ name: 'subscription_id' })
   subscription: Subscription;
 

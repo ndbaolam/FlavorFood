@@ -149,7 +149,7 @@ export class RecipesService {
       recipeDetail['embedding'] = await this.embeddingService.generate({
         "title": recipeDetail['title'],
         "description": recipeDetail['description'],
-          "difficulty_level": recipeDetail['difficulty_level']
+        //"difficulty_level": recipeDetail['difficulty_level']
       });
 
       const insertResult = await this.recipesRepository
@@ -402,7 +402,7 @@ export class RecipesService {
     }
   }
 
-  async findSimilarRecipes(embedding: number[], limit = 10): Promise<Recipes[]> {
+  async findSimilarRecipes(embedding: number[], limit = 12): Promise<Recipes[]> {
     const embeddingStr = `[${embedding.join(',')}]`
     /*
       https://github.com/pgvector/pgvector

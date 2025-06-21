@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Patch, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Patch, UseGuards, Req, UnauthorizedException, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { InvoiceService } from './invoice.service';
 import { CreateInvoiceDto, UpdateInvoiceDto } from './dto/invoice.dto';
-import { Invoice } from './entity/invoice.entity';
+import { Invoice, InvoiceStatus } from './entity/invoice.entity';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { Request } from 'express';
 
@@ -26,9 +26,15 @@ export class InvoiceController {
   }
 
   @Get()
+  @ApiQuery({ name: 'userId', required: false, type: Number })
+  @ApiQuery({ name: 'status', required: false, type: String, enum: InvoiceStatus })
   @ApiOperation({ summary: 'Get all invoices' })
-  async findAll(): Promise<Invoice[]> {
-    return this.invoiceService.findAll();
+  @ApiResponse({ status: 200, type: [Invoice]})
+  async findAll(
+    @Query('userId') userId: string | null = null,
+    @Query('status') status: InvoiceStatus | null = null,
+  ): Promise<Invoice[]> {
+    return this.invoiceService.findAll(Number(userId), status);
   }
 
   @Get(':id')

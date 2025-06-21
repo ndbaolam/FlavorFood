@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axiosInstance from "../services/axiosInstance";
-
+import { useNavigate } from "react-router-dom";
+import { checkAuth } from "../utils/auth";
 
 interface CommentFormProps {
   recipeId: number;
@@ -13,32 +14,27 @@ const CommentForm: React.FC<CommentFormProps> = ({ recipeId, onCommentCreated })
   const [comment, setComment] = useState<string>("");
   const [userId, setUserId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  useEffect(() => {
-    axiosInstance
-      .get("/auth/profile", {
-        withCredentials: true,
-      })
-      .then((response) => {
-        setUserId(response.data?.user_id);
-        console.log("User ID:", response.data?.user_id);
-      })
-      .catch((error) => {
-        console.error("Error fetching user profile:", error);
-      });
-  }, []); 
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!comment) {
+    if (!comment.trim()) {
       toast.error("Vui lòng nhập bình luận!", { position: "top-right", autoClose: 2000 });
       return;
     }
-    if (!userId) {
-      toast.error("Bạn cần đăng nhập để bình luận", { position: "top-right", autoClose: 2000 });
+
+    const isLoggedIn = await checkAuth();
+    if (!isLoggedIn) {
+      toast.info("Bạn cần đăng nhập để bình luận!", { position: "top-right", autoClose: 2000 });
+      navigate("/sign-in", { state: { returnTo: window.location.pathname } });
       return;
     }
+    if (!comment.trim() && rating === 0) {
+      toast.error("Vxui lòng nhập bình luận và chọn mức đánh giá!", { position: "top-right", autoClose: 3000 });
+      return;
+    }
+
     if (rating === 0) {
       toast.error("Vui lòng chọn mức đánh giá!", { position: "top-right", autoClose: 2000 });
       return;
@@ -50,7 +46,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ recipeId, onCommentCreated })
       await axiosInstance.post(
         "/reviews",
         {
-          recipeId, 
+          recipeId,
           userId,
           rating,
           comment,
@@ -92,7 +88,7 @@ const CommentForm: React.FC<CommentFormProps> = ({ recipeId, onCommentCreated })
         placeholder="Viết bình luận của bạn..."
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        required
+
       />
 
       <button

@@ -56,16 +56,47 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
         }
     };
 
+    // const handleEditToggle = async () => {
+    //     if (isEditing && storeData) {
+    //         try {
+    //             const open = new Date(`2025-01-01T${openHourInput}:00Z`);
+    //             const close = new Date(`2025-01-01T${closeHourInput}:00Z`);
+    //             const payload = {
+    //                 ...storeData,
+    //                 openHours: open.toISOString(),
+    //                 closeHours: close.toISOString(),
+    //             };
+    //             const res = await axiosInstance.patch(`stores/${store_id}`, payload);
+    //             if (res.data) {
+    //                 setStoreData(res.data);
+    //                 setOriginalData(res.data); 
+    //                 setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
+    //                 setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
+    //                 toast.success("Cập nhật thành công!", { autoClose: 2000 });
+    //             }
+    //         } catch (error) {
+    //             console.error("Error updating store:", error);
+    //             toast.error("Cập nhật thất bại!", { autoClose: 2000 });
+    //         }
+    //     }
+    //     setIsEditing(!isEditing);
+    // };
     const handleEditToggle = async () => {
         if (isEditing && storeData) {
             try {
                 const open = new Date(`2025-01-01T${openHourInput}:00Z`);
                 const close = new Date(`2025-01-01T${closeHourInput}:00Z`);
+    
                 const payload = {
-                    ...storeData,
+                    name: storeData.name,
+                    description: storeData.description,
+                    address: storeData.address,
+                    phone_number: storeData.phone_number,
+                    image: storeData.image,
                     openHours: open.toISOString(),
                     closeHours: close.toISOString(),
                 };
+    
                 const res = await axiosInstance.patch(`stores/${store_id}`, payload);
                 if (res.data) {
                     setStoreData(res.data);
@@ -81,7 +112,7 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
         }
         setIsEditing(!isEditing);
     };
-
+    console.log("Sending store update:", storeData);    
     const handleCancelEdit = () => {
         if (originalData) {
             setStoreData(originalData);

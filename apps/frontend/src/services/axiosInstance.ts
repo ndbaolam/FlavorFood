@@ -6,19 +6,23 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true, // Enable sending cookies with cross-origin requests
+  withCredentials: true, 
 });
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    console.log("Request headers:", config.headers);
     return config;
   },
   (error) => {
     return Promise.reject(error);
   }
 );
-
 // Response interceptor
 axiosInstance.interceptors.response.use(
   (response) => response,

@@ -15,7 +15,7 @@ const TipsCard: React.FC<TipsCardProps> = ({ tips, currentCategoryPath, onToggle
   const linkto = `/tips/${formattedTitle}_${tips.tip_id}.html`;
 
   return (
-    <div 
+    <div
       className="bg-gradient-to-b from-blue-50 to-white shadow-lg hover:scale-105 transition-all ease-in-out flex flex-col h-full rounded-xl overflow-hidden cursor-pointer"
       onClick={() => navigate(linkto)}
     >
@@ -32,7 +32,12 @@ const TipsCard: React.FC<TipsCardProps> = ({ tips, currentCategoryPath, onToggle
           {tips.title}
         </h2>
 
-        <p className="text-black text-center mb-4 text-sm line-clamp-5 overflow-hidden text-ellipsis" dangerouslySetInnerHTML={{ __html: tips.content.replace(/(\d+\.\s[^<]+)/g, '<strong>$1</strong>') }} />
+        <p
+          className="text-black text-center mb-4 text-sm line-clamp-4"
+          dangerouslySetInnerHTML={{
+            __html: tips.content.replace(/(\d+\.\s[^<]+)/g, '<strong>$1</strong>'),
+          }}
+        />
       </div>
     </div>
   );
