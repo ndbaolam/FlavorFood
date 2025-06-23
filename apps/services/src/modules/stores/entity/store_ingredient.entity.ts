@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn,  CreateDateColumn, UpdateDateColumn, } from 'typeorm';
 import { Stores as Store } from './store.entity';
 
 @Entity('store_ingredients')
@@ -18,10 +18,10 @@ export class StoreIngredient {
   @Column('decimal', { precision: 10, scale: 2 })
   quantity: number;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
   @ManyToOne(() => Store, store => store.ingredients)

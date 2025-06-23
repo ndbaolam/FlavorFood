@@ -4,7 +4,8 @@ import { Store } from "../../../pages/Market/store.interface";
 import { toast } from "react-toastify";
 import { User } from "../../../pages/Profile/Profile.interface";
 import mapboxgl from "mapbox-gl";
-mapboxgl.accessToken = 'pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q';
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
+
 interface CreateStoreProps {
   onCreate: (newStore: Store) => void;
   currentUser: User;

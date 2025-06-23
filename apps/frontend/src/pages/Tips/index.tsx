@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import FilterTips from '../../components/FilterTips';
 import TipsCard from '../../components/TipsCard';
-import { TipsItem } from './tip.interface';
 import axiosInstance from '../../services/axiosInstance';
-import SearchBox from '../../components/Search';
 import { useSearchParams } from 'react-router-dom';
+import { TipsItem } from './Tip.interface';
+import SearchBox from '../../components/Search';
+import { flexibleSearch } from '../../utils/vietnameseUtils';
 
 const LIMIT = 12;
 
@@ -53,8 +53,8 @@ const Tips: React.FC = () => {
       const matchGenre = activeGenre
         ? tip.genres.some(genre => genre.genre_id === activeGenre)
         : true;
-      const matchTitle = searchTitle
-        ? tip.title.toLowerCase().includes(searchTitle.toLowerCase())
+        const matchTitle = searchTitle
+        ? flexibleSearch([tip.title], searchTitle)
         : true;
       return matchGenre && matchTitle;
     });
@@ -155,21 +155,23 @@ const Tips: React.FC = () => {
       <main className="container mx-auto">
         <section className="text-center relative mt-20">
           <h2 className="text-4xl font-bold mb-2">Mẹo nhà bếp </h2>
-          <p className="text-gray-600 text-lg mb-8">
-            Tận dụng mọi góc bếp - Nấu ăn thông minh, tiết kiệm thời gian!
+          <p className="text-gray-600 text-lg mb-8 italic">
+            "Tận dụng mọi góc bếp - Nấu ăn thông minh, tiết kiệm thời gian!"
           </p>
         </section>
 
         <div className="justify-center items-center flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          <SearchBox
+        <SearchBox
             onSearch={setSearchTitle}
             isPopupOpen={false}
             value={searchTitle}
+            placeholder="Tìm kiếm mẹo vặt"
+            className="text-black min-w-64 pl-10 pr-4 border-2 border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 h-10"
           />
         </div>
 
         {/* Tips Grid */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-8">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mt-20">
           {paginatedTips.length > 0 ? (
             paginatedTips.map((tip) => (
               <TipsCard key={tip.tip_id} tips={tip} />

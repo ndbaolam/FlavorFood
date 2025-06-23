@@ -3,27 +3,26 @@ import React, { useState } from "react";
 import { formatTime } from "../utils/fomatDate";
 import { formatCurrency } from "../utils/fomatPrice";
 import { formatQuantity } from "../utils/fomatQuantity";
+import { removeVietnameseTones } from "../utils/vietnameseUtils";
 
-const highlightSearchTerm = (text: string, searchTerm: string) => {
+const highlightSearchTerm = (text: string, searchTerm: string): React.ReactNode => {
   if (!searchTerm) return text;
-  const regex = new RegExp(`(${searchTerm})`, 'gi');
-  return text.replace(regex, (match) => `<span style="color: red; font-weight: bold;">${match}</span>`);
+
+  const normalizedText = removeVietnameseTones(text).toLowerCase();
+  const normalizedSearch = removeVietnameseTones(searchTerm).toLowerCase();
+
+  if (normalizedText.includes(normalizedSearch)) {
+    return <span className="text-red-600 font-bold">{text}</span>;
+  }
+
+  return text;
 };
 
 const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, searchTerm }) => {
   const [imgError, setImgError] = useState(false);
 
-  console.log("store.ingredients:", store.ingredients);
-
-  const toLocalHoursMinutes = (date: Date) => {
-    return {
-      hours: date.getHours(),
-      minutes: date.getMinutes(),
-    };
-  };
-
   return (
-    <div className="p-4 bg-white h-full shadow-inner border-l border-gray-200">
+    <div className="p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold">{store.name}</h2>
       </div>
@@ -36,25 +35,23 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
       <p className="mb-1">{store.description}</p>
 
       <div className="flex items-center gap-4 mt-4 mb-2 text-black">
-        <MapPin className="text-blue-500 w-8 h-8" />
+        <MapPin className="text-blue-500 w-12 h-12" />
         <span>Địa chỉ: {store.address}</span>
       </div>
 
       <div className="flex items-center gap-4 mb-2 text-black">
-        <Phone className="text-green-500 w-6 h-6" />
+        <Phone className="text-green-500 w-5 h-5" />
         <span>SĐT: {store.phone_number}</span>
       </div>
 
       <div className="flex items-center gap-4 mb-2 text-black">
-        <Clock className="text-black w-6 h-6" />
+        <Clock className="text-black w-5 h-5" />
         <span>
           Giờ mở cửa: {formatTime(store.openHours)} - {formatTime(store.closeHours)}
         </span>
       </div>
 
-
-      <h3 className="font-semibold text-xl mt-4 mb-2">Nguyên liệu:</h3>
-
+      <h3 className="font-semibold text-xl mt-4 mb-2">Nguyên liệu</h3>
       <table className="w-full table-auto text-sm">
         <thead>
           <tr>
@@ -67,22 +64,20 @@ const StoreDetails: React.FC<{ store: any, searchTerm: string }> = ({ store, sea
           {store.ingredients
             .slice()
             .sort((a: any, b: any) => {
-              const aMatch = a.title.toLowerCase().includes(searchTerm.toLowerCase());
-              const bMatch = b.title.toLowerCase().includes(searchTerm.toLowerCase());
+              const normalizedSearch = removeVietnameseTones(searchTerm).toLowerCase();
+              const aMatch = removeVietnameseTones(a.title).toLowerCase().includes(normalizedSearch);
+              const bMatch = removeVietnameseTones(b.title).toLowerCase().includes(normalizedSearch);
               return (bMatch ? 1 : 0) - (aMatch ? 1 : 0);
             })
-            .map((item: any, index: number) => {
-              const isMatch = searchTerm && item.title.toLowerCase().includes(searchTerm.toLowerCase());
-              return (
-                <tr key={index} className="border-b">
-                  <td className={`py-2 px-4 ${isMatch ? 'text-red-600 font-bold' : ''}`}>
-                    {item.title}
-                  </td>
-                  <td className="py-2 px-4">{formatQuantity(item.quantity)}</td>
-                  <td className="py-2 px-4">{formatCurrency(item.price)}/{item.unit}</td>
-                </tr>
-              );
-            })}
+            .map((item: any, index: number) => (
+              <tr key={index} className="border-b">
+                <td className="py-2 px-4">
+                  {highlightSearchTerm(item.title, searchTerm)}
+                </td>
+                <td className="py-2 px-4">{formatQuantity(item.quantity)}</td>
+                <td className="py-2 px-4">{formatCurrency(item.price)}/{item.unit}</td>
+              </tr>
+            ))}
         </tbody>
 
       </table>

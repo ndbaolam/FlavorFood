@@ -7,6 +7,7 @@ import imageCompression from "browser-image-compression";
 import { User } from "../../../pages/Profile/Profile.interface";
 
 const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: User }> = ({ className, store_id, currentUser }) => {
+
     const [isEditing, setIsEditing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [storeData, setStoreData] = useState<Store | null>(null);
@@ -32,7 +33,7 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
     }, [store_id]);
 
     if (!storeData) return null;
-    if (storeData.user.user_id !== currentUser.user_id) {
+    if (!storeData || !storeData.user || storeData.user.user_id !== currentUser.user_id) {
         return <p>Cửa hàng này không thuộc về bạn.</p>;
     }
 
@@ -55,32 +56,6 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
             setStoreData({ ...storeData, closeHours: e.target.value });
         }
     };
-
-    // const handleEditToggle = async () => {
-    //     if (isEditing && storeData) {
-    //         try {
-    //             const open = new Date(`2025-01-01T${openHourInput}:00Z`);
-    //             const close = new Date(`2025-01-01T${closeHourInput}:00Z`);
-    //             const payload = {
-    //                 ...storeData,
-    //                 openHours: open.toISOString(),
-    //                 closeHours: close.toISOString(),
-    //             };
-    //             const res = await axiosInstance.patch(`stores/${store_id}`, payload);
-    //             if (res.data) {
-    //                 setStoreData(res.data);
-    //                 setOriginalData(res.data); 
-    //                 setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
-    //                 setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
-    //                 toast.success("Cập nhật thành công!", { autoClose: 2000 });
-    //             }
-    //         } catch (error) {
-    //             console.error("Error updating store:", error);
-    //             toast.error("Cập nhật thất bại!", { autoClose: 2000 });
-    //         }
-    //     }
-    //     setIsEditing(!isEditing);
-    // };
     const handleEditToggle = async () => {
         if (isEditing && storeData) {
             try {
@@ -97,14 +72,14 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
                     closeHours: close.toISOString(),
                 };
     
-                const res = await axiosInstance.patch(`stores/${store_id}`, payload);
-                if (res.data) {
-                    setStoreData(res.data);
-                    setOriginalData(res.data); 
-                    setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
-                    setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
-                    toast.success("Cập nhật thành công!", { autoClose: 2000 });
-                }
+                await axiosInstance.patch(`stores/${store_id}`, payload);
+    
+                const res = await axiosInstance.get(`/stores/${store_id}`);
+                setStoreData(res.data);
+                setOriginalData(res.data);
+                setOpenHourInput(new Date(res.data.openHours).toISOString().slice(11, 16));
+                setCloseHourInput(new Date(res.data.closeHours).toISOString().slice(11, 16));
+                toast.success("Cập nhật thành công!", { autoClose: 2000 });
             } catch (error) {
                 console.error("Error updating store:", error);
                 toast.error("Cập nhật thất bại!", { autoClose: 2000 });
@@ -112,7 +87,7 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
         }
         setIsEditing(!isEditing);
     };
-    console.log("Sending store update:", storeData);    
+    
     const handleCancelEdit = () => {
         if (originalData) {
             setStoreData(originalData);
@@ -187,14 +162,14 @@ const StoreInfor: React.FC<{ className?: string; store_id: number; currentUser: 
 
                             <button
                                 onClick={handleEditToggle}
-                                className="flex items-center gap-2 px-3 py-1 border border-blue-500 text-blue-600 rounded hover:bg-blue-100 transition"
-                            >
+                                className="text-blue-600 hover:text-blue-800 px-3 py-1 border-2 border-blue-300 rounded-md"
+                                >
                                 {isEditing ? "Lưu" : <PencilRuler size={20} />}
                             </button>
                             {isEditing && (
                                 <button
                                     onClick={handleCancelEdit}
-                                    className="flex items-center gap-1 px-3 py-1 border border-red-500 text-red-600 rounded hover:bg-red-100 transition"
+                              className="text-red-600 hover:text-red-800 px-3 py-1 border-2 border-red-300 rounded-md"
                                 >
                                     Huỷ
                                 </button>

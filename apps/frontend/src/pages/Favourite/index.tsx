@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../../services/axiosInstance";
 import { useFavorite } from "../../lib/FavoriteContext";
 import RecipeCard from "../../components/RecipeCard";
-import SearchBox from "../../components/Search";
 import { useSearchParams } from 'react-router-dom';
+import SearchBox from "../../components/Search";
+import { flexibleSearch } from "../../utils/vietnameseUtils";
+
 const Favourite: React.FC = () => {
   const { favorites, isFavorite, toggleFavorite, refreshFavorites } = useFavorite();
   const [detailedFavorites, setDetailedFavorites] = useState<any[]>([]);
@@ -64,7 +66,7 @@ const Favourite: React.FC = () => {
   };
 
   const filteredFavorites = detailedFavorites.filter(recipe =>
-    recipe.title.toLowerCase().includes(searchTitle.toLowerCase())
+    flexibleSearch([recipe.title, recipe.ingredients?.join(' ') || ''], searchTitle)
   );
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -162,20 +164,22 @@ const Favourite: React.FC = () => {
       <main className="mx-auto container">
         <section className="relative text-center mt-20">
           <h2 className="text-4xl font-bold mb-2">Danh sách món ăn yêu thích</h2>
-          <p className="text-black text-lg mb-8 mt-4">
-          Món ngon bạn thích – luôn bên bạn, sẵn sàng khám phá.
+          <p className="text-black text-lg mb-8 mt-4 italic">
+          Những món ăn bạn yêu thích – luôn ở đây để chờ bạn khám phá lại bất cứ lúc nào.
           </p>
         </section>
         <div className="justify-center items-center flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
-          <SearchBox
+        <SearchBox
             onSearch={setSearchTitle}
             isPopupOpen={false}
             value={searchTitle}
+            placeholder="Tìm kiếm món ăn/nguyên liệu"
+            className="text-black min-w-64 pl-10 pr-4 border-2 border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 h-10"
           />
         </div>
 
         {detailedFavorites.length === 0 ? (
-          <p className="text-center text-black">Bạn chưa có món ăn yêu thích nào.</p>
+          <p className="mt-10 text-center text-black">Bạn chưa có món ăn yêu thích nào.</p>
         ) : (
           <>
             <div className="p-4 mb-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

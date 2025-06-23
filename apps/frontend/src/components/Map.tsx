@@ -2,9 +2,7 @@ import mapboxgl from "mapbox-gl";
 import { useEffect, useRef } from "react";
 import { Store } from "../pages/Market/store.interface";
 
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q";
-
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 interface MapProps {
   stores: Store[];
   selectedStore: Store | null;

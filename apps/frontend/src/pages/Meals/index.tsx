@@ -4,11 +4,12 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import FilterMenu from '../../components/FilterMenu';
 import RecipeCard from '../../components/RecipeCard';
-import SearchBox from '../../components/Search';
 import { useFavorite } from '../../lib/FavoriteContext';
 import axiosInstance from '../../services/axiosInstance';
 import { Recipe } from './recipe.interface';
 import { checkAuth } from '../../utils/auth';
+import SearchBox from '../../components/Search';
+import { flexibleSearch } from '../../utils/vietnameseUtils';
 
 const LIMIT = 12;
 
@@ -81,15 +82,15 @@ const Meals: React.FC = () => {
       }
       let filteredRecipes = [...allRecipes];
 
+
       if (searchTitle.trim()) {
-        const keyword = searchTitle.toLowerCase();
-        filteredRecipes = filteredRecipes.filter(
-          (recipe) =>
-            recipe.title.toLowerCase().includes(keyword) ||
-            recipe.ingredients?.some((ing) =>
-              ing.ingredient.toLowerCase().includes(keyword)
-            )
-        );
+        filteredRecipes = filteredRecipes.filter((recipe) => {
+          const fieldsToSearch = [
+            recipe.title,
+            ...(recipe.ingredients?.map((ing) => ing.ingredient) || [])
+          ];
+          return flexibleSearch(fieldsToSearch, searchTitle);
+        });
       }
       if (selectedDifficulty) {
         filteredRecipes = filteredRecipes.filter(
@@ -254,8 +255,8 @@ const Meals: React.FC = () => {
       <main className="container mx-auto">
         <section className="relative text-center mt-20">
           <h2 className="text-4xl font-bold mb-2">Hôm nay ăn gì</h2>
-          <p className="text-gray-600 text-lg mb-8">
-            Khám phá các món ăn ngon cùng chúng tôi
+          <p className="text-gray-600 text-lg mb-8  italic">
+            "Khám phá các món ăn ngon cùng chúng tôi. Trải nghiệm ẩm thực phong phú mỗi ngày."
           </p>
         </section>
         <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
@@ -271,6 +272,8 @@ const Meals: React.FC = () => {
             onSearch={setSearchTitle}
             isPopupOpen={false}
             value={searchTitle}
+            placeholder="Tìm kiếm món ăn/nguyên liệu"
+            className="text-black min-w-64 pl-10 pr-4 border-2 border-gray-300 rounded-full px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 h-10"
           />
           <div className="flex gap-4 mb-4">
             <select

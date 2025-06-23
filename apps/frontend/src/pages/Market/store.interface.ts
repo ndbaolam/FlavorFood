@@ -25,9 +25,9 @@ export interface Ingredient {
   title: string;
   price: number;
   quantity: number;
-  created_at: Date;
+  created_at: string;
   unit: string;
-  updated_at: Date;
+  updated_at: string;
 }
 export interface Subscription {
   subscription_id: number;

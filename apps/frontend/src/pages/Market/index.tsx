@@ -12,6 +12,10 @@ import { getUserProfile } from "../../utils/auth";
 import { formatTime } from "../../utils/fomatDate";
 import { User } from "../Profile/Profile.interface";
 import { toast } from "react-toastify";
+import { flexibleSearch } from "../../utils/vietnameseUtils";
+import { useRef } from "react";
+import { highlightMatches } from "../../utils/highlightUtils";
+import SearchBox from "../../components/Search";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 
@@ -36,6 +40,7 @@ const Market: React.FC = () => {
   const [distanceFilter, setDistanceFilter] = useState(5);
   const isSellerActive = user?.role === "seller" && user?.status === "active";
   const [showDistanceOptions, setShowDistanceOptions] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     const fetchUser = async () => {
       const profile = await getUserProfile();
@@ -71,6 +76,22 @@ const Market: React.FC = () => {
       return null;
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDistanceOptions(false);
+      }
+    };
+
+    if (showDistanceOptions) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showDistanceOptions]);
 
   useEffect(() => {
     const fetchStores = async () => {
@@ -142,17 +163,7 @@ const Market: React.FC = () => {
 
   const filteredStores = useMemo(() => {
     return stores
-      .filter((store) => {
-        if (!searchTerm.trim()) return true;
-
-        const lowerSearch = searchTerm.toLowerCase();
-        const matchesIngredient = store.ingredients?.some((ingredient) =>
-          ingredient.title?.toLowerCase().includes(lowerSearch)
-        );
-        const matchesStoreName = store.name?.toLowerCase().includes(lowerSearch);
-
-        return matchesIngredient || matchesStoreName;
-      })
+      .filter(store => store.status === "active")
       .map((store) => {
         const validUserLocation = userLocation != null;
         const validStoreLocation = store.location?.latitude && store.location?.longitude;
@@ -164,8 +175,16 @@ const Market: React.FC = () => {
         return { ...store, distance, id: store.store_id };
       })
       .filter((store) => {
-        // Chỉ giữ lại những cửa hàng trong khoảng cách cho phép (theo km)
-        return store.distance === null || store.distance <= distanceFilter * 1000;
+        const fieldsToSearch = [
+          store.name || "",
+          store.address || "",
+          ...(store.ingredients?.map((ingredient) => ingredient.title || "") || [])
+        ];
+
+        const matchSearch = flexibleSearch(fieldsToSearch, searchTerm);
+        const matchDistance = store.distance === null || store.distance <= distanceFilter * 1000;
+
+        return matchSearch && matchDistance;
       })
       .sort((a, b) => {
         if (a.distance === null) return 1;
@@ -173,7 +192,6 @@ const Market: React.FC = () => {
         return a.distance - b.distance;
       });
   }, [stores, searchTerm, userLocation, distanceFilter]);
-
 
   const handleMapClick = (store: StoreWithLocation) => {
     window.open(`https://www.google.com/maps?q=${encodeURIComponent(store.address)}`, "_blank");
@@ -183,126 +201,123 @@ const Market: React.FC = () => {
 
   return (
     <div className="min-h-screen p-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-center">Tìm kiếm nguyên liệu, cửa hàng</h2>
-        {!isSellerActive && (
-          <button
-            onClick={handleStoreRegistration}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            Đăng ký cửa hàng
-          </button>
-        )}
+      <div className=" text-center mt-8">
+        <h2 className="text-4xl font-bold">Khám phá cửa hàng gần bạn</h2>
+        <p className="text-gray-600 text-lg mt-1 italic">
+          "Tìm nguyên liệu tươi ngon cho bữa ăn hoàn hảo!"
+        </p>
       </div>
-      <div className="flex flex-col md:flex-row h-screen">
-        <div className="md:w-1/4 w-full h-1/2 md:h-full p-4 overflow-y-auto rounded-lg shadow-lg">
-          <div className="flex items-center gap-2 mb-4 relative">
-            <div className="relative flex-1">
-              <input
-                type="text"
-                maxLength={50}
-                placeholder="Nhập tên nguyên liệu / cửa hàng..."
-                className="w-full p-2 border-2 border-gray-300 rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-blue-400"
+      <div className="mt-10">
+        <div className="flex justify-end mb-4 ">
+          {!isSellerActive && (
+            <button
+              onClick={handleStoreRegistration}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+            >
+              Đăng ký cửa hàng
+            </button>
+          )}
+        </div>
+        <div className="flex flex-col md:flex-row h-screen rounded-lg shadow-md  border-gray-100 border-2">
+        <div className="md:w-1/4 w-full h-1/2 md:h-full overflow-y-auto relative">
+        <div className="p-2 sticky top-0 z-10 bg-white  flex items-center gap-6">
+              <SearchBox
                 value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value.slice(0, 50));
+                onSearch={(val) => {
+                  setSearchTerm(val);
                   setSelectedStore(null);
                 }}
+                isPopupOpen={showDistanceOptions}
+                placeholder="Tìm kiếm nguyên liệu/cửa hàng"
+                className="text-black min-w-64 pl-10 pr-4 border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 h-10"
               />
-              {searchTerm && (
+              <div className="relative" ref={dropdownRef}>
                 <button
-                  onClick={() => {
-                    setSearchTerm("");
-                    setSelectedStore(null);
-                  }}
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 text-2xl hover:text-red-500 focus:outline-none"
+                  onClick={() => setShowDistanceOptions((prev) => !prev)}
+                  className="w-full p-2 border-2 border-gray-300 rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-400"
                 >
-                  ×
+                  <Filter className="w-5 h-5 text-black" />
                 </button>
-              )}
-            </div>
-            <div className="relative">
-              <button
-                onClick={() => setShowDistanceOptions((prev) => !prev)}
-                className="w-full p-2 border-2 border-gray-300 rounded-lg  focus:outline-none focus:ring-2 focus:ring-blue-400"
-              >
-                <Filter className="w-6 h-6 text-gray-600" />
-              </button>
 
-              {showDistanceOptions && (
-                <div className="absolute z-10 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-2 w-32">
-                  {[5, 10, 15, 20, 25, 30].map((km) => (
-                    <div
-                      key={km}
-                      className={`cursor-pointer p-2 rounded hover:bg-blue-100 ${distanceFilter === km ? "bg-blue-200 font-semibold" : ""
-                        }`}
-                      onClick={() => {
-                        setDistanceFilter(km);
-                        setShowDistanceOptions(false);
-                      }}
-                    >
-                      {km} km
-                    </div>
-                  ))}
-                </div>
-              )}
+                {showDistanceOptions && (
+                  <div className="absolute z-10 right-0 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg p-2 w-32">
+                    {[5, 10, 15, 20, 25, 30].map((km) => (
+                      <div
+                        key={km}
+                        className={`cursor-pointer p-2 rounded hover:bg-blue-100 ${distanceFilter === km ? "bg-blue-200 font-semibold" : ""
+                          }`}
+                        onClick={() => {
+                          setDistanceFilter(km);
+                          setShowDistanceOptions(false);
+                        }}
+                      >
+                        {km} km
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-          {userLocation ? (
-            <ul>
-              {filteredStores.length > 0 ? (
-                filteredStores.map((store) => {
-                  const isSelected = selectedStore?.store_id === store.store_id;
+            {userLocation ? (
+              <ul>
+                {filteredStores.length > 0 ? (
+                  filteredStores.map((store) => {
+                    const isSelected = selectedStore?.store_id === store.store_id;
 
-                  return (
-                    <li
-                      key={store.store_id}
-                      className={`p-2 rounded shadow mb-2 cursor-pointer transition-all duration-200
+                    return (
+                      <li
+                        key={store.store_id}
+                        className={`p-2 rounded shadow mb-2 cursor-pointer transition-all duration-200
               ${isSelected ? "bg-gray-300" : "bg-white hover:bg-gray-100"}`}
-                      onClick={() => setSelectedStore(store)}
-                    >
-                      <h3 className="text-black">{store.name}</h3>
-                      <p className="text-black text-sm">{store.address}</p>
-                      <p className="text-black text-sm">
-                        Giờ mở cửa: <span className="text-green-500 text-sm">{formatTime(store.openHours)}</span> -{" "}
-                        <span className="text-green-500 text-sm">{formatTime(store.closeHours)}</span>
-                      </p>
-                      {store.distance !== null && (
-                        <p className="justify-end flex items-center gap-1 mt-4">
-                          <MapPin className="text-blue-400" /> {(store.distance / 1000).toFixed(2)} km
+                        onClick={() => setSelectedStore(store)}
+                      >
+                        <h3 className="text-black">
+                          {highlightMatches(store.name || '', searchTerm)}
+                        </h3>
+                        <p className="text-black text-sm">
+                          {highlightMatches(store.address || '', searchTerm)}
                         </p>
-                      )}
-                    </li>
-                  );
-                })
-              ) : (
-                <p>Không có cửa hàng nào phù hợp với yêu cầu tìm kiếm.</p>
-              )}
-            </ul>
-          ) : (
-            <p>Đang lấy vị trí của bạn...</p>
-          )}
+                        <p className="text-black text-sm">
+                          Giờ mở cửa: <span className="text-green-500 text-sm">{formatTime(store.openHours)}</span> -{" "}
+                          <span className="text-green-500 text-sm">{formatTime(store.closeHours)}</span>
+                        </p>
+                        {store.distance !== null && (
+                          <p className="justify-end flex items-center gap-1 mt-4">
+                            <MapPin className="text-blue-400" /> {(store.distance / 1000).toFixed(2)} km
+                          </p>
+                        )}
+                      </li>
+                    );
+                  })
+                ) : (
+                  <p>Không có cửa hàng nào phù hợp với yêu cầu tìm kiếm.</p>
+                )}
+              </ul>
+            ) : (
+              <p>Đang lấy vị trí của bạn...</p>
+            )}
 
-        </div>
-
-        <div className={`h-1/2 md:h-full relative transition-all duration-300 ${selectedStore ? "md:w-2/4" : "md:w-3/4"} w-full`}>
-          <Map
-            stores={stores}
-            selectedStore={selectedStore}
-            userLocation={userLocation}
-            onMapClick={(store) => {
-              setSelectedStore(store);
-              setSearchTerm("");
-              handleMapClick(store);
-            }}
-          />
-        </div>
-
-        {selectedStore && (
-          <div className="md:w-1/4 w-full h-full overflow-y-auto bg-white rounded-lg shadow-lg">
-            <StoreDetails store={selectedStore} searchTerm={searchTerm} />
           </div>
-        )}
+
+          <div className={`h-1/2 md:h-full relative transition-all duration-300 ${selectedStore ? "md:w-2/4" : "md:w-3/4"} w-full`}>
+            <Map
+              stores={stores}
+              selectedStore={selectedStore}
+              userLocation={userLocation}
+              onMapClick={(store) => {
+                setSelectedStore(store);
+                setSearchTerm("");
+                handleMapClick(store);
+              }}
+            />
+          </div>
+
+          {selectedStore && (
+            <div className="md:w-1/4 w-full h-full overflow-y-auto ">
+              <StoreDetails store={selectedStore} searchTerm={searchTerm} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
