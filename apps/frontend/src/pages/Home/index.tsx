@@ -177,7 +177,7 @@ const Home: React.FC = () => {
 
         <div className="py-12">
           <h2 className="text-4xl font-semibold text-center mb-8 text-black">
-            Món ngon nổi bật
+            Món ngon dành cho bạn
           </h2>
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {recipes.length > 0 ? (

@@ -7,6 +7,8 @@ import axiosInstance from "../../../services/axiosInstance";
 import { toast } from "react-toastify";
 import { formatCurrency } from "../../../utils/fomatPrice";
 import { formatQuantity } from "../../../utils/fomatQuantity";
+import { flexibleSearch } from "../../../utils/vietnameseUtils";
+import { formatDate } from "../../../utils/fomatDate";
 
 interface IngredientTableProps {
   className?: string;
@@ -115,9 +117,8 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
   };
 
   const filteredFood = food.filter((item) =>
-    item.title.toLowerCase().includes(searchTitle.toLowerCase())
+    flexibleSearch([item.title], searchTitle)
   );
-
   const sortedFood = filteredFood.sort((a, b) => {
     const aUpdatedAt = new Date(a.updated_at).getTime();
     const bUpdatedAt = new Date(b.updated_at).getTime();
@@ -205,8 +206,16 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
           <SearchBox onSearch={setSearchTitle} isPopupOpen={false} value={searchTitle} />
         </div>
       </div>
+      <div className="flex justify-between p-4 text-md">
+        <div>
+          Tổng số nguyên liệu : {filteredFood.length}
+        </div>
+        <div>
+          Trang {currentPage} / {totalPages}
+        </div>
+      </div>
 
-      <div className="overflow-x-auto p-4">
+      <div className="overflow-x-auto mr-4 ml-4 mb-4">
         <table className="min-w-full bg-white shadow-md border border-black">
           <thead>
             <tr className="bg-blue-700 text-white border-b border-black">
@@ -300,7 +309,7 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
                     </td>
                     <td className="p-3 text-center border-l border-black border-b">
                       {product.updated_at
-                        ? new Date(product.updated_at).toLocaleDateString()
+                        ? formatDate(product.updated_at)
                         : "Chưa có dữ liệu"}
                     </td>
                     <td className="p-3 border border-black">
@@ -309,13 +318,13 @@ const IngredientTable = ({ store, className, ingredients }: IngredientTableProps
                           <>
                             <button
                               onClick={() => handleEditIngredient(product.ingredient_id, editingData)}
-                              className="text-green-600 hover:text-green-800 px-3 py-1 border-2 border-green-300 rounded-md"
-                            >
+                              className="text-blue-600 hover:text-blue-800 px-3 py-1 border-2 border-blue-300 rounded-md"
+                              >
                               Lưu
                             </button>
                             <button
                               onClick={() => setEditingId(null)}
-                              className="text-gray-700 hover:text-black px-3 py-1 border-2 border-gray-300 rounded-md"
+                              className="text-red-600 hover:text-red-800 px-3 py-1 border-2 border-red-300 rounded-md"
                             >
                               Hủy
                             </button>

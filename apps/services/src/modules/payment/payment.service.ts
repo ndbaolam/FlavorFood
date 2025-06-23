@@ -134,7 +134,7 @@ export class PaymentService {
 
       if (momoStatus !== '0') {
         await this.invoiceRepo.save({
-          title: `Invoice for ${subscription.title}`,
+          title: `Hoá đơn của ${subscription.title.toLowerCase()}`,
           description: subscription.description,
           status: InvoiceStatus.FAILED,
           user,
@@ -150,7 +150,7 @@ export class PaymentService {
       
         await this.dataSource.transaction(async (manager) => {
           const invoice = manager.create(Invoice, {
-            title: `Invoice for ${subscription.title}`,
+            title: `Hoá đơn của ${subscription.title.toLowerCase()}`,
             description: subscription.description,
             status: InvoiceStatus.COMPLETED,
             user,

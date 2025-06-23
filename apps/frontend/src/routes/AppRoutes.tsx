@@ -19,6 +19,7 @@ import Posts from '../pages/Admin/Post';
 import Tip from '../pages/Admin/Tip';
 import AdminStore from '../pages/Admin/Store';
 import SellerHome from '../pages/Seller/Home';
+import AdminInvoice from '../pages/Admin/Invoice';
 
 const routes: RouteObject[] = [
   {
@@ -51,6 +52,7 @@ const routes: RouteObject[] = [
       { path: 'posts', element: <Posts /> },
       { path: 'tips', element: <Tip /> },
       { path: 'stores', element: <AdminStore /> },
+      {path: 'invoices',element:<AdminInvoice />},
     ],
   },
 ];

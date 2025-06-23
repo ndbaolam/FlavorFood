@@ -2,9 +2,7 @@ import mapboxgl from "mapbox-gl";
 import { useEffect, useRef } from "react";
 import { Store } from "../pages/Market/store.interface";
 
-mapboxgl.accessToken =
-  "pk.eyJ1IjoiZGluaG1pbmhhbmgiLCJhIjoiY205ZmxoNTAwMDgwODJpc2NpaDU0YnI4eSJ9.dOtWi9uma-n7tGP5ngB04Q";
-
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN;
 interface MapProps {
   stores: Store[];
   selectedStore: Store | null;
@@ -44,16 +42,29 @@ const Map: React.FC<MapProps> = ({
         store.longitude >= -180 &&
         store.longitude <= 180
       ) {
+        const popup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        }).setHTML(
+          `<h2><strong>${store.name}</strong></h2><p>${store.address}</p>`
+        );
+  
         const marker = new mapboxgl.Marker()
           .setLngLat([store.longitude, store.latitude])
-          .setPopup(
-            new mapboxgl.Popup().setHTML(
-              `<h2><strong>${store.name}</strong></h2><p>${store.address}</p>`
-            )
-          )
           .addTo(map.current!);
-
-        marker.getElement().addEventListener("click", () => {
+  
+        const el = marker.getElement();
+  
+        el.addEventListener("mouseenter", () => {
+          popup.addTo(map.current!);
+          popup.setLngLat([store.longitude!, store.latitude!]);
+        });
+  
+        el.addEventListener("mouseleave", () => {
+          popup.remove();
+        });
+  
+        el.addEventListener("click", () => {
           if (onMapClick) onMapClick(store);
         });
       } else {

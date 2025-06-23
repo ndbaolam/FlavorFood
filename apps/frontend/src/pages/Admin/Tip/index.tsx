@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TipsItem } from '../../Tips/tip.interface';
+import { TipsItem } from '../../Tips/Tip.interface';
 import { SquarePlus, Trash2, PencilRuler } from 'lucide-react';
 import CreateTip from "../../../components/Admin/Tip/CreateTip";
 import SearchBox from "../../../components/Search";
