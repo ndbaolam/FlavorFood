@@ -32,7 +32,6 @@ interface StoreWithLocation extends Store {
 const Market: React.FC = () => {
   const navigate = useNavigate();
   const [stores, setStores] = useState<StoreWithLocation[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
   const [selectedStore, setSelectedStore] = useState<StoreWithLocation | null>(null);
   const [userLocation, setUserLocation] = useState<Location | null>(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +40,11 @@ const Market: React.FC = () => {
   const isSellerActive = user?.role === "seller" && user?.status === "active";
   const [showDistanceOptions, setShowDistanceOptions] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+  const [searchTerm, setSearchTerm] = useState(() => localStorage.getItem("market_searchTerm") || "");
+
+useEffect(() => {
+  localStorage.setItem("market_searchTerm", searchTerm);
+}, [searchTerm]);
   useEffect(() => {
     const fetchUser = async () => {
       const profile = await getUserProfile();

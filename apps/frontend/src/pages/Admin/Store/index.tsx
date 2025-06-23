@@ -8,10 +8,10 @@ const LIMIT = 5;
 
 const AdminStore = () => {
     const [stores, setStores] = useState<Store[]>([]);
-    const [searchTitle, setSearchTitle] = useState("");
+    const [searchTitle, setSearchTitle] = useState(() => localStorage.getItem("store_searchTitle") || "");
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState('');
+    const [selectedStatus, setSelectedStatus] = useState(() => localStorage.getItem("store_selectedStatus") || "");
 
     useEffect(() => {
         const fetchStores = async () => {
@@ -30,6 +30,14 @@ const AdminStore = () => {
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTitle, selectedStatus]);
+
+    useEffect(() => {
+        localStorage.setItem("store_searchTitle", searchTitle);
+    }, [searchTitle]);
+    useEffect(() => {
+        localStorage.setItem("store_selectedStatus", selectedStatus);
+    }, [selectedStatus]);
+
 
     const sortedStores = useMemo(() => {
         return [...stores].sort((a, b) => {
@@ -161,7 +169,7 @@ const AdminStore = () => {
                 Quản lý cửa hàng
             </div>
             <div className="flex flex-wrap items-end justify-end gap-4 px-4 pt-4">
-                <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
+                <SearchBox placeholder="Tìm kiếm cửa hàng/địa chỉ" onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
                 <select
                     value={selectedStatus}
                     onChange={(e) => setSelectedStatus(e.target.value)}
@@ -188,7 +196,7 @@ const AdminStore = () => {
                             <th className="p-3 text-center border-r border-white">Email</th>
                             <th className="p-3 text-center border-r border-white">Địa chỉ</th>
                             <th className="p-3 text-center border-r border-white">Ngày tạo</th>
-                            <th className="p-3 text-center">Trạng thái</th>
+                            <th className="p-3 text-center w-36">Trạng thái</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -201,9 +209,9 @@ const AdminStore = () => {
                                     <td className="p-3 border-l border-black border-b">{store.user.mail}</td>
                                     <td className="p-3 border-l border-black border-b">{store.address}</td>
                                     <td className="p-3 text-center border-l border-black border-b">{formatDate(store.created_at)}</td>
-                                    <td className="p-3 text-center border-l border-black border-b">
+                                    <td className="p-3 text-center border-l border-black border-b w-40">
                                         <span className={`px-2 py-1 rounded-full text-sm font-semibold ${store.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                                            {store.status}
+                                            {store.status === 'active' ? 'Hoạt động' : 'Không hoạt động'}
                                         </span>
                                     </td>
                                 </tr>

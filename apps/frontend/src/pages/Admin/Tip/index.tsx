@@ -6,10 +6,12 @@ import SearchBox from "../../../components/Search";
 import TipDetailPopup from "../../../components/Admin/Tip/TipDetailPopup";
 import { toast } from 'react-toastify';
 import axiosInstance from '../../../services/axiosInstance';
+import { flexibleSearch } from '../../../utils/vietnameseUtils';
+import { formatDate } from '../../../utils/fomatDate';
 
 const Tip: React.FC = () => {
   const [tip, setTip] = useState<TipsItem[]>([]);
-  const [searchTitle, setSearchTitle] = useState<string>('');
+  const [searchTitle, setSearchTitle] = useState(() => localStorage.getItem("tip_searchTitle") || "");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedTip, setSelectedTip] = useState<TipsItem | null>(null);
   const [selectedTipIds, setSelectedTipIds] = useState<number[]>([]);
@@ -18,6 +20,9 @@ const Tip: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const LIMIT = 5;
+  useEffect(() => {
+    localStorage.setItem("tip_searchTitle", searchTitle);
+  }, [searchTitle]);
 
   useEffect(() => {
     const fetchTip = async () => {
@@ -135,7 +140,7 @@ const Tip: React.FC = () => {
   });
 
   const filteredTips = sortedTips.filter((t) =>
-    t.title.toLowerCase().includes(searchTitle.toLowerCase())
+    flexibleSearch([t.title], searchTitle)
   );
 
   const totalPages = Math.ceil(filteredTips.length / LIMIT);
@@ -268,7 +273,7 @@ const Tip: React.FC = () => {
           </button>
         </div>
 
-        <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
+        <SearchBox placeholder="Tìm kiếm mẹo vặt" onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
       </div>
       <div className="flex justify-between p-4 text-md">
         <div>
@@ -292,9 +297,9 @@ const Tip: React.FC = () => {
                   checked={selectedTipIds.length === tip.length && tip.length > 0}
                 />
               </th>
-              <th className="p-3 text-center border-r border-white ">Tiêu đề mẹo vặt</th>
+              <th className="p-3 text-center border-r border-white ">Tên mẹo vặt</th>
               <th className="p-3 text-center border-r border-white ">Ngày tạo</th>
-              <th className="p-3 text-center border-r border-white ">Cập nhật lần cuối</th>
+              <th className="p-3 text-center border-r border-white ">Cập nhật</th>
               <th className="p-3 text-center">Hành động</th>
             </tr>
           </thead>
@@ -314,8 +319,8 @@ const Tip: React.FC = () => {
                     />
                   </td>
                   <td className="p-3 border-l border-black border-b">{t.title}</td>
-                  <td className="p-3 text-center border-l border-black border-b"> {t.createdAt ? new Date(t.createdAt).toLocaleDateString() : 'N/A'}</td>
-                  <td className="p-3 text-center border-l border-black border-b">{t.updatedAt ? new Date(t.updatedAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="p-3 text-center border-l border-black border-b"> {formatDate(t.createdAt)}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{formatDate(t.updatedAt)}</td>
                   <td className="p-3 border border-black">
                     <div className="flex justify-center items-center h-full">
                       <button

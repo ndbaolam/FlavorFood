@@ -4,16 +4,40 @@ import { formatCurrency } from '../../../utils/fomatPrice';
 import { formatDate } from '../../../utils/fomatDate';
 import SearchBox from "../../../components/Search";
 import { flexibleSearch } from "../../../utils/vietnameseUtils";
+
 const AdminInvoice: React.FC = () => {
   const [invoice, setInvoice] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchTitle, setSearchTitle] = useState('');
+  const [searchTitle, setSearchTitle] = useState(() => localStorage.getItem("invoice_searchTitle") || "");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedStatus, setSelectedStatus] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState(() => localStorage.getItem("invoice_selectedStatus") || "");
+
   const [showOnlyExpired, setShowOnlyExpired] = useState(false);
 
   const LIMIT = 5;
+  useEffect(() => {
+    localStorage.setItem("invoice_searchTitle", searchTitle);
+  }, [searchTitle]);
+  useEffect(() => {
+    localStorage.setItem("invoice_selectedStatus", selectedStatus);
+  }, [selectedStatus]);
+
+
+  const getStatusInVietnamese = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'Đã thanh toán';
+      case 'pending':
+        return 'Đang xử lý';
+      case 'expired':
+        return 'Hết hạn';
+      case 'failed':
+        return 'Thất bại';
+      default:
+        return status;
+    }
+  };
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -67,6 +91,7 @@ const AdminInvoice: React.FC = () => {
       return matchSearch && matchStatus && matchExpired;
     });
   }, [sortedInvoice, searchTitle, selectedStatus, showOnlyExpired]);
+
   const totalPages = Math.ceil(filteredInvoice.length / LIMIT);
 
   const paginatedInvoice = useMemo(() => {
@@ -169,7 +194,7 @@ const AdminInvoice: React.FC = () => {
       <div className="text-4xl font-bold ml-3">Quản lý hoá đơn</div>
 
       <div className="flex flex-wrap items-end justify-end gap-4 px-4 pt-4">
-        <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
+        <SearchBox placeholder="Tìm kiếm hoá đơn/người mua" onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
         <select
           value={selectedStatus}
           onChange={(e) => setSelectedStatus(e.target.value)}
@@ -192,14 +217,14 @@ const AdminInvoice: React.FC = () => {
         <table className="min-w-full bg-white shadow-md border border-black">
           <thead>
             <tr className="bg-blue-700 text-white border-b border-black">
-              <th className="p-3 text-center border-r border-white">Tiêu đề</th>
+              <th className="p-3 text-center border-r border-white">Nội dung</th>
               <th className="p-3 text-center border-r border-white">Giá tiền (VNĐ)</th>
               <th className="p-3 text-center border-r border-white">Thời hạn (ngày)</th>
               <th className="p-3 text-center border-r border-white">Người mua</th>
               <th className="p-3 text-center border-r border-white">Email</th>
               <th className="p-3 text-center border-r border-white">Ngày tạo</th>
               <th className="p-3 text-center border-r border-white">Ngày hết hạn</th>
-              <th className="p-3 text-center">Trạng thái</th>
+              <th className="p-3 text-center w-36">Trạng thái</th>
             </tr>
           </thead>
           <tbody>
@@ -224,7 +249,7 @@ const AdminInvoice: React.FC = () => {
                     );
                   })()}
 
-                  <td className="p-3 text-center border-l border-black border-b">
+                  <td className="p-3 text-center border-l border-black border-b w-36">
                     <span
                       className={`px-2 py-1 rounded-full text-sm font-semibold
                         ${t.status === "pending"
@@ -238,7 +263,7 @@ const AdminInvoice: React.FC = () => {
                                 : "bg-slate-200 text-slate-700"
                         }`}
                     >
-                      {t.status}
+                      {getStatusInVietnamese(t.status)}
                     </span>
                   </td>
                 </tr>

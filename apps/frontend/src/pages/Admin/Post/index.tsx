@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Recipe } from '../../Meals/recipe.interface';
 import SearchBox from "../../../components/Search";
 import { PencilRuler, SquarePlus, Trash2 } from 'lucide-react';
@@ -7,7 +6,8 @@ import CreatePost from "../../../components/Admin/Post/CreatePost";
 import RecipeDetailPopup from "../../../components/Admin/Post/RecipeDetailPopup";
 import axiosInstance from '../../../services/axiosInstance';
 import { toast } from 'react-toastify';
-
+import { flexibleSearch, removeVietnameseTones } from '../../../utils/vietnameseUtils';
+import { formatDate } from '../../../utils/fomatDate';
 interface Category {
   category_id: number;
   title: string;
@@ -16,7 +16,7 @@ interface Category {
 const Posts: React.FC = () => {
   const [posts, setPosts] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [searchTitle, setSearchTitle] = useState<string>('');
+  const [searchTitle, setSearchTitle] = useState(() => localStorage.getItem("post_searchTitle") || "");
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedPosts, setSelectedPosts] = useState<number[]>([]);
   const [editingPost, setEditingPost] = useState<Recipe | null>(null);
@@ -25,7 +25,7 @@ const Posts: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>(() => {
-    const savedCategory = localStorage.getItem('selectedCategory');
+  const savedCategory = localStorage.getItem('selectedCategory');
     return savedCategory ? (savedCategory === 'all' ? 'all' : parseInt(savedCategory)) : 'all';
   });
   const LIMIT = 5;
@@ -33,6 +33,9 @@ const Posts: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('selectedCategory', selectedCategory.toString());
   }, [selectedCategory]);
+  useEffect(() => {
+    localStorage.setItem("post_searchTitle", searchTitle);
+  }, [searchTitle]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -183,20 +186,28 @@ const Posts: React.FC = () => {
   };
 
   const sortedPosts = [...posts].sort((a, b) => {
-    return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+    const dateA = new Date(a.updated_at).getTime();
+    const dateB = new Date(b.updated_at).getTime();
+  
+    if (dateB !== dateA) {
+      return dateB - dateA; 
+    }
+    const titleA = removeVietnameseTones(a.title);
+    const titleB = removeVietnameseTones(b.title);
+    return titleA.localeCompare(titleB);
   });
-
+  
   const filteredPosts = sortedPosts.filter((post) => {
-    const matchesTitle = post.title.toLowerCase().includes(searchTitle.toLowerCase()) ||
-      post.categories.some((category) =>
-        category.title.toLowerCase().includes(searchTitle.toLowerCase())
+    const title = post.title || '';
+    const categoryTitles = post.categories.map((cat) => cat.title || '');
+  
+    return flexibleSearch([title, ...categoryTitles], searchTitle) &&
+      (
+        selectedCategory === 'all' ||
+        post.categories.some((category) => category.category_id === selectedCategory)
       );
-
-    const matchesCategory = selectedCategory === 'all' ||
-      post.categories.some((category) => category.category_id === selectedCategory);
-
-    return matchesTitle && matchesCategory;
   });
+  
 
   const totalPages = Math.ceil(filteredPosts.length / LIMIT);
   const paginatedPosts = filteredPosts.slice((currentPage - 1) * LIMIT, currentPage * LIMIT);
@@ -331,7 +342,7 @@ const Posts: React.FC = () => {
         </div>
 
         <div className="flex space-x-3">
-          <SearchBox onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
+          <SearchBox placeholder="Tìm kiếm món ăn" onSearch={setSearchTitle} isPopupOpen={isPopupOpen} value={searchTitle} />
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : parseInt(e.target.value))}
@@ -391,8 +402,8 @@ const Posts: React.FC = () => {
                   </td>
                   <td className="p-3 border-l border-black border-b">{post.title}</td>
                   <td className="p-3 text-center border-l border-black border-b">{post.categories.map((c) => c.title).join(', ')}</td>
-                  <td className="p-3 text-center border-l border-black border-b">{new Date(post.created_at).toLocaleDateString()}</td>
-                  <td className="p-3 text-center border-l border-black border-b">{new Date(post.updated_at).toLocaleDateString()}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{formatDate(post.created_at)}</td>
+                  <td className="p-3 text-center border-l border-black border-b">{formatDate(post.updated_at)}</td>
                   <td className="p-3 border border-black">
                     <div className="flex justify-center items-center h-full">
                       <button
