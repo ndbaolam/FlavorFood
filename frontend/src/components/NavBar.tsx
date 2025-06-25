@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, ReactNode } from "react";
 import {
   Menu,
   X,
@@ -23,8 +23,8 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [userRole, setUserRole] = useState(null as string | null);
   const [isStoreExpired, setIsStoreExpired] = useState(false);
   const [isExpiredTooltipOpen, setIsExpiredTooltipOpen] = useState(false);
 
@@ -211,7 +211,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                       }`}
                   >
                     {icon}
-                    {label}
+                    <span>{label}</span>
                   </Link>
                 )}
               </div>
@@ -251,7 +251,7 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                         className="flex items-center px-4 py-2 hover:bg-blue-100"
                       >
                         {icon}
-                        {label}
+                        <span>{label}</span>
                       </a>
                     ))}
                   </div>
