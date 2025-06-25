@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 import { Recipe } from '../../Meals/recipe.interface';
 import SearchBox from "../../../components/Search";
 import { PencilRuler, SquarePlus, Trash2 } from 'lucide-react';
@@ -232,7 +232,7 @@ const Posts: React.FC = () => {
       </button>
     );
 
-    const paginationItems = [];
+    const paginationItems: JSX.Element[] = [];
 
     paginationItems.push(
       <button

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { JSX, useEffect, useState } from 'react';
 import { TipsItem } from '../../Tips/Tip.interface';
 import { SquarePlus, Trash2, PencilRuler } from 'lucide-react';
 import CreateTip from "../../../components/Admin/Tip/CreateTip";
@@ -166,7 +166,7 @@ const Tip: React.FC = () => {
       </button>
     );
 
-    const paginationItems = [];
+    const paginationItems: JSX.Element[] = [];
 
     paginationItems.push(
       <button

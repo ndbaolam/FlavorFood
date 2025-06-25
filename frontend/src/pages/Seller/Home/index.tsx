@@ -8,6 +8,7 @@ import { User } from "../../Profile/Profile.interface";
 import { SquarePlus } from "lucide-react";
 import CreateIngredient from "../../../components/Seller/CreateForm/CreateIngredient";
 import { Ingredient } from "../../Market/store.interface";
+import React from "react";
 
 const SellerHome = () => {
   const [store, setStore] = useState<Store | null>(null);

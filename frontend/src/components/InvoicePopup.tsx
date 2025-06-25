@@ -9,7 +9,8 @@ interface InvoicePopupProps {
 }
 
 const InvoicePopup: React.FC<InvoicePopupProps> = ({ invoices, onClose }) => {
-  const user = invoices[0]?.user;
+  const validInvoices = invoices.filter((invoice) => invoice.status !== 'failed');
+  const user = validInvoices[0]?.user;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import axiosInstance from "../../services/axiosInstance";
 import { useFavorite } from "../../lib/FavoriteContext";
 import RecipeCard from "../../components/RecipeCard";
@@ -94,7 +94,7 @@ const Favourite: React.FC = () => {
       </button>
     );
 
-    const paginationItems = [];
+    const paginationItems: JSX.Element[] = [];
 
     paginationItems.push(
       <button

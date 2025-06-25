@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, JSX } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -185,7 +185,7 @@ const Meals: React.FC = () => {
         {label || pageNum}
       </button>
     );
-    const paginationItems = [];
+    const paginationItems: JSX.Element[] = [];
 
     paginationItems.push(
       <button
