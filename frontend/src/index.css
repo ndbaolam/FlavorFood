@@ -2,31 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
+@media print {
+
+  nav,
+  footer,
+  .comments-section,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    margin: 0;
+  }
+}
 
 @media print {
-    nav,
-    footer,
-    .comments-section,
-    .no-print {
-      display: none !important;
-    }
-    body {
-      margin: 0;
-    }
+  .no-print {
+    display: none !important;
   }
-  
-  @media print {
-    .no-print {
-      display: none !important;
-    }
-  
-    body {
-      background: white !important;
-      color: black !important;
-      margin: 0;
-    }
-    #recipe-detail-content {
-      page-break-inside: avoid;
-    }
+
+  body {
+    background: white !important;
+    color: black !important;
+    margin: 0;
   }
-  
+
+  #recipe-detail-content {
+    page-break-inside: avoid;
+  }
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Merriweather", serif;
+}
+
+p, span, .description {
+  font-family: "Work Sans", sans-serif;
+}
+

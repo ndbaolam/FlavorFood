@@ -1,0 +1,32 @@
+{
+    "compilerOptions": {
+      "target": "ESNext", // Supports modern JavaScript features
+      "module": "ESNext", // Uses ES modules
+      "jsx": "react-jsx", // Enables JSX support for React
+      "strict": true, // Enables strict type-checking
+      "moduleResolution": "Node", // Resolves modules in Node.js style
+      "esModuleInterop": true, // Allows default imports for CommonJS modules
+      "allowSyntheticDefaultImports": true, // Enables synthetic default imports
+      "skipLibCheck": true, // Skips type checks for declaration files
+      "baseUrl": "./", // Sets the base URL for module resolution
+      "paths": {
+        "@/*": ["src/*"] // Aliases for cleaner imports
+      },
+      "types": ["vite/client", "@types/react", "@types/node"], // Includes necessary type definitions
+      "resolveJsonModule": true, // Allows importing JSON files
+      "forceConsistentCasingInFileNames": true // Enforces consistent casing in file names
+    },
+    "include": [
+      "src", // Includes the source directory
+      "vite.config.ts", // Includes the Vite configuration file
+      "tailwind.config.js", // Includes Tailwind configuration
+      "postcss.config.js" // Includes PostCSS configuration
+    ],
+    "exclude": [
+      "node_modules", // Excludes third-party libraries
+      "dist", // Excludes build output
+      "**/*.test.ts", // Excludes test files
+      "**/*.spec.ts", // Excludes spec files
+      "**/*.js" // Excludes plain JavaScript files
+    ]
+  }

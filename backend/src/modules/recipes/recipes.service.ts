@@ -57,7 +57,7 @@ export class RecipesService {
   }
 
   async searchRecipes(searchDto: SearchRecipeDto): Promise<Recipes[]> {
-    const { title, description, difficulty_level, offset, limit, categories, feature, most_rating } =
+    const { title, description, difficulty_level, offset = 0, limit, categories, feature, most_rating } =
       searchDto;
     const qb = this.recipesRepository
       .createQueryBuilder('recipes')
@@ -68,7 +68,7 @@ export class RecipesService {
       .leftJoin('recipes.steps', 'steps')
       .addSelect(['categories.category_id', 'categories.title'])    
       .addSelect(['steps.number', 'steps.step']);
-
+  
     if (title) {
       qb.andWhere('recipes.title ILIKE :title', { title: `%${title}%` });
     }
@@ -85,46 +85,43 @@ export class RecipesService {
     if (categories && categories.length > 0) {
       qb.andWhere('categories.title IN (:...categories)', { categories });
     }
-
+  
     let recipes = await qb.getMany();
-
-    recipes.map(recipe => {
+  
+    // Calculate average rating and review count for each recipe
+    recipes = recipes.map(recipe => {
       if (recipe.reviews && recipe.reviews.length > 0) {
         const total = recipe.reviews.reduce((acc, review) => acc + Number(review.rating), 0);
-        recipe['average_rating'] = total / recipe.reviews.length;
+        (recipe as any)['average_rating'] = total / recipe.reviews.length;
       } else {
-        recipe['average_rating'] = 0;
+        (recipe as any)['average_rating'] = 0;
       }
-      recipe['review_count'] = recipe.reviews.length;
-    })
-
-    if (offset) {
-      recipes = recipes.slice(offset);
+      (recipe as any)['review_count'] = recipe.reviews ? recipe.reviews.length : 0;
+      return recipe;
+    });
+  
+    // Apply sorting BEFORE pagination
+    if (most_rating) {
+      // Sort by highest average rating first
+      recipes.sort((a, b) => (b as any)['average_rating'] - (a as any)['average_rating']);
+    } else if (feature) {
+      // Sort by most number of reviews first
+      recipes.sort((a, b) => (b as any)['review_count'] - (a as any)['review_count']);
     }
-
-    if (limit) {
-      recipes = recipes.slice(0, limit);
-    }
-
+  
+    // Apply pagination AFTER sorting
+    const startIndex = offset;
+    const endIndex = limit ? startIndex + limit : recipes.length;
+    recipes = recipes.slice(startIndex, endIndex);
+  
     if (!recipes.length) {
       throw new NotFoundException(
         `No recipes found matching your search criteria.`
       );
     }
-
-    recipes.sort((a, b) => {
-      if (feature && most_rating) {
-        return b['average_rating'] - a['average_rating'];
-      } else if (feature) {
-        return b['review_count'] - a['review_count'];
-      } else if (most_rating) {
-        return b['average_rating'] - a['average_rating'];
-      }
-      return 0;
-    })
-
+  
     return recipes;
-  }  
+  }
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipes> {
     try {

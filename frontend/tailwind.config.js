@@ -13,6 +13,8 @@ module.exports = withMT({
     extend: {
       fontFamily: {
         lobster: ['Lobster', 'cursive'],
+        title: ['Playfair Display', 'serif'],
+        description: ['Roboto', 'sans-serif'],
       },
     },
   },

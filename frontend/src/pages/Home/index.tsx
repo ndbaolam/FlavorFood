@@ -8,7 +8,7 @@ import Banner from '../../components/banner';
 import axiosInstance from '../../services/axiosInstance';
 import RecipeCard from '../../components/RecipeCard';
 import { toast } from 'react-toastify';
-import { checkAuth } from '../../utils/auth';
+import { checkAuth, getUserProfile } from '../../utils/auth';
 import { useFavorite } from '../../lib/FavoriteContext';
 
 
@@ -77,28 +77,68 @@ const Home: React.FC = () => {
   }, [categoryId]);
 
   useEffect(() => {
-    setLoadingRecipes(true);
-    axiosInstance
-      .get('/recipes/recommend', {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        withCredentials: true
-      })
-      .then((response) => {
+    const fetchRecipes = async () => {
+      setLoadingRecipes(true);
+      
+      try {
+        const isAuthenticated = await checkAuth();
+        
+        if (isAuthenticated) {
+          try {
+            const response = await axiosInstance.post('/recipes/recommend', {
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              withCredentials: true
+            });
+  
+            const data = response.data;
+            const sortedRecipes = data.sort((a: any, b: any) => {
+              return (b.average_rating || 0) - (a.average_rating || 0);
+            });
+            
+            setRecipes(sortedRecipes);
+            return;
+            
+          } catch (error) {
+            console.error('Lỗi khi gọi /recipes/recommend:', error);
+            console.error('Response data:', error.response?.data);
+            console.error('Request headers:', error.config?.headers);
+            
+          }
+        } else {
+          console.log('Chưa đăng nhập, lấy món ăn rating cao...');
+        }
+  
+        const response = await axiosInstance.get('recipes', {
+          params: {
+            most_rating: true,  
+            limit: 8,        
+            offset: 0         
+          },
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true
+        });
+  
         const data = response.data;
+  
         const sortedRecipes = data.sort((a: any, b: any) => {
           return (b.average_rating || 0) - (a.average_rating || 0);
         });
-
+        
         setRecipes(sortedRecipes);
-      })
-      .catch(() => {
+        
+      } catch (error) {
+        console.error('Lỗi khi tải món ăn:', error);
         setErrorRecipes('Không thể tải món ăn thịnh hành.');
-      })
-      .finally(() => {
+      } finally {
         setLoadingRecipes(false);
-      });
+      }
+    };
+  
+    fetchRecipes();
   }, []);
 
   const handleToggleFavorite = async (recipeId: number) => {

@@ -62,7 +62,7 @@ export class RecipesController {
     }
   }
 
-  @Get('/recommend')
+  @Post('/recommend')
   @ApiOperation({ summary: 'Recommend recipes' })
   @UseGuards(JwtAuthGuard)
   async recommend(@Req() req: Request) {
