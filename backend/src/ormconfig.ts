@@ -1,8 +1,11 @@
+import 'reflect-metadata';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-dotenv.config({ path: path.resolve(__dirname, '.env') });
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const dataSource = new DataSource({
   type: 'postgres',

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   Column,
   CreateDateColumn,
@@ -16,11 +17,6 @@ import { Ingredient } from '../ingredient/entity/ingredient.entity';
 import { Nutritrion } from '../nutrition/entity/nutrition.entity';
 import { Steps } from '../steps/entity/step.entity';
 
-const vectorTransformer: ValueTransformer = {
-  to: (value: number[]): string => JSON.stringify(value),
-  from: (value: string): number[] => JSON.parse(value),
-};
-
 export enum DifficultyLevel {
   EASY = 'Dễ',
   MEDIUM = 'Trung bình',
@@ -32,10 +28,16 @@ export class Recipes {
   @PrimaryGeneratedColumn()
   recipe_id: number;
 
-  @Column({ nullable: false })
+  @Column({ 
+    type: 'varchar',
+    nullable: false 
+  })
   title: string;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: false,        
+  })
   description: string;
 
   @Column({
@@ -46,17 +48,27 @@ export class Recipes {
   difficulty_level: DifficultyLevel;  
 
   @Column({    
+    type: 'int',
     nullable: true,
   })
   time: number;
 
-  @Column({ nullable: true })
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
   image: string;
 
-  @Column({ nullable: true })
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
   image_detail: string;
 
-  @Column()
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
   serving: number;
 
   // One Recipe can be favorited many times
@@ -90,15 +102,7 @@ export class Recipes {
       referencedColumnName: 'category_id',
     },
   })
-  categories: Categories[];
-
-  @Column({
-    type: 'varchar',
-    nullable: true,
-    transformer: vectorTransformer,
-    // select: false
-  })
-  embedding: number[]
+  categories: Categories[];  
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

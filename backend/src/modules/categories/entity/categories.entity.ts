@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -15,6 +16,7 @@ export class Categories {
   category_id: number;
 
   @Column({    
+    type: 'varchar',
     nullable: false
   })
   title: string;
