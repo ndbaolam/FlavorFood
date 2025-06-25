@@ -83,6 +83,8 @@
     "@nestjs/jwt": "^10.2.0",
     "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^10.0.2",
+    "@nrwl/devkit": "^19.8.4",
+    "@nx-tools/nx-docker": "^3.0.8",
     "@nx/eslint": "20.0.6",
     "@nx/eslint-plugin": "20.0.6",
     "@nx/jest": "20.0.6",

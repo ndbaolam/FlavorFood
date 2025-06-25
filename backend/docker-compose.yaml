@@ -1,10 +1,11 @@
 services:
-  postgresql:    
+  db:    
     image: pgvector/pgvector:pg16
     env_file:
       - .env 
     #command: ['postgres', '-c', 'wal_level=logical']
-    container_name: postgresql    
+    container_name: db
+    hostname: db
     ports:
       - "5432:5432"
     networks:
@@ -15,17 +16,6 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     volumes: 
       - postgres_data:/var/lib/postgresql/data
-
-  frontend:
-    build:
-      context: ./apps/frontend
-      dockerfile: Dockerfile
-    container_name: frontend
-    hostname: frontend
-    ports:
-      - "3000:80"
-    networks:
-      - flavor_food
 
   # jeager:
   #   image: jaegertracing/jaeger:2.6.0
