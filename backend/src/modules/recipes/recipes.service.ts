@@ -13,6 +13,8 @@ import { Nutritrion } from './nutrition/entity/nutrition.entity';
 import { Steps } from './steps/entity/step.entity';
 import { EmbeddingService } from '../embedding/embedding.service';
 import { FavoriteService } from '../favorite/favorite.service';
+import pgvector from 'pgvector';
+import { features } from 'process';
 
 @Injectable()
 export class RecipesService {
@@ -152,6 +154,12 @@ export class RecipesService {
         //"difficulty_level": recipeDetail['difficulty_level']
       });
 
+      if (!recipeDetail['embedding']) {
+        throw new ConflictException(
+          `Failed to generate embedding for recipe ${recipeDetail.title}.`
+        );
+      } 
+
       const insertResult = await this.recipesRepository
         .createQueryBuilder()
         .insert()
@@ -160,6 +168,12 @@ export class RecipesService {
         .execute();
 
       const recipeId = insertResult.identifiers[0].recipe_id;
+      const embeddingVector = pgvector.toSql(recipeDetail['embedding']);
+
+      await this.recipesRepository.query(
+        `UPDATE recipes SET embedding=$1 WHERE recipe_id=$2`,
+        [embeddingVector, recipeId]
+      );
 
       if (categoryIds && categoryIds.length > 0) {
         await this.recipesRepository
@@ -403,7 +417,8 @@ export class RecipesService {
   }
 
   async findSimilarRecipes(embedding: number[], limit = 12): Promise<Recipes[]> {
-    const embeddingStr = `[${embedding.join(',')}]`
+    const embeddingStr = pgvector.toSql(embedding);
+    
     /*
       https://github.com/pgvector/pgvector
       <-> - L2 distance
@@ -416,31 +431,105 @@ export class RecipesService {
     const query = `
       SELECT *, embedding <=> $1 AS distance
       FROM recipes
+      WHERE embedding IS NOT NULL
       ORDER BY distance ASC
       LIMIT $2
-    `
-
-    const result = await this.dataSource.query(query, [embeddingStr, limit])
-    return result
+    `;
+  
+    try {
+      const result = await this.dataSource.query(query, [embeddingStr, limit]);
+      return result;
+    } catch (error) {
+      console.error('Error finding similar recipes:', error);
+      throw new Error(`Failed to find similar recipes: ${error.message}`);
+    }
   }
-
+  
   async recommend(userId: number): Promise<Recipes[]> {
-    const favorite = await this.favoriteService.getFavoritesByUserId(userId)
-
-    const embeddings = await Promise.all(
-      favorite.map(async (item) => {
-        const recipe = item.recipe;
-
-        return await this.embeddingService.generate({
-          title: recipe.title,
-          description: recipe.description,
+    try {
+      const favorites = await this.favoriteService.getFavoritesByUserId(userId);
+  
+      // Handle case where user has no favorites
+      if (!favorites || favorites.length === 0) {
+        console.log(`User ${userId} has no favorites, returning popular recipes`);
+        return this.searchRecipes({
+          feature: true,
+          most_rating: true,
+          limit: 8,
+          categories: []
+        });
+      }
+  
+      // Generate embeddings for all favorite recipes
+      const embeddings = await Promise.all(
+        favorites.map(async (item) => {
+          const recipe = item.recipe;
+  
+          // Validate recipe data
+          if (!recipe.title || !recipe.description) {
+            console.warn(`Recipe ${recipe.recipe_id} missing title or description`);
+            return null;
+          }
+  
+          try {
+            return await this.embeddingService.generate({
+              title: recipe.title,
+              description: recipe.description,
+            });
+          } catch (error) {
+            console.error(`Failed to generate embedding for recipe ${recipe.recipe_id}:`, error);
+            return null;
+          }
         })
-      })
-    )
-
-    const avg = this.embeddingService.average(embeddings)
-    const norm = this.embeddingService.normalize(avg)
-
-    return this.findSimilarRecipes(norm)
+      );
+  
+      // Filter out null embeddings
+      const validEmbeddings = embeddings.filter(embedding => embedding !== null);
+  
+      if (validEmbeddings.length === 0) {
+        console.warn(`No valid embeddings generated for user ${userId}`);
+        return this.searchRecipes({
+          feature: true,
+          most_rating: true,
+          limit: 8,
+          categories: []
+        }); // Fallback
+      }
+  
+      // Calculate average and normalize
+      const avg = this.embeddingService.average(validEmbeddings);
+      const norm = this.embeddingService.normalize(avg);
+  
+      // Get similar recipes but exclude user's favorites
+      const favoriteIds = favorites.map(fav => fav.recipe.recipe_id);
+      return this.findSimilarRecipesExcluding(norm, favoriteIds, 12);
+  
+    } catch (error) {
+      console.error(`Error generating recommendations for user ${userId}:`, error);
+      throw new Error(`Failed to generate recommendations: ${error.message}`);
+    }
+  }
+  
+  async findSimilarRecipesExcluding(embedding: number[], excludeIds: number[], limit = 12): Promise<Recipes[]> {
+    const embeddingStr = pgvector.toSql(embedding);
+    
+    const query = `
+      SELECT *, embedding <=> $1 AS distance
+      FROM recipes
+      WHERE embedding IS NOT NULL
+      AND id NOT IN (${excludeIds.map((_, index) => `$${index + 2}`).join(', ')})
+      ORDER BY distance ASC
+      LIMIT $${excludeIds.length + 2}
+    `;
+  
+    try {
+      const params = [embeddingStr, ...excludeIds, limit];
+      const result = await this.dataSource.query(query, params);
+      return result;
+    } catch (error) {
+      console.error('Error finding similar recipes excluding favorites:', error);
+      // Fallback to regular similarity search if excluding fails
+      return this.findSimilarRecipes(embedding, limit);
+    }
   }
 }

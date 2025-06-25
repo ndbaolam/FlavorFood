@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, JSX } from 'react';
 import TipsCard from '../../components/TipsCard';
 import axiosInstance from '../../services/axiosInstance';
 import { useSearchParams } from 'react-router-dom';
@@ -85,8 +85,8 @@ const Tips: React.FC = () => {
       </button>
     );
 
-    const paginationItems = [];
-    
+    const paginationItems: JSX.Element[] = [];
+
     paginationItems.push(
       <button
         key="prev"

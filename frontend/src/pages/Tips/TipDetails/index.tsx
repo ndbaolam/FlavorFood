@@ -1,10 +1,11 @@
 import { LoaderFunctionArgs, useLoaderData, useNavigate } from "react-router-dom";
-import { TipsItem } from '../tip.interface';
 import axiosInstance from "../../../services/axiosInstance";
 import { CircleArrowLeft } from "lucide-react";
 import { checkAuth } from "../../../utils/auth";
 import "../../../index.css";
 import { toast } from "react-toastify";
+import { TipsItem } from "../Tip.interface";
+import React from "react";
 export async function clientLoader({ params }: LoaderFunctionArgs) {
   try {
     const { slug } = params;

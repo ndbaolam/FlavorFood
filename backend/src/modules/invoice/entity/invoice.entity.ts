@@ -20,7 +20,6 @@ export class Invoice {
     {
       type: 'varchar',
       nullable: false,
-      unique: true, // Ensure each invoice has a unique title
     }
   )
   @IsString()

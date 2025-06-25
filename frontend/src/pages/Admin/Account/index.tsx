@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import { User } from "../../Profile/Profile.interface";
 import { LockKeyhole } from "lucide-react";
 import SearchBox from "../../../components/Search";
@@ -160,7 +160,7 @@ const Account: React.FC = () => {
       </button>
     );
 
-    const paginationItems = [];
+    const paginationItems: JSX.Element[] = [];
 
     paginationItems.push(
       <button

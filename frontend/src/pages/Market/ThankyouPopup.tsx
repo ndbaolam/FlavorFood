@@ -59,7 +59,7 @@ const ThankYou: React.FC<ThankYouProps> = ({ onClose, userId }) => {
 
           <div className="flex justify-center gap-4 mt-6">
             <a
-              href="/store-registration"
+              href="/my-store"
               className="bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition"
             >
               Quay về cửa hàng của bạn

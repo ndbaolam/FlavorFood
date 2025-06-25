@@ -1,9 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { JSX, useEffect, useMemo, useState } from "react";
 import { Store } from "../../Market/store.interface";
 import axiosInstance from '../../../services/axiosInstance';
 import SearchBox from "../../../components/Search";
 import { flexibleSearch } from "../../../utils/vietnameseUtils"
 import { formatDate } from '../../../utils/fomatDate';
+import React from "react";
 const LIMIT = 5;
 
 const AdminStore = () => {
@@ -97,19 +98,19 @@ const AdminStore = () => {
             </button>
         );
 
-        const paginationItems = [];
+        const paginationItems: JSX.Element[] = [];
 
-        paginationItems.push(
-            <button
-                key="prev"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1 rounded mr-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
-                aria-label="Trang trước"
-            >
-                &lt;
-            </button>
-        );
+    paginationItems.push(
+      <button
+        key="prev"
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
+        className="px-3 py-1 rounded mr-1 bg-white text-gray-600 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed hover:bg-blue-100"
+        aria-label="Trang trước"
+      >
+        &lt;
+      </button>
+    );
 
         if (totalPages <= 3) {
             for (let i = 1; i <= totalPages; i++) {

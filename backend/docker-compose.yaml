@@ -15,48 +15,40 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes: 
-      - postgres_data:/var/lib/postgresql/data
+      - flavorfood_postgres_data-cloned:/var/lib/postgresql/data
 
-  # jeager:
-  #   image: jaegertracing/jaeger:2.6.0
-  #   container_name: jaeger
-  #   hostname: jaeger
-  #   ports:
-  #     - "16686:16686"
-  #     - "8888:8888"
-  #     - "8889:8889"
-  #     - "4317:4317"
-  #     - "4318:4318"
-  #   networks:
-  #     flavor_food:
-  #       aliases: [spm_metrics_source]
-  #   volumes:
-  #     - ./observability/config-spm.yaml:/etc/jaeger/config.yml
-  #     - ./observability/jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
-  #   command: ["--config", "/etc/jaeger/config.yml"]
+  jeager:
+    image: jaegertracing/jaeger:2.6.0
+    container_name: jaeger
+    hostname: jaeger
+    ports:
+      - "16686:16686"
+      - "8888:8888"
+      - "8889:8889"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      flavor_food:
+        aliases: [spm_metrics_source]
+    volumes:
+      - ./observability/config-spm.yaml:/etc/jaeger/config.yml
+      - ./observability/jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+    command: ["--config", "/etc/jaeger/config.yml"]
   
-  # prometheus:
-  #   image: prom/prometheus
-  #   container_name: prometheus
-  #   hostname: prometheus
-  #   volumes:
-  #     - "./observability/prometheus.yml:/etc/prometheus/prometheus.yml"
-  #   networks:
-  #     - flavor_food
-  #   ports:
-  #     - "9090:9090"
-
-  # fastapi:
-  #   build:
-  #     context: ./apps/fastapi
-  #     dockerfile: Dockerfile
-  #   container_name: fastapi
-  #   hostname: fastapi
-  #   ports:
-  #     - "8000:8000"
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    volumes:
+      - "./observability/prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      - flavor_food
+    ports:
+      - "9090:9090"
 
 volumes:
-  postgres_data:
+  flavorfood_postgres_data-cloned:
+    external: true
 
 networks:
   flavor_food:

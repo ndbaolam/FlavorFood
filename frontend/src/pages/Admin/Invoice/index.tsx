@@ -1,9 +1,10 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, JSX } from "react";
 import axiosInstance from '../../../services/axiosInstance';
 import { formatCurrency } from '../../../utils/fomatPrice';
 import { formatDate } from '../../../utils/fomatDate';
 import SearchBox from "../../../components/Search";
 import { flexibleSearch } from "../../../utils/vietnameseUtils";
+import React from "react";
 
 const AdminInvoice: React.FC = () => {
   const [invoice, setInvoice] = useState<any[]>([]);
@@ -120,7 +121,7 @@ const AdminInvoice: React.FC = () => {
       </button>
     );
 
-    const paginationItems = [];
+    const paginationItems: JSX.Element[] = [];
 
     paginationItems.push(
       <button

@@ -62,16 +62,11 @@ export class RecipesController {
     }
   }
 
-  @Post('/recommend')
+  @Get('/recommend')
   @ApiOperation({ summary: 'Recommend recipes' })
   @UseGuards(JwtAuthGuard)
   async recommend(@Req() req: Request) {
     const user = req['user'];
-    
-    // if (!user) {
-    //   throw new UnauthorizedException();
-    // }
-    
     return await this.recipesService.recommend(Number(user['sub']));
   }
 

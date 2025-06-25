@@ -19,7 +19,7 @@ export class Subscription {
   @Column(
     {
       type: 'varchar',
-      nullable: false,      
+      nullable: true,      
     }
   )
   title: string;
@@ -27,7 +27,7 @@ export class Subscription {
   @Column(
     {
       type: 'text',
-      nullable: false,
+      nullable: true,
     }
   )
   description: string;
@@ -35,7 +35,7 @@ export class Subscription {
   @Column(
     {
       type: 'decimal',
-      nullable: false,
+      nullable: true,
     }
   )
   price: number;
@@ -43,7 +43,7 @@ export class Subscription {
   @Column(
     {
       type: 'int',
-      nullable: false,
+      nullable: true,
     }
   )
   day_remain: number; // Number of days remaining in the subscription

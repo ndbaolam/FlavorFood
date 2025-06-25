@@ -206,8 +206,8 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                     to={to}
                     onClick={() => handlePageChange(label)}
                     className={`flex items-center px-3 py-2 rounded-md font-medium transition-colors ${isActiveMenu(to)
-                        ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
-                        : "text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
+                      ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
+                      : "text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
                       }`}
                   >
                     {icon}
@@ -225,7 +225,15 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                   onClick={toggleAccountMenu}
                   className="flex items-center w-10 h-10 rounded-full overflow-hidden border focus:outline-none"
                 >
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                  <img
+                    src={avatarUrl}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "../../public/avatar.jpg";
+                    }}
+                  />
                 </button>
                 {isAccountOpen && (
                   <div className="absolute right-4 top-20 w-48 bg-white rounded-lg shadow-lg z-50 text-black">
@@ -310,8 +318,8 @@ const Navbar: React.FC<NavbarProps> = ({ setActivePage, onUserLoggedIn }) => {
                   to={to}
                   onClick={() => handlePageChange(label)}
                   className={`flex items-center px-3 py-2 rounded-md font-medium transition-colors ${isActiveMenu(to)
-                      ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
-                      : "text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
+                    ? "bg-gradient-to-r from-blue-500 to-blue-300 text-white"
+                    : "text-black hover:bg-gradient-to-r hover:from-blue-500 hover:to-blue-300 hover:text-white"
                     }`}
                 >
                   {icon}
