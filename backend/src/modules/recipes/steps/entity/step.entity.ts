@@ -15,6 +15,7 @@ export class Steps {
 
   @Column({
     type: 'varchar',
+    nullable: true
   })
   step: string
 

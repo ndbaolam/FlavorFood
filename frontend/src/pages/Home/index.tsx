@@ -79,12 +79,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     setLoadingRecipes(true);
     axiosInstance
-      .get('/recipes', {
-        params: {
-          feature: true,
-          most_rating: true,
-          limit: 8,
+      .get('/recipes/recommend', {
+        headers: {
+          'Content-Type': 'application/json',
         },
+        withCredentials: true
       })
       .then((response) => {
         const data = response.data;
@@ -101,6 +100,7 @@ const Home: React.FC = () => {
         setLoadingRecipes(false);
       });
   }, []);
+
   const handleToggleFavorite = async (recipeId: number) => {
     try {
       const isAuthenticated = await checkAuth();
