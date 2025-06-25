@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Users } from "../../users/entity/users.entity";
@@ -15,12 +16,18 @@ export class Invoice {
   @PrimaryGeneratedColumn()
   invoice_id: number;
 
-  @Column()
+  @Column(
+    {
+      type: 'varchar',
+      nullable: false,
+      unique: true, // Ensure each invoice has a unique title
+    }
+  )
   @IsString()
   @IsNotEmpty()  
   title: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'text' })
   @IsString()
   @IsOptional()  
   description?: string;

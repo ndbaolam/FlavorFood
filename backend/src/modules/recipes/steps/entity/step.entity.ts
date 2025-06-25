@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Recipes } from "../../entity/recipes.entity";
 
@@ -6,10 +7,15 @@ export class Steps {
   @PrimaryGeneratedColumn()
   id: number  
 
-  @Column({ nullable: true })
+  @Column({ 
+    type: 'int',
+    nullable: true 
+  })
   number: number
 
-  @Column('text')
+  @Column({
+    type: 'varchar',
+  })
   step: string
 
   @ManyToOne(() => Recipes, (recipe) => recipe.steps, {

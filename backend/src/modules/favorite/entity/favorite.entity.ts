@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   Column,
   CreateDateColumn,
@@ -15,10 +16,16 @@ export class Favorite {
   @PrimaryGeneratedColumn()
   favorite_id: number;
 
-  @Column()
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
   user_id: number;
 
-  @Column()
+  @Column({
+    type: 'int',
+    nullable: false,
+  })
   recipe_id: number;
 
   @ManyToOne(() => Users, user => user.favorites, { onDelete: 'CASCADE' })

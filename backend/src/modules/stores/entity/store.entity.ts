@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -16,10 +17,14 @@ export class Stores {
   @PrimaryGeneratedColumn()
   store_id: number;
 
-  @Column()
+  @Column({
+    type: 'varchar',
+    nullable: false,
+    unique: true,
+  })
   name: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   image: string;
 
   @Column({
@@ -28,7 +33,7 @@ export class Stores {
   })
   description: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   address: string;
 
   @Column({ nullable: true, type: 'double precision' })
@@ -45,7 +50,7 @@ export class Stores {
   })
   status: 'active' | 'inactive' | 'closed';
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar' })
   phone_number: string;
 
   @Column({ nullable: true, type: 'timestamptz' })

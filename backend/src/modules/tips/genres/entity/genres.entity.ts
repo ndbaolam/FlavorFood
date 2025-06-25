@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -14,7 +15,7 @@ export class TipGenres {
   @PrimaryGeneratedColumn({ name: 'genre_id' })
   genre_id: number;
 
-  @Column({ nullable: false })
+  @Column({ nullable: false, type: 'varchar' })
   title: string;
 
   @CreateDateColumn({ type: 'timestamp' })
