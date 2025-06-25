@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {
   Column,
   CreateDateColumn,
@@ -15,16 +16,36 @@ export class Subscription {
   @PrimaryGeneratedColumn()
   subscription_id: number;
 
-  @Column()
+  @Column(
+    {
+      type: 'varchar',
+      nullable: false,      
+    }
+  )
   title: string;
 
-  @Column()
+  @Column(
+    {
+      type: 'text',
+      nullable: false,
+    }
+  )
   description: string;
 
-  @Column('decimal')
+  @Column(
+    {
+      type: 'decimal',
+      nullable: false,
+    }
+  )
   price: number;
 
-  @Column()
+  @Column(
+    {
+      type: 'int',
+      nullable: false,
+    }
+  )
   day_remain: number; // Number of days remaining in the subscription
 
   @OneToOne(() => Invoice, Invoice => Invoice.subscription, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })

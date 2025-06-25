@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { 
   Column, 
   Entity, 
@@ -30,21 +31,21 @@ export class Users {
   @PrimaryGeneratedColumn()
   user_id: number;
 
-  @Column({ unique: true, length: 255 })
+  @Column({ unique: true, length: 255, type: 'varchar' })
   @IsEmail()
   mail: string;
 
-  @Column({ select: false})
+  @Column({ select: false, type: 'varchar' })
   @IsStrongPassword()
   password: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, type: 'varchar' })
   first_name: string;
 
-  @Column({ length: 50 })
+  @Column({ length: 50, type: 'varchar' })
   last_name: string;
 
-  @Column({ nullable: true, length: 255 })
+  @Column({ nullable: true, length: 255, type: 'varchar' })
   avatar: string;
 
   @Column({

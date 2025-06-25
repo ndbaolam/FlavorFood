@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn,  CreateDateColumn, UpdateDateColumn, } from 'typeorm';
 import { Stores as Store } from './store.entity';
 
@@ -9,10 +10,18 @@ export class StoreIngredient {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
-  @Column()
+  @Column(
+    {
+      type: 'varchar',
+      nullable: false, 
+    }
+  )
   title: string;
 
-  @Column({ nullable: true })
+  @Column({ 
+    type: 'varchar',
+    nullable: true 
+  })
   unit: string;
 
   @Column('decimal', { precision: 10, scale: 2 })

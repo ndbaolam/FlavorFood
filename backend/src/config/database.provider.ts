@@ -12,7 +12,7 @@ export const databaseProvider = {
     password: configService.get<string>('POSTGRES_PASSWORD'),
     database: configService.get<string>('POSTGRES_DB'),
     entities: [__dirname + '/../**/*.entity{.ts,.js}'], // Load entities
-    synchronize: true, // False in production
+    synchronize: false, // False in production
     autoLoadEntities: true,
     logging: ['error', 'warn'],    
   }),
