@@ -57,7 +57,9 @@ export class AuthController {
         maxAge: 3600000,
       });
 
-      return res.status(HttpStatus.OK).json({ message: 'Login successful', token: accessToken });
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: 'Login successful', token: accessToken });
     } catch (error) {
       Logger.error('Error during Google OAuth:', error);
       return res.status(HttpStatus.FORBIDDEN).json({ message: 'Invalid' });
@@ -75,11 +77,11 @@ export class AuthController {
       const { data } = await axios.get(
         `https://www.googleapis.com/oauth2/v1/userinfo?access_token=${access_token}`,
       );
-  
+
       if (!data) {
         throw new UnauthorizedException('Invalid credentials');
       }
-  
+
       const user: UserGoogleInterface = {
         provider: 'google',
         providerId: data.id,
@@ -88,27 +90,30 @@ export class AuthController {
         lastName: data.family_name,
         avatar: data.picture,
       };
-  
+
       const accessToken: string = await this.authService.signInOAuth(user);
-  
+
       res.cookie('access_token', accessToken, {
         httpOnly: true,
         secure: true,
         sameSite: 'lax',
         maxAge: 3600000,
       });
-  
-      return res.status(HttpStatus.OK).json({ message: 'Login successful', token: accessToken });
+
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: 'Login successful', token: accessToken });
     } catch (error) {
       throw new UnauthorizedException('Invalid access token');
     }
   }
-  
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Login with email and password' })
-  @ApiBody({ schema: { example: { mail: 'user@example.com', password: '123456' } } })
+  @ApiBody({
+    schema: { example: { mail: 'user@example.com', password: '123456' } },
+  })
   @ApiResponse({ status: 200, description: 'Returns access token' })
   async login(
     @Body('mail') mail: string,
@@ -140,7 +145,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Logout and clear access token cookie' })
   @ApiResponse({ status: 200, description: 'User logged out' })
   async logout(@Res() res: Response, @Req() req: Request) {
-    return this.authService.logout(res, req);    
+    return this.authService.logout(res, req);
   }
 
   @Get('profile')

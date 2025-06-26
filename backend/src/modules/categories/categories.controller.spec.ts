@@ -36,25 +36,29 @@ describe('CategoriesController', () => {
   it('should create a category', async () => {
     const dto: CreateCategoriesDto = { title: 'Tech' };
     const category: Categories = {
-      category_id: 1, title: 'Tech', 
-      created_at: new Date(), 
+      category_id: 1,
+      title: 'Tech',
+      created_at: new Date(),
       updated_at: new Date(),
-      recipes: []
+      recipes: [],
     };
-    
+
     jest.spyOn(service, 'create').mockResolvedValue(category);
 
     expect(await controller.create(dto)).toBe(category);
   });
 
   it('should return all categories', async () => {
-    const categories: Categories[] = [{
-      category_id: 1, title: 'Tech',
-      created_at: undefined,
-      updated_at: undefined,
-      recipes: []
-    }];
-    
+    const categories: Categories[] = [
+      {
+        category_id: 1,
+        title: 'Tech',
+        created_at: undefined,
+        updated_at: undefined,
+        recipes: [],
+      },
+    ];
+
     jest.spyOn(service, 'findAll').mockResolvedValue(categories);
 
     expect(await controller.findAll()).toBe(categories);
@@ -62,12 +66,13 @@ describe('CategoriesController', () => {
 
   it('should return a single category', async () => {
     const category: Categories = {
-      category_id: 1, title: 'Tech',
+      category_id: 1,
+      title: 'Tech',
       created_at: undefined,
       updated_at: undefined,
-      recipes: []
+      recipes: [],
     };
-    
+
     jest.spyOn(service, 'findOne').mockResolvedValue(category);
 
     expect(await controller.findOne('1')).toBe(category);
@@ -76,12 +81,13 @@ describe('CategoriesController', () => {
   it('should update a category', async () => {
     const dto: UpdateCategoriesDto = { title: 'Updated Tech' };
     const updatedCategory: Categories = {
-      category_id: 1, title: 'Updated Tech',
+      category_id: 1,
+      title: 'Updated Tech',
       created_at: undefined,
       updated_at: undefined,
-      recipes: []
+      recipes: [],
     };
-    
+
     jest.spyOn(service, 'update').mockResolvedValue(updatedCategory);
 
     expect(await controller.update('1', dto)).toBe(updatedCategory);

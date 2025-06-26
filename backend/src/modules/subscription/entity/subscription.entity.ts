@@ -16,39 +16,34 @@ export class Subscription {
   @PrimaryGeneratedColumn()
   subscription_id: number;
 
-  @Column(
-    {
-      type: 'varchar',
-      nullable: true,      
-    }
-  )
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
   title: string;
 
-  @Column(
-    {
-      type: 'text',
-      nullable: true,
-    }
-  )
+  @Column({
+    type: 'text',
+    nullable: true,
+  })
   description: string;
 
-  @Column(
-    {
-      type: 'decimal',
-      nullable: true,
-    }
-  )
+  @Column({
+    type: 'decimal',
+    nullable: true,
+  })
   price: number;
 
-  @Column(
-    {
-      type: 'int',
-      nullable: true,
-    }
-  )
+  @Column({
+    type: 'int',
+    nullable: true,
+  })
   day_remain: number; // Number of days remaining in the subscription
 
-  @OneToOne(() => Invoice, Invoice => Invoice.subscription, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @OneToOne(() => Invoice, (Invoice) => Invoice.subscription, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   invoice: Invoice;
 
   @CreateDateColumn({ type: 'timestamp' })

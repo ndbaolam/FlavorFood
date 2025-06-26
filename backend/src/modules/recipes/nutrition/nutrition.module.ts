@@ -3,6 +3,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Nutritrion } from './entity/nutrition.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Nutritrion])]
+  imports: [TypeOrmModule.forFeature([Nutritrion])],
 })
 export class NutritionModule {}

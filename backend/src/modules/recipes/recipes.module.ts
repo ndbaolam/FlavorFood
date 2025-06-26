@@ -15,19 +15,14 @@ import { FavoriteModule } from '../favorite/favorite.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      Recipes, 
-      Ingredient, 
-      Nutritrion,
-      Steps,
-    ]),
+    TypeOrmModule.forFeature([Recipes, Ingredient, Nutritrion, Steps]),
     CategoriesModule,
     IngredientModule,
     NutritionModule,
     StepsModule,
     FavoriteModule,
-    
-    EmbeddingModule
+
+    EmbeddingModule,
   ],
   controllers: [RecipesController],
   providers: [RecipesService],

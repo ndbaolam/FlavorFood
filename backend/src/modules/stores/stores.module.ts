@@ -10,7 +10,7 @@ import { StoreIngredientModule } from './store_ingredient/store-ingredient.modul
 @Module({
   imports: [
     TypeOrmModule.forFeature([Store, User, StoreIngredient]),
-    StoreIngredientModule
+    StoreIngredientModule,
   ],
   providers: [StoreService],
   controllers: [StoreController],

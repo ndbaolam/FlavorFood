@@ -20,7 +20,7 @@ import { features } from 'process';
 export class RecipesService {
   constructor(
     @InjectRepository(Recipes)
-    private readonly recipesRepository: Repository<Recipes>,    
+    private readonly recipesRepository: Repository<Recipes>,
 
     @InjectRepository(Ingredient)
     private readonly ingredientsRepository: Repository<Ingredient>,
@@ -46,7 +46,7 @@ export class RecipesService {
       .leftJoinAndSelect('recipes.nutrition', 'nutrition')
       .leftJoinAndSelect('recipes.reviews', 'reviews')
       .leftJoin('recipes.steps', 'steps')
-      .addSelect(['categories.category_id', 'categories.title'])    
+      .addSelect(['categories.category_id', 'categories.title'])
       .addSelect(['steps.number', 'steps.step'])
       .where('recipes.recipe_id = :id', { id })
       .getOne();
@@ -57,8 +57,16 @@ export class RecipesService {
   }
 
   async searchRecipes(searchDto: SearchRecipeDto): Promise<Recipes[]> {
-    const { title, description, difficulty_level, offset = 0, limit, categories, feature, most_rating } =
-      searchDto;
+    const {
+      title,
+      description,
+      difficulty_level,
+      offset = 0,
+      limit,
+      categories,
+      feature,
+      most_rating,
+    } = searchDto;
     const qb = this.recipesRepository
       .createQueryBuilder('recipes')
       .leftJoin('recipes.categories', 'categories')
@@ -66,9 +74,9 @@ export class RecipesService {
       .leftJoinAndSelect('recipes.nutrition', 'nutrition')
       .leftJoinAndSelect('recipes.reviews', 'reviews')
       .leftJoin('recipes.steps', 'steps')
-      .addSelect(['categories.category_id', 'categories.title'])    
+      .addSelect(['categories.category_id', 'categories.title'])
       .addSelect(['steps.number', 'steps.step']);
-  
+
     if (title) {
       qb.andWhere('recipes.title ILIKE :title', { title: `%${title}%` });
     }
@@ -85,47 +93,56 @@ export class RecipesService {
     if (categories && categories.length > 0) {
       qb.andWhere('categories.title IN (:...categories)', { categories });
     }
-  
+
     let recipes = await qb.getMany();
-  
+
     // Calculate average rating and review count for each recipe
-    recipes = recipes.map(recipe => {
+    recipes = recipes.map((recipe) => {
       if (recipe.reviews && recipe.reviews.length > 0) {
-        const total = recipe.reviews.reduce((acc, review) => acc + Number(review.rating), 0);
+        const total = recipe.reviews.reduce(
+          (acc, review) => acc + Number(review.rating),
+          0,
+        );
         (recipe as any)['average_rating'] = total / recipe.reviews.length;
       } else {
         (recipe as any)['average_rating'] = 0;
       }
-      (recipe as any)['review_count'] = recipe.reviews ? recipe.reviews.length : 0;
+      (recipe as any)['review_count'] = recipe.reviews
+        ? recipe.reviews.length
+        : 0;
       return recipe;
     });
-  
+
     // Apply sorting BEFORE pagination
     if (most_rating) {
       // Sort by highest average rating first
-      recipes.sort((a, b) => (b as any)['average_rating'] - (a as any)['average_rating']);
+      recipes.sort(
+        (a, b) => (b as any)['average_rating'] - (a as any)['average_rating'],
+      );
     } else if (feature) {
       // Sort by most number of reviews first
-      recipes.sort((a, b) => (b as any)['review_count'] - (a as any)['review_count']);
+      recipes.sort(
+        (a, b) => (b as any)['review_count'] - (a as any)['review_count'],
+      );
     }
-  
+
     // Apply pagination AFTER sorting
     const startIndex = offset;
     const endIndex = limit ? startIndex + limit : recipes.length;
     recipes = recipes.slice(startIndex, endIndex);
-  
+
     if (!recipes.length) {
       throw new NotFoundException(
-        `No recipes found matching your search criteria.`
+        `No recipes found matching your search criteria.`,
       );
     }
-  
+
     return recipes;
   }
 
   async create(createRecipeDto: CreateRecipeDto): Promise<Recipes> {
     try {
-      let {
+      const {
         categories: categoryIds,
         ingredients,
         nutrition,
@@ -136,26 +153,26 @@ export class RecipesService {
       const existingRecipe: Recipes = await this.recipesRepository
         .createQueryBuilder('recipes')
         .where('recipes.title = :title', { title: recipeDetail.title })
-        .getOne();      
+        .getOne();
 
       if (existingRecipe instanceof Recipes) {
         throw new ConflictException(
-          `Recipe with title ${recipeDetail.title} already exists.`
+          `Recipe with title ${recipeDetail.title} already exists.`,
         );
       }
-      
+
       // Embedding
       recipeDetail['embedding'] = await this.embeddingService.generate({
-        "title": recipeDetail['title'],
-        "description": recipeDetail['description'],
+        title: recipeDetail['title'],
+        description: recipeDetail['description'],
         //"difficulty_level": recipeDetail['difficulty_level']
       });
 
       if (!recipeDetail['embedding']) {
         throw new ConflictException(
-          `Failed to generate embedding for recipe ${recipeDetail.title}.`
+          `Failed to generate embedding for recipe ${recipeDetail.title}.`,
         );
-      } 
+      }
 
       const insertResult = await this.recipesRepository
         .createQueryBuilder()
@@ -169,17 +186,17 @@ export class RecipesService {
 
       await this.recipesRepository.query(
         `UPDATE recipes SET embedding=$1 WHERE recipe_id=$2`,
-        [embeddingVector, recipeId]
+        [embeddingVector, recipeId],
       );
 
       if (categoryIds && categoryIds.length > 0) {
         await this.recipesRepository
           .createQueryBuilder()
           .relation(Recipes, 'categories')
-          .of({recipe_id: recipeId})
+          .of({ recipe_id: recipeId })
           .add(categoryIds);
       }
-      
+
       if (ingredients && ingredients.length > 0) {
         const ingredientsToInsert = ingredients.map((ingredient) => ({
           ...ingredient,
@@ -199,7 +216,7 @@ export class RecipesService {
           ...nutrient,
           recipe: recipeId,
         }));
-  
+
         await this.nutritionRepository
           .createQueryBuilder()
           .insert()
@@ -213,7 +230,7 @@ export class RecipesService {
           ...step,
           recipe: recipeId,
         }));
-  
+
         await this.stepRepository
           .createQueryBuilder()
           .insert()
@@ -226,9 +243,9 @@ export class RecipesService {
         .createQueryBuilder('recipes')
         .leftJoin('recipes.categories', 'categories')
         .leftJoinAndSelect('recipes.ingredients', 'ingredients')
-        .leftJoinAndSelect('recipes.nutrition', 'nutrition') 
-        .leftJoin('recipes.steps', 'steps')      
-        .addSelect(['categories.category_id', 'categories.title'])    
+        .leftJoinAndSelect('recipes.nutrition', 'nutrition')
+        .leftJoin('recipes.steps', 'steps')
+        .addSelect(['categories.category_id', 'categories.title'])
         .addSelect(['steps.number', 'steps.step'])
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
@@ -241,26 +258,28 @@ export class RecipesService {
 
   async update(
     recipeId: number,
-    updateRecipeDto: UpdateRecipeDto
+    updateRecipeDto: UpdateRecipeDto,
   ): Promise<Recipes> {
     try {
       const existingRecipe = await this.recipesRepository.findOne({
         where: { recipe_id: recipeId },
         relations: ['ingredients', 'categories', 'nutrition', 'steps'],
       });
-  
+
       if (!existingRecipe) {
         throw new NotFoundException(`Recipe with id ${recipeId} not found.`);
       }
-  
+
       const updateObj: Partial<Recipes> = {};
       if (updateRecipeDto.title) updateObj.title = updateRecipeDto.title;
-      if (updateRecipeDto.description) updateObj.description = updateRecipeDto.description;      
-      if (updateRecipeDto.difficulty_level) updateObj.difficulty_level = updateRecipeDto.difficulty_level;      
+      if (updateRecipeDto.description)
+        updateObj.description = updateRecipeDto.description;
+      if (updateRecipeDto.difficulty_level)
+        updateObj.difficulty_level = updateRecipeDto.difficulty_level;
       if (updateRecipeDto.image) updateObj.image = updateRecipeDto.image;
       if (updateRecipeDto.serving) updateObj.serving = updateRecipeDto.serving;
       if (updateRecipeDto.time) updateObj.time = updateRecipeDto.time;
-  
+
       if (Object.keys(updateObj).length > 0) {
         await this.recipesRepository
           .createQueryBuilder()
@@ -269,7 +288,7 @@ export class RecipesService {
           .where('recipe_id = :recipeId', { recipeId })
           .execute();
       }
-  
+
       if (updateRecipeDto.categories) {
         if (existingRecipe.categories && existingRecipe.categories.length > 0) {
           await this.recipesRepository
@@ -278,14 +297,14 @@ export class RecipesService {
             .of(recipeId)
             .remove(existingRecipe.categories.map((c) => c.category_id));
         }
-      
+
         await this.recipesRepository
           .createQueryBuilder()
           .relation(Recipes, 'categories')
           .of(recipeId)
           .add(updateRecipeDto.categories);
-      }      
-  
+      }
+
       if (updateRecipeDto.ingredients) {
         await this.ingredientsRepository
           .createQueryBuilder()
@@ -293,27 +312,26 @@ export class RecipesService {
           .from(Ingredient)
           .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
-  
+
         if (updateRecipeDto.ingredients.length > 0) {
           const newIngredients = updateRecipeDto.ingredients
-          .filter((ingredient) => ingredient.ingredient)
-          .map((ingredient) => ({
-            ingredient: ingredient.ingredient,
-            quantity: ingredient.quantity,
-            unit: ingredient.unit,
-            recipe: { recipe_id: recipeId } as Recipes,
-          }));
+            .filter((ingredient) => ingredient.ingredient)
+            .map((ingredient) => ({
+              ingredient: ingredient.ingredient,
+              quantity: ingredient.quantity,
+              unit: ingredient.unit,
+              recipe: { recipe_id: recipeId } as Recipes,
+            }));
 
-          
           await Promise.all(
-            newIngredients.map(i =>
+            newIngredients.map((i) =>
               this.ingredientsRepository.save({
                 ingredient: i.ingredient,
                 quantity: i.quantity,
                 unit: i.unit,
                 recipe: { recipe_id: recipeId } as Recipes,
-              })
-            )
+              }),
+            ),
           );
         }
       }
@@ -325,7 +343,7 @@ export class RecipesService {
           .from(Nutritrion)
           .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
-      
+
         if (updateRecipeDto.nutrition.length > 0) {
           const newNutrition = updateRecipeDto.nutrition
             .filter((item) => item.name)
@@ -335,7 +353,7 @@ export class RecipesService {
               unit: item.unit,
               recipe: { recipe_id: recipeId } as Recipes,
             }));
-      
+
           await Promise.all(
             newNutrition.map((n) =>
               this.nutritionRepository.save({
@@ -343,12 +361,11 @@ export class RecipesService {
                 amount: n.amount,
                 unit: n.unit,
                 recipe: { recipe_id: recipeId } as Recipes,
-              })
-            )
+              }),
+            ),
           );
         }
       }
-      
 
       if (updateRecipeDto.steps) {
         await this.stepRepository
@@ -357,7 +374,7 @@ export class RecipesService {
           .from(Steps)
           .where('recipeRecipeId = :recipeId', { recipeId })
           .execute();
-      
+
         if (updateRecipeDto.steps.length > 0) {
           const newSteps = updateRecipeDto.steps
             .filter((item) => item.step)
@@ -366,39 +383,39 @@ export class RecipesService {
               step: item.step,
               recipe: { recipe_id: recipeId } as Recipes,
             }));
-      
+
           await Promise.all(
             newSteps.map((s) =>
               this.stepRepository.save({
                 number: s.number,
                 step: s.step,
                 recipe: { recipe_id: recipeId } as Recipes,
-              })
-            )
+              }),
+            ),
           );
         }
       }
-      
+
       const updatedRecipe = await this.recipesRepository
         .createQueryBuilder('recipes')
         .leftJoin('recipes.categories', 'categories')
         .leftJoinAndSelect('recipes.ingredients', 'ingredients')
         .leftJoinAndSelect('recipes.nutrition', 'nutrition')
-        .leftJoin('recipes.steps', 'steps')     
-        .addSelect(['categories.category_id', 'categories.title'])    
-        .addSelect(['steps.number', 'steps.step'])  
+        .leftJoin('recipes.steps', 'steps')
+        .addSelect(['categories.category_id', 'categories.title'])
+        .addSelect(['steps.number', 'steps.step'])
         .where('recipes.recipe_id = :recipeId', { recipeId })
         .getOne();
-  
+
       if (!updatedRecipe) {
         throw new NotFoundException(`Recipe with id ${recipeId} not found.`);
       }
-  
+
       return updatedRecipe;
     } catch (error) {
       throw new Error(error.message);
     }
-  }  
+  }
 
   async remove(id: number): Promise<void> {
     const result = await this.recipesRepository
@@ -413,9 +430,12 @@ export class RecipesService {
     }
   }
 
-  async findSimilarRecipes(embedding: number[], limit = 12): Promise<Recipes[]> {
+  async findSimilarRecipes(
+    embedding: number[],
+    limit = 12,
+  ): Promise<Recipes[]> {
     const embeddingStr = pgvector.toSql(embedding);
-    
+
     /*
       https://github.com/pgvector/pgvector
       <-> - L2 distance
@@ -432,7 +452,7 @@ export class RecipesService {
       ORDER BY distance ASC
       LIMIT $2
     `;
-  
+
     try {
       const result = await this.dataSource.query(query, [embeddingStr, limit]);
       return result;
@@ -441,75 +461,90 @@ export class RecipesService {
       throw new Error(`Failed to find similar recipes: ${error.message}`);
     }
   }
-  
+
   async recommend(userId: number): Promise<Recipes[]> {
     try {
       const favorites = await this.favoriteService.getFavoritesByUserId(userId);
-  
+
       // Handle case where user has no favorites
       if (!favorites || favorites.length === 0) {
-        console.log(`User ${userId} has no favorites, returning popular recipes`);
+        console.log(
+          `User ${userId} has no favorites, returning popular recipes`,
+        );
         return this.searchRecipes({
           feature: true,
           most_rating: true,
           limit: 8,
-          categories: []
+          categories: [],
         });
       }
-  
+
       // Generate embeddings for all favorite recipes
       const embeddings = await Promise.all(
         favorites.map(async (item) => {
           const recipe = item.recipe;
-  
+
           // Validate recipe data
           if (!recipe.title || !recipe.description) {
-            console.warn(`Recipe ${recipe.recipe_id} missing title or description`);
+            console.warn(
+              `Recipe ${recipe.recipe_id} missing title or description`,
+            );
             return null;
           }
-  
+
           try {
             return await this.embeddingService.generate({
               title: recipe.title,
               description: recipe.description,
             });
           } catch (error) {
-            console.error(`Failed to generate embedding for recipe ${recipe.recipe_id}:`, error);
+            console.error(
+              `Failed to generate embedding for recipe ${recipe.recipe_id}:`,
+              error,
+            );
             return null;
           }
-        })
+        }),
       );
-  
+
       // Filter out null embeddings
-      const validEmbeddings = embeddings.filter(embedding => embedding !== null);
-  
+      const validEmbeddings = embeddings.filter(
+        (embedding) => embedding !== null,
+      );
+
       if (validEmbeddings.length === 0) {
         console.warn(`No valid embeddings generated for user ${userId}`);
         return this.searchRecipes({
           feature: true,
           most_rating: true,
           limit: 8,
-          categories: []
+          categories: [],
         }); // Fallback
       }
-  
+
       // Calculate average and normalize
       const avg = this.embeddingService.average(validEmbeddings);
       const norm = this.embeddingService.normalize(avg);
-  
+
       // Get similar recipes but exclude user's favorites
-      const favoriteIds = favorites.map(fav => fav.recipe.recipe_id);
+      const favoriteIds = favorites.map((fav) => fav.recipe.recipe_id);
       return this.findSimilarRecipesExcluding(norm, favoriteIds, 12);
-  
     } catch (error) {
-      console.error(`Error generating recommendations for user ${userId}:`, error);
+      console.error(
+        `Error generating recommendations for user ${userId}:`,
+        error,
+      );
       throw new Error(`Failed to generate recommendations: ${error.message}`);
     }
   }
-  
-  async findSimilarRecipesExcluding(embedding: number[], excludeIds: number[], limit = 12): Promise<Recipes[]> {
+
+  async findSimilarRecipesExcluding(
+    embedding: number[],
+    excludeIds: number[],
+    limit = 12,
+  ): Promise<Recipes[]> {
     const embeddingStr = pgvector.toSql(embedding);
-    
+
     const query = `
       SELECT *, embedding <=> $1 AS distance
       FROM recipes
@@ -518,13 +553,16 @@ export class RecipesService {
       ORDER BY distance ASC
       LIMIT $${excludeIds.length + 2}
     `;
-  
+
     try {
       const params = [embeddingStr, ...excludeIds, limit];
       const result = await this.dataSource.query(query, params);
       return result;
     } catch (error) {
-      console.error('Error finding similar recipes excluding favorites:', error);
+      console.error(
+        'Error finding similar recipes excluding favorites:',
+        error,
+      );
       // Fallback to regular similarity search if excluding fails
       return this.findSimilarRecipes(embedding, limit);
     }

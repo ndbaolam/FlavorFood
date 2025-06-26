@@ -1,8 +1,8 @@
-import { Test } from "@nestjs/testing";
-import { UploadController } from "./upload.controller";
-import { CloudinaryService } from "./cloudinary.provider";
+import { Test } from '@nestjs/testing';
+import { UploadController } from './upload.controller';
+import { CloudinaryService } from './cloudinary.provider';
 
-describe("UploadController", () => {
+describe('UploadController', () => {
   let controller: UploadController;
   let cloudinaryService: CloudinaryService;
 
@@ -23,27 +23,29 @@ describe("UploadController", () => {
     cloudinaryService = module.get<CloudinaryService>(CloudinaryService);
   });
 
-  it("should be defined", () => {
+  it('should be defined', () => {
     expect(controller).toBeDefined();
   });
 
-  it("should upload a file", async () => {
-    const file = { 
-      fieldname: "image", 
-      originalname: "test.jpg", 
-      encoding: "7bit", 
-      mimetype: "image/jpeg", 
-      size: 1024, 
-      buffer: Buffer.from("image"),
+  it('should upload a file', async () => {
+    const file = {
+      fieldname: 'image',
+      originalname: 'test.jpg',
+      encoding: '7bit',
+      mimetype: 'image/jpeg',
+      size: 1024,
+      buffer: Buffer.from('image'),
       stream: null,
-      destination: "",
-      filename: "test.jpg",
-      path: ""
+      destination: '',
+      filename: 'test.jpg',
+      path: '',
     };
-    const result = { secure_url: "https://cloudinary.com/image" };
+    const result = { secure_url: 'https://cloudinary.com/image' };
 
-    jest.spyOn(cloudinaryService, "uploadImage").mockResolvedValue(result);
+    jest.spyOn(cloudinaryService, 'uploadImage').mockResolvedValue(result);
 
-    expect(await controller.uploadFile(file)).toEqual({ url: result["secure_url"] });
+    expect(await controller.uploadFile(file)).toEqual({
+      url: result['secure_url'],
+    });
   });
-})
+});

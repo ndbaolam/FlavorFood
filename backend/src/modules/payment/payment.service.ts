@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import axios from 'axios';
 import * as crypto from 'crypto';
 import { Request } from 'express';
@@ -22,7 +27,7 @@ export class PaymentService {
     private readonly dataSource: DataSource,
 
     @InjectRepository(Invoice)
-    private invoiceRepo: Repository<Invoice>,    
+    private invoiceRepo: Repository<Invoice>,
 
     @InjectRepository(Subscription)
     private subscriptionRepo: Repository<Subscription>,
@@ -72,23 +77,27 @@ export class PaymentService {
     return response.data;
   }
 
-  async confirmMomoTransaction(orderId: string, requestId: string, amount: number) {
+  async confirmMomoTransaction(
+    orderId: string,
+    requestId: string,
+    amount: number,
+  ) {
     const config = this.momoConfig;
-    
+
     const accessKey = config.accessKey;
     const secretKey = config.secretKey;
     const partnerCode = config.partnerCode;
     const requestType = 'capture';
     const description = 'Xác nhận giao dịch';
     const lang = 'vi';
-  
+
     const rawSignature = `accessKey=${accessKey}&amount=${amount}&description=${description}&orderId=${orderId}&partnerCode=${partnerCode}&requestId=${requestId}&requestType=${requestType}`;
-  
+
     const signature = crypto
       .createHmac('sha256', secretKey)
       .update(rawSignature)
       .digest('hex');
-  
+
     const body = {
       partnerCode,
       requestId,
@@ -99,22 +108,22 @@ export class PaymentService {
       description,
       signature,
     };
-  
+
     const response = await axios.post(`${config.confirmEndpoint}`, body, {
       headers: { 'Content-Type': 'application/json' },
     });
-  
+
     return response.data;
-  }  
-  
-  async handleMomoNotification(payload: any) {    
-    return payload
   }
 
-  async handleMomoReturn(userId: number, query: MomoPaymentQuery) {    
+  async handleMomoNotification(payload: any) {
+    return payload;
+  }
+
+  async handleMomoReturn(userId: number, query: MomoPaymentQuery) {
     try {
       //orderId: order_id_timestamp
-      const subscriptionId = query.orderId.split("_")[1]; 
+      const subscriptionId = query.orderId.split('_')[1];
       const user = await this.userService.getUserById(userId);
 
       if (!user) {
@@ -147,7 +156,7 @@ export class PaymentService {
       //Begin transaction
       try {
         let savedInvoice;
-      
+
         await this.dataSource.transaction(async (manager) => {
           const invoice = manager.create(Invoice, {
             title: `Hoá đơn của ${subscription.title.toLowerCase()}`,
@@ -156,18 +165,25 @@ export class PaymentService {
             user,
             subscription,
           });
-      
+
           savedInvoice = await manager.save(invoice);
-      
-          await manager.update('users', { user_id: userId },
+
+          await manager.update(
+            'users',
+            { user_id: userId },
             {
               role: UserRole.SELLER,
-              expired_at: new Date(Date.now() + subscription.day_remain * 24 * 60 * 60 * 1000), // Set expiration date based on subscription time
-              status: user.status == UserStatus.ACTIVE ? user.status : UserStatus.ACTIVE, // Ensure user status is set to ACTIVE
-            }
+              expired_at: new Date(
+                Date.now() + subscription.day_remain * 24 * 60 * 60 * 1000,
+              ), // Set expiration date based on subscription time
+              status:
+                user.status == UserStatus.ACTIVE
+                  ? user.status
+                  : UserStatus.ACTIVE, // Ensure user status is set to ACTIVE
+            },
           );
         });
-      
+
         return {
           message: 'Payment successful and invoice created',
           invoice: {
@@ -178,11 +194,13 @@ export class PaymentService {
         };
       } catch (error) {
         console.error('Momo payment error:', error);
-        throw new InternalServerErrorException('Payment failed. If you have paid, please contact Admin to get a refund!');
-      }  
+        throw new InternalServerErrorException(
+          'Payment failed. If you have paid, please contact Admin to get a refund!',
+        );
+      }
     } catch (error) {
       console.error('Momo payment error:', error);
       throw new Error('Something went wrong. Please try again later!');
-    }       
+    }
   }
 }

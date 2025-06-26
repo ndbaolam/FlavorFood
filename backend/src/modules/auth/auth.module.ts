@@ -25,16 +25,14 @@ import { SellerStrategy } from './strategies/seller.strategy';
     }),
 
     UsersModule,
-    TypeOrmModule.forFeature([
-      Users
-    ]),
+    TypeOrmModule.forFeature([Users]),
   ],
   providers: [
     AuthService,
     GoogleStrategy,
     JwtStrategy,
     AdminStrategy,
-    SellerStrategy
+    SellerStrategy,
   ],
   controllers: [AuthController],
 })

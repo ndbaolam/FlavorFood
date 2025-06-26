@@ -21,7 +21,7 @@ export class Tips {
   @Column({
     type: 'varchar',
     length: 255,
-    nullable: false
+    nullable: false,
   })
   title: string;
 
@@ -46,7 +46,7 @@ export class Tips {
     onUpdate: 'CASCADE',
   })
   @JoinTable({
-    name: 'tip_genres', 
+    name: 'tip_genres',
     joinColumn: {
       name: 'tip_id',
       referencedColumnName: 'tip_id',

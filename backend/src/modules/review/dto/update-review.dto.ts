@@ -6,11 +6,17 @@ export class UpdateReviewDto {
   @Min(1)
   @Max(5)
   @IsOptional()
-  @ApiPropertyOptional({ example: 5, description: 'Điểm đánh giá từ 1 đến 5 (tùy chọn)' })
+  @ApiPropertyOptional({
+    example: 5,
+    description: 'Điểm đánh giá từ 1 đến 5 (tùy chọn)',
+  })
   rating?: number;
 
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional({ example: 'Cập nhật đánh giá: rất hài lòng', description: 'Bình luận đánh giá (tùy chọn)' })
+  @ApiPropertyOptional({
+    example: 'Cập nhật đánh giá: rất hài lòng',
+    description: 'Bình luận đánh giá (tùy chọn)',
+  })
   comment?: string;
 }

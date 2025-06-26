@@ -6,7 +6,7 @@ import { StoreIngredientController } from './store-ingredient.controller';
 import { Stores as Store } from '../entity/store.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([StoreIngredient, Store])], 
+  imports: [TypeOrmModule.forFeature([StoreIngredient, Store])],
   controllers: [StoreIngredientController],
   providers: [StoreIngredientService],
 })

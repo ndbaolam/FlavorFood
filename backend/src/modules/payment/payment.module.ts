@@ -8,12 +8,9 @@ import { Users } from '../users/entity/users.entity';
 import { Subscription } from '../subscription/entity/subscription.entity';
 
 @Module({
-  imports: [UsersModule, 
-    TypeOrmModule.forFeature([
-      Users, 
-      Invoice, 
-      Subscription
-    ])
+  imports: [
+    UsersModule,
+    TypeOrmModule.forFeature([Users, Invoice, Subscription]),
   ],
   controllers: [PaymentController],
   providers: [PaymentService],

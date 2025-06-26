@@ -5,4 +5,4 @@ export interface UserGoogleInterface {
   firstName: string;
   lastName: string;
   avatar: string;
-};
+}

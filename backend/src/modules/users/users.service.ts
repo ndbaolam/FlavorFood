@@ -12,7 +12,7 @@ import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 export class UsersService {
   constructor(
     @InjectRepository(Users)
-    private usersRepository: Repository<Users>
+    private usersRepository: Repository<Users>,
   ) {}
 
   async getAllUsers(): Promise<Users[]> {
@@ -33,26 +33,24 @@ export class UsersService {
   }
 
   async searchUsers(mail: string, status: UserStatus): Promise<Users[]> {
-    return await this.usersRepository.find(
-      {
-        where: {
-          mail: mail ? `%${mail}%` : undefined,
-          status: status !== undefined ? status : undefined,
-        },
-        select: [
-          'user_id',
-          'mail',
-          'first_name',
-          'last_name',
-          'avatar',
-          'role',
-          'status',
-          'expired_at',
-          'created_at',
-          'updated_at',
-        ],
-      }
-    );
+    return await this.usersRepository.find({
+      where: {
+        mail: mail ? `%${mail}%` : undefined,
+        status: status !== undefined ? status : undefined,
+      },
+      select: [
+        'user_id',
+        'mail',
+        'first_name',
+        'last_name',
+        'avatar',
+        'role',
+        'status',
+        'expired_at',
+        'created_at',
+        'updated_at',
+      ],
+    });
   }
 
   async getUserById(userId: number): Promise<Users> {
@@ -64,9 +62,9 @@ export class UsersService {
         'first_name',
         'last_name',
         'avatar',
-        'role',   
-        'status',  
-        'expired_at',   
+        'role',
+        'status',
+        'expired_at',
         'created_at',
         'updated_at',
       ],
@@ -90,7 +88,7 @@ export class UsersService {
 
   async updateUser(
     userId: number,
-    updateUserDto: UpdateUserDto
+    updateUserDto: UpdateUserDto,
   ): Promise<Users> {
     const user = await this.getUserById(userId);
     const updatedUser = this.usersRepository.merge(user, updateUserDto);
@@ -106,14 +104,14 @@ export class UsersService {
     return await this.usersRepository.findOne({
       where: { mail: email },
       select: [
-        'user_id',        
+        'user_id',
         'mail',
         'first_name',
         'last_name',
         'avatar',
-        'role',  
-        'status',  
-        'expired_at',    
+        'role',
+        'status',
+        'expired_at',
         'created_at',
         'updated_at',
       ],

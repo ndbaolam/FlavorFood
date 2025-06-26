@@ -11,12 +11,12 @@ export class InvoiceService {
     @InjectRepository(Invoice)
     private readonly invoiceRepository: Repository<Invoice>,
     @InjectRepository(Users)
-    private readonly userRepository: Repository<Users>
+    private readonly userRepository: Repository<Users>,
   ) {}
 
   async create(
     userId: number,
-    createInvoiceDto: CreateInvoiceDto
+    createInvoiceDto: CreateInvoiceDto,
   ): Promise<Invoice> {
     const user = await this.userRepository.findOne({
       where: { user_id: userId },
@@ -58,7 +58,7 @@ export class InvoiceService {
           const createdAt = new Date(invoice.created_at);
           const expiredAt = new Date(createdAt);
           expiredAt.setDate(
-            createdAt.getDate() + invoice.subscription.day_remain
+            createdAt.getDate() + invoice.subscription.day_remain,
           );
 
           if (expiredAt < now) {
@@ -81,7 +81,7 @@ export class InvoiceService {
 
   async update(
     invoiceId: number,
-    updateInvoiceDto: UpdateInvoiceDto
+    updateInvoiceDto: UpdateInvoiceDto,
   ): Promise<Invoice> {
     const invoice = await this.invoiceRepository.preload({
       invoice_id: invoiceId,

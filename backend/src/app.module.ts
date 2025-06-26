@@ -42,13 +42,11 @@ import { EmbeddingModule } from './modules/embedding/embedding.module';
     NotificationsModule,
     InvoiceModule,
     SubscriptionModule,
-    EmbeddingModule
+    EmbeddingModule,
   ],
 })
-export class AppModule implements NestModule{
+export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LoggerMiddleware)
-      .forRoutes('*');
+    consumer.apply(LoggerMiddleware).forRoutes('*');
   }
 }

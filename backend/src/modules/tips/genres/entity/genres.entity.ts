@@ -23,10 +23,10 @@ export class TipGenres {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
-  
+
   @ManyToMany(() => Tips, (tip) => tip.genres, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinTable({
     name: 'tip_genres',

@@ -1,6 +1,6 @@
-import { Type } from "class-transformer";
-import { IsNumber, IsString, IsNotEmpty, IsOptional } from "class-validator";
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from 'class-transformer';
+import { IsNumber, IsString, IsNotEmpty, IsOptional } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class StepDto {
   @IsOptional()
@@ -11,6 +11,9 @@ export class StepDto {
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ example: 'Trộn đều tất cả nguyên liệu lại với nhau.', description: 'Mô tả bước hướng dẫn' })
+  @ApiProperty({
+    example: 'Trộn đều tất cả nguyên liệu lại với nhau.',
+    description: 'Mô tả bước hướng dẫn',
+  })
   step: string;
 }

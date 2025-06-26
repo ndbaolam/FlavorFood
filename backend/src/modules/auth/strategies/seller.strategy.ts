@@ -9,7 +9,7 @@ import { Request } from 'express';
 @Injectable()
 export class SellerStrategy extends PassportStrategy(Strategy, 'seller') {
   constructor(
-    private readonly configService: ConfigService,    
+    private readonly configService: ConfigService,
     private readonly usersServices: UsersService,
   ) {
     const extractJwtFromCookie = (req: Request) => {
@@ -29,25 +29,27 @@ export class SellerStrategy extends PassportStrategy(Strategy, 'seller') {
 
   async validate(payload: JwtPayload) {
     const user = await this.usersServices.findUserByEmail(payload.mail);
-  
+
     if (!user) {
       throw new UnauthorizedException('Please log in to continue');
     }
-  
+
     if (!['admin', 'seller'].includes(user['role'])) {
-      throw new UnauthorizedException('You are not authorized to access this resource');
+      throw new UnauthorizedException(
+        'You are not authorized to access this resource',
+      );
     }
-  
+
     if (
       user['role'] === 'seller' &&
       new Date(user['expired_at']) < new Date()
     ) {
       throw new UnauthorizedException('Your account has expired');
     }
-  
+
     return {
       sub: payload.user_id,
       mail: payload.mail,
     };
-  }  
+  }
 }

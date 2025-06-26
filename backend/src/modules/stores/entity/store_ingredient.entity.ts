@@ -1,5 +1,13 @@
 import 'reflect-metadata';
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn,  CreateDateColumn, UpdateDateColumn, } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Stores as Store } from './store.entity';
 
 @Entity('store_ingredients')
@@ -10,17 +18,15 @@ export class StoreIngredient {
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
-  @Column(
-    {
-      type: 'varchar',
-      nullable: false, 
-    }
-  )
+  @Column({
+    type: 'varchar',
+    nullable: false,
+  })
   title: string;
 
-  @Column({ 
+  @Column({
     type: 'varchar',
-    nullable: true 
+    nullable: true,
   })
   unit: string;
 
@@ -33,7 +39,7 @@ export class StoreIngredient {
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 
-  @ManyToOne(() => Store, store => store.ingredients)
+  @ManyToOne(() => Store, (store) => store.ingredients)
   @JoinColumn({ name: 'store_id' })
   store: Store;
 }

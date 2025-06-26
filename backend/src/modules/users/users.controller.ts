@@ -32,7 +32,10 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Lấy danh sách tất cả người dùng' })
-  @ApiResponse({ status: 200, description: 'Danh sách người dùng được trả về.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Danh sách người dùng được trả về.',
+  })
   async getUsers() {
     return this.usersService.getAllUsers();
   }
@@ -50,7 +53,7 @@ export class UsersController {
   @ApiQuery({ name: 'status', enum: UserStatus, required: false })
   async searchUsers(
     @Query('mail') mail: string,
-    @Query('status') status: UserStatus
+    @Query('status') status: UserStatus,
   ) {
     return this.usersService.searchUsers(mail, status);
   }
@@ -68,7 +71,7 @@ export class UsersController {
   @ApiBody({ type: UpdateUserDto })
   async updateUser(
     @Param('id') id: number,
-    @Body() updateUserDto: UpdateUserDto
+    @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.usersService.updateUser(+id, updateUserDto);
   }

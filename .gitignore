@@ -48,3 +48,7 @@ Thumbs.db
 apps/services/credentials.json
 .cursor/rules/nx-rules.mdc
 .github/instructions/nx.instructions.md
+
+fastapi/venv
+fastapi/.venv
+fastapi/.__pycache__/*

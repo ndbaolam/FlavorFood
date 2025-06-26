@@ -12,10 +12,7 @@ export class NotificationsController {
   @Get('stream')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Connect to SSE stream (user-specific)' })
-  sse(
-    @Req() req: Request,
-    @Res() res: Response,    
-  ) {
+  sse(@Req() req: Request, @Res() res: Response) {
     const userId = req['sub'];
 
     if (!userId) {

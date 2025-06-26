@@ -39,11 +39,15 @@ export class ReviewController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create a new review (authenticated)' })
   @ApiBody({ type: CreateReviewDto })
-  @ApiResponse({ status: 201, description: 'Review created successfully', type: Review })
+  @ApiResponse({
+    status: 201,
+    description: 'Review created successfully',
+    type: Review,
+  })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async createReview(
     @Req() req: Request,
-    @Body() { ...dto }: CreateReviewDto
+    @Body() { ...dto }: CreateReviewDto,
   ): Promise<Review> {
     const user = req['user'];
     if (!user) {
@@ -55,7 +59,10 @@ export class ReviewController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get list of reviews, optionally filter by userId, recipeId, or reviewId' })
+  @ApiOperation({
+    summary:
+      'Get list of reviews, optionally filter by userId, recipeId, or reviewId',
+  })
   @ApiQuery({ name: 'userId', required: false, type: Number })
   @ApiQuery({ name: 'recipeId', required: false, type: Number })
   @ApiQuery({ name: 'reviewId', required: false, type: Number })
@@ -63,13 +70,9 @@ export class ReviewController {
   async getReviews(
     @Query('userId') userId?,
     @Query('recipeId') recipeId?,
-    @Query('reviewId') reviewId?
+    @Query('reviewId') reviewId?,
   ): Promise<Review[]> {
-    return this.reviewService.getReviews(
-      +userId,
-      +recipeId,
-      +reviewId
-    );
+    return this.reviewService.getReviews(+userId, +recipeId, +reviewId);
   }
 
   @Patch(':id')
@@ -78,10 +81,14 @@ export class ReviewController {
   @ApiOperation({ summary: 'Update a review by ID (authenticated)' })
   @ApiParam({ name: 'id', type: Number })
   @ApiBody({ type: UpdateReviewDto })
-  @ApiResponse({ status: 200, description: 'Review updated successfully', type: Review })
+  @ApiResponse({
+    status: 200,
+    description: 'Review updated successfully',
+    type: Review,
+  })
   async updateReview(
     @Param('id', ParseIntPipe) id: number,
-    @Body() dto: UpdateReviewDto
+    @Body() dto: UpdateReviewDto,
   ): Promise<Review> {
     return this.reviewService.updateReview(id, dto);
   }
@@ -92,9 +99,7 @@ export class ReviewController {
   @ApiOperation({ summary: 'Delete a review by ID (authenticated)' })
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: 204, description: 'Review deleted successfully' })
-  async deleteReview(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<void> {
+  async deleteReview(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.reviewService.deleteReview(id);
   }
 }

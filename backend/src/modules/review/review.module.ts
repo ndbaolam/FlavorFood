@@ -10,6 +10,6 @@ import { Recipes } from '../recipes/entity/recipes.entity';
   imports: [TypeOrmModule.forFeature([Review, Users, Recipes])],
   controllers: [ReviewController],
   providers: [ReviewService],
-  exports: [ReviewService]
+  exports: [ReviewService],
 })
 export class ReviewModule {}

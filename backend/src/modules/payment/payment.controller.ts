@@ -23,7 +23,7 @@ import { ConfigService } from '@nestjs/config';
 export class PaymentController {
   constructor(
     private readonly paymentService: PaymentService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   @Get('momo')
@@ -34,13 +34,13 @@ export class PaymentController {
   async createPayment(
     @Req() req: Request,
     @Query('orderId') orderId: string,
-    @Query('amount', ParseIntPipe) amount: number
+    @Query('amount', ParseIntPipe) amount: number,
   ) {
     try {
       const result = await this.paymentService.createMomoPayment(
         orderId,
         +amount,
-        req
+        req,
       );
       return result;
     } catch (error) {
@@ -52,21 +52,25 @@ export class PaymentController {
   @Get('momo-return')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Xử lý redirect từ MoMo (returnUrl)' })
-  async momoReturn(@Query() query: MomoPaymentQuery, @Req() req: Request, @Res() res: Response) {
-    try {      
+  async momoReturn(
+    @Query() query: MomoPaymentQuery,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    try {
       const userId = req['user']['sub'];
       await this.paymentService.handleMomoReturn(Number(userId), query);
       return res.redirect(
-        this.configService.get('VITE_CLIENT_URL') 
-        + `/store-registration?status=success&orderId=${query.orderId}&requestId=${query.requestId}&amount=${query.amount}`
+        this.configService.get('VITE_CLIENT_URL') +
+          `/store-registration?status=success&orderId=${query.orderId}&requestId=${query.requestId}&amount=${query.amount}`,
       );
     } catch (error) {
       Logger.error('Error creating MoMo payment', error);
       return res.redirect(
-        this.configService.get('VITE_CLIENT_URL') 
-        + `/store-registration?status=fail&orderId=${query.orderId}&requestId=${query.requestId}&amount=${query.amount}`
+        this.configService.get('VITE_CLIENT_URL') +
+          `/store-registration?status=fail&orderId=${query.orderId}&requestId=${query.requestId}&amount=${query.amount}`,
       );
-    }    
+    }
   }
 
   @Post('momo-notify')
@@ -83,20 +87,18 @@ export class PaymentController {
 
   @Post('momo-confirm')
   @ApiOperation({ summary: 'Confirm Momo payment' })
-  async confirmPayment(
-    @Query() query: MomoConfirmDto,
-  ) {
+  async confirmPayment(@Query() query: MomoConfirmDto) {
     try {
       const result = await this.paymentService.confirmMomoTransaction(
         query.orderId,
         query.requestId,
         query.amount,
       );
-  
+
       return result;
     } catch (error) {
       Logger.error('Error confirming MoMo payment', error);
       throw new Error('Failed to confirm MoMo payment');
-    }    
+    }
   }
 }

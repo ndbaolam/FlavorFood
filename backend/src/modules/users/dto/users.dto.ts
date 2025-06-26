@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, IsString, IsEnum, IsOptional, IsStrongPassword, IsDate } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsStrongPassword,
+  IsDate,
+} from 'class-validator';
 import { UserRole, UserStatus } from '../entity/users.entity';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -40,7 +48,9 @@ export class CreateUserDto {
   @IsDate()
   @ApiProperty({ type: Date, example: new Date() })
   @Type(() => Date)
-  @ApiPropertyOptional({ description: 'Expiration date for the seller account' })
+  @ApiPropertyOptional({
+    description: 'Expiration date for the seller account',
+  })
   expired_at?: Date;
 }
 
@@ -65,6 +75,8 @@ export class UpdateUserDto {
   @IsDate()
   @ApiProperty({ type: Date, example: new Date() })
   @Type(() => Date)
-  @ApiPropertyOptional({ description: 'Expiration date for the seller account' })
+  @ApiPropertyOptional({
+    description: 'Expiration date for the seller account',
+  })
   expired_at?: Date;
 }

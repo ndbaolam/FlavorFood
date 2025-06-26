@@ -1,0 +1,124 @@
+services:
+  db:    
+    image: pgvector/pgvector:pg16
+    env_file:
+      - .env 
+    #command: ['postgres', '-c', 'wal_level: logical']
+    container_name: db
+    hostname: db
+    ports:
+      - "5432:5432"
+    networks:
+      - flavor_food
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes: 
+      - flavorfood_postgres_data-cloned:/var/lib/postgresql/data
+
+  jeager:
+    image: jaegertracing/jaeger:2.6.0
+    container_name: jaeger
+    hostname: jaeger
+    ports:
+      - "16686:16686"
+      - "8888:8888"
+      - "8889:8889"
+      - "4317:4317"
+      - "4318:4318"
+    networks:
+      flavor_food:
+        aliases: [spm_metrics_source]
+    volumes:
+      - ./observability/config-spm.yaml:/etc/jaeger/config.yml
+      - ./observability/jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+    # command: ["--config", "/etc/jaeger/config.yml"]
+  
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    hostname: prometheus
+    volumes:
+      - "./observability/prometheus.yml:/etc/prometheus/prometheus.yml"
+    networks:
+      - flavor_food
+    ports:
+      - "9090:9090"
+
+  fastapi:
+    build:
+      context: ./fastapi
+      dockerfile: Dockerfile
+    container_name: fastapi
+    hostname: fastapi
+    ports:
+      - "8000:8000"
+    networks:
+      - flavor_food      
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: backend
+    hostname: backend
+    env_file:
+      - .env
+    environment:      
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: db      
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}      
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+      GOOGLE_CALLBACK_URI: ${GOOGLE_CALLBACK_URI}      
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}      
+      MOMO_URL: ${MOMO_URL}
+      MOMO_PARTNER_CODE: ${MOMO_PARTNER_CODE}
+      MOMO_ACCESS_KEY: ${MOMO_ACCESS_KEY}
+      MOMO_SECRET_KEY: ${MOMO_SECRET_KEY}    
+      # MOMO_REDIRECT_URL: ${MOMO_REDIRECT_URL}
+      # MOMO_NOTIFY_URL: ${MOMO_NOTIFY_URL}
+      FASTAPI_HOST: http://fastapi:8000
+      SPM_METRICS_ENDPOINT: http://jeager:4318
+    command: sh -c "yarn migration:run && node dist/main"
+    ports:
+      - "3000:3000"
+    networks:
+      - flavor_food
+    depends_on:
+      - fastapi
+      - db
+      - jeager
+      - prometheus    
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    hostname: frontend
+    env_file:
+      - .env
+    environment:
+      VITE_CLIENT_URL: ${VITE_CLIENT_URL}
+      VITE_SERVER_URL: ${VITE_SERVER_URL}
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID}
+      VITE_MAPBOX_TOKEN: ${VITE_MAPBOX_TOKEN}
+    ports:
+      - "80:80"
+    networks:
+      - flavor_food
+    depends_on:
+      - backend
+
+volumes:
+  flavorfood_postgres_data-cloned:
+    external: true
+
+networks:
+  flavor_food:

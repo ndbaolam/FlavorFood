@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Like, Repository, In } from 'typeorm';
 import { CreateTipDto, UpdateTipDto } from './dto/tips.dto';
@@ -12,7 +16,7 @@ export class TipsService {
     private readonly tipsRepository: Repository<Tips>,
 
     @InjectRepository(TipGenres)
-    private readonly genresRepository: Repository<TipGenres>
+    private readonly genresRepository: Repository<TipGenres>,
   ) {}
 
   async create(createTipDto: CreateTipDto): Promise<Tips> {
@@ -21,11 +25,11 @@ export class TipsService {
 
       const existedTip = await this.tipsRepository.findOne({
         where: { title: tipData.title },
-      });      
+      });
 
       if (existedTip != null) {
         throw new ConflictException(
-          `Tip with title ${tipData.title} already exists`
+          `Tip with title ${tipData.title} already exists`,
         );
       }
 
@@ -38,12 +42,12 @@ export class TipsService {
 
         const foundGenreIds = genreEntities.map((g) => g.genre_id);
         const missingGenres = genres.filter(
-          (id) => !foundGenreIds.includes(id)
+          (id) => !foundGenreIds.includes(id),
         );
 
         if (missingGenres.length > 0) {
           throw new NotFoundException(
-            `Genres not found: ${missingGenres.join(', ')}`
+            `Genres not found: ${missingGenres.join(', ')}`,
           );
         }
 
@@ -75,7 +79,12 @@ export class TipsService {
     return tip;
   }
 
-  async search(title?: string, genreIds?: number[], offset?: number, limit?: number): Promise<Tips[]> {
+  async search(
+    title?: string,
+    genreIds?: number[],
+    offset?: number,
+    limit?: number,
+  ): Promise<Tips[]> {
     const query = this.tipsRepository
       .createQueryBuilder('tips')
       .leftJoinAndSelect('tips.genres', 'genre');
@@ -100,8 +109,8 @@ export class TipsService {
     if (!tips || tips.length === 0) {
       throw new NotFoundException(
         `No tips found with title: '${title}' and genres: [${genreIds?.join(
-          ', '
-        )}]`
+          ', ',
+        )}]`,
       );
     }
 
@@ -124,7 +133,7 @@ export class TipsService {
 
       if (missingGenres.length > 0) {
         throw new NotFoundException(
-          `Genres not found: ${missingGenres.join(', ')}`
+          `Genres not found: ${missingGenres.join(', ')}`,
         );
       }
 

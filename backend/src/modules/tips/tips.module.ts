@@ -9,6 +9,6 @@ import { TipGenres } from './genres/entity/genres.entity';
 @Module({
   imports: [TypeOrmModule.forFeature([Tips, TipGenres]), GenresModule],
   controllers: [TipsController],
-  providers: [TipsService]
+  providers: [TipsService],
 })
 export class TipsModule {}

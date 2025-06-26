@@ -19,10 +19,14 @@ export class ReviewService {
   ) {}
 
   async createReview(dto: CreateReviewDto): Promise<Review> {
-    const user = await this.userRepository.findOne({ where: { user_id: dto.userId } });
+    const user = await this.userRepository.findOne({
+      where: { user_id: dto.userId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
-    const recipe = await this.recipeRepository.findOne({ where: { recipe_id: dto.recipeId } });
+    const recipe = await this.recipeRepository.findOne({
+      where: { recipe_id: dto.recipeId },
+    });
     if (!recipe) throw new NotFoundException('Recipe not found');
 
     const review = this.reviewRepository.create({
@@ -39,28 +43,36 @@ export class ReviewService {
     return this.reviewRepository.find({ relations: ['user', 'recipe'] });
   }
 
-  async getReviews(userId?: number, recipeId?: number, reviewId?: number): Promise<Review[]> {
-    const query = this.reviewRepository.createQueryBuilder('reviews')
+  async getReviews(
+    userId?: number,
+    recipeId?: number,
+    reviewId?: number,
+  ): Promise<Review[]> {
+    const query = this.reviewRepository
+      .createQueryBuilder('reviews')
       .leftJoinAndSelect('reviews.user', 'users')
       .leftJoinAndSelect('reviews.recipe', 'recipes');
 
     if (reviewId) {
       query.andWhere('reviews.review_id = :reviewId', { reviewId });
     }
-  
+
     if (userId) {
       query.andWhere('users.user_id = :userId', { userId });
     }
-  
+
     if (recipeId) {
       query.andWhere('recipes.recipe_id = :recipeId', { recipeId });
     }
-  
+
     return query.getMany();
-  }  
+  }
 
   async getReviewById(id: number): Promise<Review> {
-    const review = await this.reviewRepository.findOne({ where: { review_id: id }, relations: ['user', 'recipe'] });
+    const review = await this.reviewRepository.findOne({
+      where: { review_id: id },
+      relations: ['user', 'recipe'],
+    });
     if (!review) throw new NotFoundException('Review not found');
     return review;
   }

@@ -27,7 +27,7 @@ export class CreateRecipeDto {
 
   @IsEnum(DifficultyLevel)
   @ApiProperty({ enum: DifficultyLevel, example: DifficultyLevel.EASY })
-  difficulty_level: DifficultyLevel;  
+  difficulty_level: DifficultyLevel;
 
   @IsOptional()
   @Type(() => Number)
@@ -50,28 +50,28 @@ export class CreateRecipeDto {
   serving: number;
 
   @IsOptional()
-  @Transform(({ value }) => Array.isArray(value) ? value : [value])
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
   @ApiPropertyOptional({ type: [Number], example: [1, 2] })
   categories?: number[];
 
   @IsOptional()
   @IsArray()
-  @Transform(({ value }) => Array.isArray(value) ? value : [value])
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => IngredientDto)
   @ApiPropertyOptional({ type: [IngredientDto] })
   ingredients?: IngredientDto[];
 
   @IsOptional()
   @IsArray()
-  @Transform(({ value }) => Array.isArray(value) ? value : [value])
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => NutritionDto)
   @ApiPropertyOptional({ type: [NutritionDto] })
   nutrition?: NutritionDto[];
 
   @IsOptional()
   @IsArray()
-  @Transform(({ value }) => Array.isArray(value) ? value : [value])
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => StepDto)
   @ApiPropertyOptional({ type: [StepDto] })
   steps?: StepDto[];
@@ -106,11 +106,14 @@ export class UpdateRecipeDto extends PartialType(CreateRecipeDto) {
 
   @IsOptional()
   @IsEnum(DifficultyLevel)
-  @ApiPropertyOptional({ enum: DifficultyLevel, example: DifficultyLevel.MEDIUM })
+  @ApiPropertyOptional({
+    enum: DifficultyLevel,
+    example: DifficultyLevel.MEDIUM,
+  })
   difficulty_level?: DifficultyLevel;
 
   @IsOptional()
-  @Transform(({ value }) => Array.isArray(value) ? value : [value])
+  @Transform(({ value }) => (Array.isArray(value) ? value : [value]))
   @Type(() => Number)
   @ApiPropertyOptional({ type: [Number], example: [3, 4] })
   categories?: number[];

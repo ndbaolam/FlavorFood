@@ -9,7 +9,7 @@ export class Nutritrion {
 
   @Column({
     type: 'varchar',
-    nullable: false,    
+    nullable: false,
   })
   name: string;
 

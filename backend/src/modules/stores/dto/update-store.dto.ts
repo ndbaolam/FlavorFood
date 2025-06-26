@@ -13,7 +13,7 @@ export class UpdateStoreDto extends PartialType(CreateStoreDto) {
   @IsString()
   address?: string;
 
-  @ApiProperty({ required: false })  
+  @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
   @Type(() => Number)
@@ -25,7 +25,11 @@ export class UpdateStoreDto extends PartialType(CreateStoreDto) {
   @Type(() => Number)
   latitude?: number;
 
-  @ApiProperty({ required: false, enum: ['active', 'inactive', 'closed'], default: 'active' })
+  @ApiProperty({
+    required: false,
+    enum: ['active', 'inactive', 'closed'],
+    default: 'active',
+  })
   @IsOptional()
   @IsString()
   status?: 'active' | 'inactive' | 'closed' = 'active';

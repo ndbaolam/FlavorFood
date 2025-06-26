@@ -16,7 +16,9 @@ export class GenresService {
   }
 
   async findOne(id: number): Promise<TipGenres> {
-    const genre = await this.genresRepository.findOne({ where: { genre_id: id } });
+    const genre = await this.genresRepository.findOne({
+      where: { genre_id: id },
+    });
     if (!genre) {
       throw new NotFoundException(`Genre with ID ${id} not found`);
     }
@@ -25,14 +27,16 @@ export class GenresService {
 
   async create(createGenreDto: CreateGenreDto): Promise<TipGenres> {
     const existedGenre = await this.genresRepository.findOne({
-      where: { title: createGenreDto.title }
+      where: { title: createGenreDto.title },
     });
 
-    if(existedGenre) {
-      throw new NotFoundException(`Genre with title ${createGenreDto.title} already exists`);
+    if (existedGenre) {
+      throw new NotFoundException(
+        `Genre with title ${createGenreDto.title} already exists`,
+      );
     }
 
-    const genre = this.genresRepository.create(createGenreDto);    
+    const genre = this.genresRepository.create(createGenreDto);
     return this.genresRepository.save(genre);
   }
 

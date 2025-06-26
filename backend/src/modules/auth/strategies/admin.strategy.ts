@@ -9,7 +9,7 @@ import { Request } from 'express';
 @Injectable()
 export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
   constructor(
-    private readonly configService: ConfigService,    
+    private readonly configService: ConfigService,
     private readonly usersServices: UsersService,
   ) {
     const extractJwtFromCookie = (req: Request) => {
@@ -27,20 +27,22 @@ export class AdminStrategy extends PassportStrategy(Strategy, 'admin') {
     });
   }
 
-  async validate(payload: JwtPayload) {    
+  async validate(payload: JwtPayload) {
     const user = await this.usersServices.findUserByEmail(payload.mail);
 
     if (!user) {
       throw new UnauthorizedException('Please log in to continue');
     }
 
-    if(user['role'] !== 'admin') {
-      throw new UnauthorizedException('You are not authorized to access this resource');
+    if (user['role'] !== 'admin') {
+      throw new UnauthorizedException(
+        'You are not authorized to access this resource',
+      );
     }
 
     return {
       sub: payload.user_id,
-      mail: payload.mail,      
+      mail: payload.mail,
     };
   }
 }

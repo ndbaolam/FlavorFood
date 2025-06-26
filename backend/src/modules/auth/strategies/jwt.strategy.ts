@@ -10,7 +10,7 @@ import { UserStatus } from '../../users/entity/users.entity';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
-    private readonly configService: ConfigService,    
+    private readonly configService: ConfigService,
     private readonly usersServices: UsersService,
   ) {
     const extractJwtFromCookie = (req: Request) => {
@@ -28,20 +28,20 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     });
   }
 
-  async validate(payload: JwtPayload) {    
+  async validate(payload: JwtPayload) {
     const user = await this.usersServices.findUserByEmail(payload.mail);
 
     if (!user) {
       throw new UnauthorizedException('Please log in to continue');
     }
 
-    if(user['status'] !== UserStatus.ACTIVE) {
+    if (user['status'] !== UserStatus.ACTIVE) {
       throw new UnauthorizedException('Your account is not active');
-    }    
+    }
 
     return {
       sub: payload.user_id,
-      mail: payload.mail,      
+      mail: payload.mail,
     };
   }
 }

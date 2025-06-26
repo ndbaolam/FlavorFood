@@ -1,4 +1,16 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Patch, UseGuards, Req, UnauthorizedException, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Patch,
+  UseGuards,
+  Req,
+  UnauthorizedException,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { InvoiceService } from './invoice.service';
 import { CreateInvoiceDto, UpdateInvoiceDto } from './dto/invoice.dto';
@@ -15,21 +27,29 @@ export class InvoiceController {
   @Post()
   @ApiOperation({ summary: 'Create a new invoice' })
   @ApiResponse({ status: 201, description: 'Invoice created', type: Invoice })
-  async create(@Req() req: Request, @Body() createInvoiceDto: CreateInvoiceDto): Promise<Invoice> {
+  async create(
+    @Req() req: Request,
+    @Body() createInvoiceDto: CreateInvoiceDto,
+  ): Promise<Invoice> {
     const user = req['user'];
 
     if (!user) {
       throw new UnauthorizedException();
     }
 
-    return this.invoiceService.create(Number(user['sub']) ,createInvoiceDto);
+    return this.invoiceService.create(Number(user['sub']), createInvoiceDto);
   }
 
   @Get()
   @ApiQuery({ name: 'userId', required: false, type: Number })
-  @ApiQuery({ name: 'status', required: false, type: String, enum: InvoiceStatus })
+  @ApiQuery({
+    name: 'status',
+    required: false,
+    type: String,
+    enum: InvoiceStatus,
+  })
   @ApiOperation({ summary: 'Get all invoices' })
-  @ApiResponse({ status: 200, type: [Invoice]})
+  @ApiResponse({ status: 200, type: [Invoice] })
   async findAll(
     @Query('userId') userId: string | null = null,
     @Query('status') status: InvoiceStatus | null = null,

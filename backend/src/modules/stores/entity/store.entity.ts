@@ -38,10 +38,10 @@ export class Stores {
 
   @Column({ nullable: true, type: 'double precision' })
   longitude: number;
-  
+
   @Column({ nullable: true, type: 'double precision' })
   latitude: number;
-  
+
   @Column({
     nullable: true,
     type: 'enum',

@@ -28,11 +28,13 @@ export class Favorite {
   })
   recipe_id: number;
 
-  @ManyToOne(() => Users, user => user.favorites, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Users, (user) => user.favorites, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id' })
   user: Users;
 
-  @ManyToOne(() => Recipes, recipe => recipe.favorites, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Recipes, (recipe) => recipe.favorites, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'recipe_id' })
   recipe: Recipes;
 

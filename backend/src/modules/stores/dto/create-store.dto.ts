@@ -21,7 +21,7 @@ export class CreateStoreDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  address: string; 
+  address: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -35,7 +35,11 @@ export class CreateStoreDto {
   @Type(() => Number)
   latitude: number;
 
-  @ApiProperty({ required: false, enum: ['active', 'inactive', 'closed'], default: 'active' })
+  @ApiProperty({
+    required: false,
+    enum: ['active', 'inactive', 'closed'],
+    default: 'active',
+  })
   @IsOptional()
   @IsString()
   status?: 'active' | 'inactive' | 'closed' = 'active';
@@ -43,7 +47,7 @@ export class CreateStoreDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsString()
-  phone_number?: string; 
+  phone_number?: string;
 
   @ApiProperty({ required: false })
   @IsOptional()

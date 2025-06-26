@@ -22,6 +22,9 @@ export class CreateReviewDto {
 
   @IsString()
   @IsOptional()
-  @ApiPropertyOptional({ example: 'Món ăn rất ngon!', description: 'Nhận xét thêm về công thức (nếu có)' })
+  @ApiPropertyOptional({
+    example: 'Món ăn rất ngon!',
+    description: 'Nhận xét thêm về công thức (nếu có)',
+  })
   comment?: string;
 }

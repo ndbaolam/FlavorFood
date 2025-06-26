@@ -1,12 +1,12 @@
 import 'reflect-metadata';
-import { 
-  Column, 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  CreateDateColumn, 
-  UpdateDateColumn, 
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   ManyToOne,
-  JoinTable 
+  JoinTable,
 } from 'typeorm';
 import { Users } from '../../users/entity/users.entity';
 import { Recipes } from '../../recipes/entity/recipes.entity';
@@ -16,20 +16,16 @@ export class Review {
   @PrimaryGeneratedColumn()
   review_id: number;
 
-  @ManyToOne(() => Users, user => user.reviews, 
-    { 
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE'
-    }
-  )
+  @ManyToOne(() => Users, (user) => user.reviews, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   user: Users;
 
-  @ManyToOne(() => Recipes, recipe => recipe.reviews, 
-    {
-      onDelete: 'CASCADE',
-      onUpdate: 'CASCADE',
-    }
-  )
+  @ManyToOne(() => Recipes, (recipe) => recipe.reviews, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   recipe: Recipes;
 
   @Column({ type: 'int', width: 1 })

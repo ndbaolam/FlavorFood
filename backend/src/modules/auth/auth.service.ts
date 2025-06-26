@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
@@ -26,7 +23,10 @@ export class AuthService {
   ) {}
 
   //Normal login
-  async login(mail: string, password: string): Promise<{ accessToken: string }> {
+  async login(
+    mail: string,
+    password: string,
+  ): Promise<{ accessToken: string }> {
     // Find user by email
     const user = await this.usersRepository.findOne({
       where: { mail },
@@ -40,8 +40,8 @@ export class AuthService {
     // Create JWT payload
     const payload: JwtPayload = {
       user_id: user.user_id,
-      mail: user.mail,      
-    }
+      mail: user.mail,
+    };
 
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
@@ -72,14 +72,16 @@ export class AuthService {
       };
 
       await this.register(userRegisterDto);
-      userExists = await this.usersService.findUserByEmail(userRegisterDto.mail); // Re-fetch user after registration
+      userExists = await this.usersService.findUserByEmail(
+        userRegisterDto.mail,
+      ); // Re-fetch user after registration
     }
 
     const payload: JwtPayload = {
       user_id: userExists.user_id,
-      mail: userExists.mail,      
-    }
-    
+      mail: userExists.mail,
+    };
+
     // Generate access token
     const accessToken = await this.jwtService.signAsync(payload, {
       secret: this.configService.get<string>('JWT_SECRET'),
@@ -116,7 +118,7 @@ export class AuthService {
     if (!payload) {
       throw new UnauthorizedException('Invalid access token');
     }
-    
+
     res.clearCookie('access_token', {
       httpOnly: true,
       secure: true,

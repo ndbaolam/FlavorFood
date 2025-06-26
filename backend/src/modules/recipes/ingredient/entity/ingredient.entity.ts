@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Recipes } from "../../entity/recipes.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Recipes } from '../../entity/recipes.entity';
 
 @Entity('ingredient')
 export class Ingredient {
@@ -8,7 +8,7 @@ export class Ingredient {
   id: number;
 
   @Column({
-    type: 'varchar',        
+    type: 'varchar',
   })
   ingredient: string;
 
@@ -22,11 +22,9 @@ export class Ingredient {
   })
   unit: string;
 
-  @ManyToOne(() => Recipes, (recipe) => recipe.ingredients, 
-    { 
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE"
-    }
-  )
+  @ManyToOne(() => Recipes, (recipe) => recipe.ingredients, {
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   recipe: Recipes;
 }

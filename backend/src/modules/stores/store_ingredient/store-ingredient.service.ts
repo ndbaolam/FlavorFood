@@ -14,11 +14,12 @@ export class StoreIngredientService {
 
     @InjectRepository(Store)
     private readonly storeRepository: Repository<Store>,
-
   ) {}
 
-  async create(createStoreIngredientDto: CreateStoreIngredientDto): Promise<StoreIngredient> {
-    const {price, title, quantity, unit, store_id} = createStoreIngredientDto
+  async create(
+    createStoreIngredientDto: CreateStoreIngredientDto,
+  ): Promise<StoreIngredient> {
+    const { price, title, quantity, unit, store_id } = createStoreIngredientDto;
 
     const store = await this.storeRepository.findOne({ where: { store_id } });
     if (!store) {
@@ -30,7 +31,7 @@ export class StoreIngredientService {
       title,
       quantity,
       unit,
-      store: { store_id }
+      store: { store_id },
     });
 
     return this.storeIngredientRepository.save(storeIngredient);
@@ -38,8 +39,8 @@ export class StoreIngredientService {
 
   async findOne(id: number): Promise<StoreIngredient> {
     const ingredient = await this.storeIngredientRepository.findOne({
-      where: {ingredient_id: id},
-      relations: ['store']
+      where: { ingredient_id: id },
+      relations: ['store'],
     });
     if (!ingredient) {
       throw new NotFoundException('Store ingredient not found');
@@ -47,7 +48,10 @@ export class StoreIngredientService {
     return ingredient;
   }
 
-  async update(id: number, updateStoreIngredientDto: UpdateStoreIngredientDto): Promise<StoreIngredient> {
+  async update(
+    id: number,
+    updateStoreIngredientDto: UpdateStoreIngredientDto,
+  ): Promise<StoreIngredient> {
     const ingredient = await this.storeIngredientRepository.preload({
       ingredient_id: id,
       ...updateStoreIngredientDto,

@@ -21,7 +21,10 @@ export class CreateSubscriptionDto {
 
   @IsNumber()
   @IsNotEmpty()
-  @ApiProperty({ example: 30, description: 'Number of days for the subscription' })
+  @ApiProperty({
+    example: 30,
+    description: 'Number of days for the subscription',
+  })
   @Type(() => Number)
   day_remain: number;
 }
@@ -44,7 +47,11 @@ export class UpdateSubscriptionDto {
 
   @IsNumber()
   @IsOptional()
-  @ApiProperty({ example: 30, description: 'Number of days for the subscription', required: false })
+  @ApiProperty({
+    example: 30,
+    description: 'Number of days for the subscription',
+    required: false,
+  })
   @Type(() => Number)
   day_remain?: number;
 }

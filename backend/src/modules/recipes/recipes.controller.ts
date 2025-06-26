@@ -43,7 +43,7 @@ export class RecipesController {
     try {
       return this.recipesService.findOne(Number(id));
     } catch (error) {
-      Logger.error(error)
+      Logger.error(error);
       throw new BadRequestException('Recipe ID must be a number');
     }
   }
@@ -51,14 +51,18 @@ export class RecipesController {
   @Get()
   @ApiOperation({ summary: 'Search recipes' })
   @ApiQuery({ name: 'title', required: false, type: String })
-  @ApiResponse({ status: 200, description: 'List of matching recipes', type: [Recipes] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of matching recipes',
+    type: [Recipes],
+  })
   async searchRecipeByTitle(
-    @Query() searchDto: SearchRecipeDto
+    @Query() searchDto: SearchRecipeDto,
   ): Promise<Recipes[]> {
     try {
       return await this.recipesService.searchRecipes(searchDto);
     } catch (error) {
-      Logger.error(error)
+      Logger.error(error);
     }
   }
 
@@ -73,33 +77,39 @@ export class RecipesController {
   @Post()
   @ApiOperation({ summary: 'Create a new recipe' })
   @ApiBody({ type: CreateRecipeDto })
-  @ApiResponse({ status: 201, description: 'Recipe created successfully', type: Recipes })
-  async create(
-    @Body() createRecipeDto: CreateRecipeDto
-  ): Promise<Recipes> {
+  @ApiResponse({
+    status: 201,
+    description: 'Recipe created successfully',
+    type: Recipes,
+  })
+  async create(@Body() createRecipeDto: CreateRecipeDto): Promise<Recipes> {
     try {
       return this.recipesService.create(createRecipeDto);
     } catch (error) {
-      Logger.error(error.message)
+      Logger.error(error.message);
       throw new BadRequestException('Error creating recipe');
-    }    
+    }
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update recipe by ID' })
   @ApiParam({ name: 'id', type: Number })
   @ApiBody({ type: UpdateRecipeDto })
-  @ApiResponse({ status: 200, description: 'Recipe updated successfully', type: Recipes })
+  @ApiResponse({
+    status: 200,
+    description: 'Recipe updated successfully',
+    type: Recipes,
+  })
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() updateRecipeDto: UpdateRecipeDto
+    @Body() updateRecipeDto: UpdateRecipeDto,
   ): Promise<Recipes> {
     try {
       return this.recipesService.update(Number(id), updateRecipeDto);
     } catch (error) {
-      Logger.error(error)
+      Logger.error(error);
       throw new BadRequestException('Error updating recipe');
-    }    
+    }
   }
 
   @Delete(':id')
@@ -110,7 +120,7 @@ export class RecipesController {
     try {
       return this.recipesService.remove(Number(id));
     } catch (error) {
-      Logger.error(error)
+      Logger.error(error);
       throw new BadRequestException('Error deleting recipe');
     }
   }

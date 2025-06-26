@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Subscription } from './entity/subscription.entity';
-import { CreateSubscriptionDto, UpdateSubscriptionDto } from './dto/subscription.dto';
+import {
+  CreateSubscriptionDto,
+  UpdateSubscriptionDto,
+} from './dto/subscription.dto';
 
 @Injectable()
 export class SubscriptionService {

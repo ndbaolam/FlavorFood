@@ -11,6 +11,9 @@ export class CreateGenreDto {
 export class UpdateGenreDto {
   @IsOptional()
   @IsString()
-  @ApiPropertyOptional({ example: 'Fitness', description: 'Tên thể loại mẹo được cập nhật' })
+  @ApiPropertyOptional({
+    example: 'Fitness',
+    description: 'Tên thể loại mẹo được cập nhật',
+  })
   title?: string;
 }

@@ -16,26 +16,30 @@ export class FavoriteService {
     private readonly recipesRepository: Repository<Recipes>,
   ) {}
 
-  async createFavorite(createFavoriteDto: CreateFavoriteDto): Promise<Favorite> {    
+  async createFavorite(
+    createFavoriteDto: CreateFavoriteDto,
+  ): Promise<Favorite> {
     try {
       const existedRecipe = this.recipesRepository.findOne({
         where: {
-          recipe_id: createFavoriteDto.recipe_id
-        }
+          recipe_id: createFavoriteDto.recipe_id,
+        },
       });
-      
+
       if (!existedRecipe) {
-        throw new NotFoundException(`Recipe with ID ${createFavoriteDto.recipe_id} not found`);
+        throw new NotFoundException(
+          `Recipe with ID ${createFavoriteDto.recipe_id} not found`,
+        );
       }
 
       const favorite = this.favoriteRepository.create(createFavoriteDto);
-      return await this.favoriteRepository.save(favorite); 
+      return await this.favoriteRepository.save(favorite);
     } catch (error) {
       throw new Error(error);
-    }    
+    }
   }
 
-  async getFavoritesByUserId(user_id: number): Promise<Favorite[]> {    
+  async getFavoritesByUserId(user_id: number): Promise<Favorite[]> {
     const favorites = await this.favoriteRepository.find({
       where: { user_id: user_id },
       relations: ['user', 'recipe'],
@@ -44,7 +48,7 @@ export class FavoriteService {
       throw new NotFoundException(`Favorites not found`);
     }
     return favorites;
-  }  
+  }
 
   async deleteFavorite(id: number): Promise<void> {
     const result = await this.favoriteRepository.delete(id);

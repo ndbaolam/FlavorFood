@@ -1,6 +1,6 @@
-import { Type } from "class-transformer";
-import { IsOptional, IsNumber, IsString, IsNotEmpty } from "class-validator";
-import { ApiProperty } from "@nestjs/swagger";
+import { Type } from 'class-transformer';
+import { IsOptional, IsNumber, IsString, IsNotEmpty } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class IngredientDto {
   @IsNotEmpty()
@@ -16,6 +16,9 @@ export class IngredientDto {
 
   @IsNotEmpty()
   @IsString()
-  @ApiProperty({ example: 'grams', description: 'Unit of the ingredient (e.g., grams, ml, tbsp)' })
+  @ApiProperty({
+    example: 'grams',
+    description: 'Unit of the ingredient (e.g., grams, ml, tbsp)',
+  })
   unit: string;
 }

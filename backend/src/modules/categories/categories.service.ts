@@ -1,4 +1,8 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Categories } from './entity/categories.entity';
@@ -8,16 +12,20 @@ import { CreateCategoriesDto, UpdateCategoriesDto } from './dto/categories.dto';
 export class CategoriesService {
   constructor(
     @InjectRepository(Categories)
-    private readonly categoriesRepository: Repository<Categories>
+    private readonly categoriesRepository: Repository<Categories>,
   ) {}
 
   async create(createCategoriesDto: CreateCategoriesDto): Promise<Categories> {
-    const existedCateogry: Categories = await this.categoriesRepository.findOne({
-      where: { title: createCategoriesDto.title },
-    });
+    const existedCateogry: Categories = await this.categoriesRepository.findOne(
+      {
+        where: { title: createCategoriesDto.title },
+      },
+    );
 
-    if(existedCateogry instanceof Categories) {
-      throw new ConflictException(`Category with title ${createCategoriesDto.title} already exists`);
+    if (existedCateogry instanceof Categories) {
+      throw new ConflictException(
+        `Category with title ${createCategoriesDto.title} already exists`,
+      );
     }
 
     const category = this.categoriesRepository.create(createCategoriesDto);
@@ -37,7 +45,7 @@ export class CategoriesService {
       throw new NotFoundException(`Category with id ${id} not found`);
     }
     return category;
-  }  
+  }
 
   async findByTitle(title: string): Promise<Categories[]> {
     const category = await this.categoriesRepository.find({
@@ -52,11 +60,11 @@ export class CategoriesService {
 
   async update(
     id: number,
-    updateCategoriesDto: UpdateCategoriesDto
+    updateCategoriesDto: UpdateCategoriesDto,
   ): Promise<Categories> {
     const category: Categories = await this.findOne(id);
 
-    if(!category) {
+    if (!category) {
       throw new NotFoundException(`Category with id ${id} not found`);
     }
 

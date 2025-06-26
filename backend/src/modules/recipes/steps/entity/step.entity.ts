@@ -1,23 +1,23 @@
 import 'reflect-metadata';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
-import { Recipes } from "../../entity/recipes.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Recipes } from '../../entity/recipes.entity';
 
 @Entity('steps')
 export class Steps {
   @PrimaryGeneratedColumn()
-  id: number  
+  id: number;
 
-  @Column({ 
+  @Column({
     type: 'int',
-    nullable: true 
+    nullable: true,
   })
-  number: number
+  number: number;
 
   @Column({
     type: 'varchar',
-    nullable: true
+    nullable: true,
   })
-  step: string
+  step: string;
 
   @ManyToOne(() => Recipes, (recipe) => recipe.steps, {
     onDelete: 'CASCADE',

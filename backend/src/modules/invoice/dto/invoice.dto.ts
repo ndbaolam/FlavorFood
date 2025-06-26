@@ -1,8 +1,14 @@
-import { ApiProperty, PartialType } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
-import { InvoiceStatus } from "../entity/invoice.entity";
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+import { InvoiceStatus } from '../entity/invoice.entity';
 
-export class CreateInvoiceDto {  
+export class CreateInvoiceDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty({

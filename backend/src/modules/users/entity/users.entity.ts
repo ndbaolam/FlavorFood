@@ -1,12 +1,12 @@
 import 'reflect-metadata';
-import { 
-  Column, 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  CreateDateColumn, 
-  UpdateDateColumn, 
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
   OneToMany,
-  OneToOne
+  OneToOne,
 } from 'typeorm';
 import { IsEmail, IsStrongPassword } from 'class-validator';
 import { Favorite } from '../../favorite/entity/favorite.entity';
@@ -62,29 +62,26 @@ export class Users {
   })
   status: UserStatus;
 
-  @OneToMany(() => Favorite, favorite => favorite.user)
+  @OneToMany(() => Favorite, (favorite) => favorite.user)
   favorites: Favorite[];
 
-  @OneToMany(() => Invoice, Invoice => Invoice.user)
+  @OneToMany(() => Invoice, (Invoice) => Invoice.user)
   invoices: Invoice[];
 
-  @OneToMany(() => Review, review => review.user)
+  @OneToMany(() => Review, (review) => review.user)
   reviews: Review[];
 
   @OneToOne(() => Stores, (store) => store.user)
-  store: Stores;  
+  store: Stores;
 
   //For Seller only
-  @CreateDateColumn(
-    { 
-      nullable: true,
-      type: 'timestamp',
-      default: null,
-      comment: 'The date when the seller account was expired'
-    }
-  )
+  @CreateDateColumn({
+    nullable: true,
+    type: 'timestamp',
+    default: null,
+    comment: 'The date when the seller account was expired',
+  })
   expired_at: Date;
-
 
   @CreateDateColumn({
     type: 'timestamp',

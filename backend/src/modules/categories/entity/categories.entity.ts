@@ -15,9 +15,9 @@ export class Categories {
   @PrimaryGeneratedColumn({ name: 'category_id' })
   category_id: number;
 
-  @Column({    
+  @Column({
     type: 'varchar',
-    nullable: false
+    nullable: false,
   })
   title: string;
 
@@ -26,10 +26,10 @@ export class Categories {
 
   @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
-  
+
   @ManyToMany(() => Recipes, (recipe) => recipe.categories, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinTable({
     name: 'recipe_categories',

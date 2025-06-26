@@ -30,9 +30,7 @@ import {
 @UseGuards(JwtAuthGuard)
 @Controller('favorite')
 export class FavoriteController {
-  constructor(
-    private readonly favoriteService: FavoriteService,    
-  ) {}
+  constructor(private readonly favoriteService: FavoriteService) {}
 
   @Post()
   @ApiOperation({ summary: 'Add a recipe to favorites' })
@@ -51,13 +49,13 @@ export class FavoriteController {
   })
   async createFavorite(
     @Req() req: Request,
-    @Body('recipe_id') recipeId: number
+    @Body('recipe_id') recipeId: number,
   ): Promise<Favorite> {
     const user = req['user'];
 
     if (!user) {
       throw new UnauthorizedException();
-    }    
+    }
 
     const createFavoriteDto: CreateFavoriteDto = {
       user_id: Number(user['sub']),
@@ -68,7 +66,7 @@ export class FavoriteController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get list of user\'s favorite recipes' })
+  @ApiOperation({ summary: "Get list of user's favorite recipes" })
   @ApiResponse({
     status: 200,
     description: 'List of favorite recipes',

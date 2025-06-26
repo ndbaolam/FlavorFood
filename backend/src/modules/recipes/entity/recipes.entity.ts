@@ -8,7 +8,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  ValueTransformer
+  ValueTransformer,
 } from 'typeorm';
 import { Favorite } from '../../favorite/entity/favorite.entity';
 import { Categories } from '../../categories/entity/categories.entity';
@@ -28,15 +28,15 @@ export class Recipes {
   @PrimaryGeneratedColumn()
   recipe_id: number;
 
-  @Column({ 
+  @Column({
     type: 'varchar',
-    nullable: false 
+    nullable: false,
   })
   title: string;
 
   @Column({
     type: 'varchar',
-    nullable: false,        
+    nullable: false,
   })
   description: string;
 
@@ -45,9 +45,9 @@ export class Recipes {
     enum: DifficultyLevel,
     default: DifficultyLevel.MEDIUM,
   })
-  difficulty_level: DifficultyLevel;  
+  difficulty_level: DifficultyLevel;
 
-  @Column({    
+  @Column({
     type: 'int',
     nullable: true,
   })
@@ -78,18 +78,22 @@ export class Recipes {
   @OneToMany(() => Review, (review) => review.recipe)
   reviews: Review[];
 
-  @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe, { cascade: true })
+  @OneToMany(() => Ingredient, (ingredient) => ingredient.recipe, {
+    cascade: true,
+  })
   ingredients: Ingredient[];
 
-  @OneToMany(() => Nutritrion, (nutrition) => nutrition.recipe, { cascade: true })
+  @OneToMany(() => Nutritrion, (nutrition) => nutrition.recipe, {
+    cascade: true,
+  })
   nutrition: Nutritrion[];
 
   @OneToMany(() => Steps, (step) => step.recipe, { cascade: true })
   steps: Steps[];
 
   @ManyToMany(() => Categories, (categories) => categories.recipes, {
-    onDelete: "CASCADE",
-    onUpdate: "CASCADE",
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinTable({
     name: 'recipe_categories',
@@ -102,7 +106,7 @@ export class Recipes {
       referencedColumnName: 'category_id',
     },
   })
-  categories: Categories[];  
+  categories: Categories[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;

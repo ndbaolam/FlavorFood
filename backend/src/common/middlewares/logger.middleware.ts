@@ -8,7 +8,8 @@ export class LoggerMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction): void {
     const { method, originalUrl } = req;
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+    const ip =
+      req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     const userAgent = req.headers['user-agent'];
     const startTime = Date.now();
 
@@ -18,16 +19,16 @@ export class LoggerMiddleware implements NestMiddleware {
         res.statusCode >= 500
           ? chalk.red
           : res.statusCode >= 400
-          ? chalk.yellow
-          : res.statusCode >= 300
-          ? chalk.cyan
-          : chalk.green;
+            ? chalk.yellow
+            : res.statusCode >= 300
+              ? chalk.cyan
+              : chalk.green;
 
       this.logger.log(
         `${chalk.blueBright(`[${method}]`)} ${chalk.whiteBright(originalUrl)} | ` +
-        `Status: ${statusColor(res.statusCode.toString())} | ` +
-        `Time: ${chalk.magenta(duration + 'ms')} | ` +
-        `IP: ${chalk.gray(ip)} | UA: ${chalk.dim(userAgent ?? '')}`
+          `Status: ${statusColor(res.statusCode.toString())} | ` +
+          `Time: ${chalk.magenta(duration + 'ms')} | ` +
+          `IP: ${chalk.gray(ip)} | UA: ${chalk.dim(userAgent ?? '')}`,
       );
     });
 

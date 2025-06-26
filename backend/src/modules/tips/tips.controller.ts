@@ -30,10 +30,14 @@ export class TipsController {
   @Post('create')
   @ApiOperation({ summary: 'Create a new tip' })
   @ApiBody({ type: CreateTipDto })
-  @ApiResponse({ status: 201, description: 'The tip has been successfully created.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The tip has been successfully created.',
+  })
   create(
-    @Body('genres', new ParseArrayPipe({ items: Number, separator: ',' })) genresId: number[],
-    @Body() { genres, ...tipData }: CreateTipDto
+    @Body('genres', new ParseArrayPipe({ items: Number, separator: ',' }))
+    genresId: number[],
+    @Body() { genres, ...tipData }: CreateTipDto,
   ) {
     const createTipDto = {
       ...tipData,
@@ -53,7 +57,13 @@ export class TipsController {
   @Get('search')
   @ApiOperation({ summary: 'Search tips by title and genres' })
   @ApiQuery({ name: 'title', required: false, type: String })
-  @ApiQuery({ name: 'genres', required: false, type: [Number], style: 'form', explode: false })
+  @ApiQuery({
+    name: 'genres',
+    required: false,
+    type: [Number],
+    style: 'form',
+    explode: false,
+  })
   @ApiQuery({ name: 'offset', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiResponse({ status: 200, description: 'Filtered tips returned.' })
@@ -81,8 +91,9 @@ export class TipsController {
   @ApiResponse({ status: 200, description: 'Tip updated successfully' })
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body('genres', new ParseArrayPipe({ items: Number, separator: ',' })) genresId: number[],
-    @Body() { genres, ...tipData }: UpdateTipDto
+    @Body('genres', new ParseArrayPipe({ items: Number, separator: ',' }))
+    genresId: number[],
+    @Body() { genres, ...tipData }: UpdateTipDto,
   ) {
     const updateTipDto = {
       ...tipData,
